@@ -6,8 +6,10 @@
     
     color: var(--text-color);
     --cold-color: blue;
-    --zero-color: rgba(213, 252, 200, 0.796);
+    --zero-color: rgb(252, 247, 221);
     --warm-color: red;
+
+    --wireframe-color: var(--text-color);
 }
 
 :root .dark {
@@ -18,6 +20,8 @@
     --cold-color: blue;
     --zero-color: white;
     --warm-color: red;
+
+    --wireframe-color: var(--text-color);
 }
 
 body {

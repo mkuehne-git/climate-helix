@@ -49,22 +49,14 @@ class ClimateHelix {
         }
         const tubeRadius = this.settings.radiusFactor * this.helix.height / this.years;
         const geometry = this.createGeometry();
+        if (options.wireframe) {
+            const style = window.getComputedStyle(document.body);
+            const color = style.getPropertyValue(`--wireframe-color`);
+            options.color = new THREE.Color(color);
+        }
         this.#mesh = new THREE.Mesh(geometry, createMaterial(options));
         return this.#mesh;
     }
-
-    // private onThemeChanged() {
-    //     console.log('onThemeChanged')
-    //     if (this.#mesh) {
-    //         this.#mesh.geometry.dispose();
-
-    //         this.#cold = this.styledColorByTemp('cold');
-    //         this.#zero = this.styledColorByTemp('zero');
-    //         this.#warm = this.styledColorByTemp('warm');
-    
-    //         this.#mesh.geometry = this.createGeometry();
-    //     }
-    // }
 
     private createGeometry(): HelixGeometry {
         const tubeRadius = this.settings.radiusFactor * this.helix.height / this.years;
@@ -81,7 +73,6 @@ class ClimateHelix {
         if (temperature) {
             const radius = map(this.helix.minT, this.helix.maxT, this.helix.minR, this.helix.maxR, temperature);
             const color = new THREE.Color();
-console.log(this.#zero);
             temperature < 0 ? color.lerpColors(this.#zero, this.#cold, Math.abs(temperature)) :
                 color.lerpColors(this.#zero, this.#warm, temperature);
             return {
@@ -97,10 +88,9 @@ console.log(this.#zero);
     private styledColorByTemp(temperature): THREE.Color {
         const style = window.getComputedStyle(document.body);
         const color = style.getPropertyValue(`--${temperature}-color`);
-        console.log(color);
         return new THREE.Color(color);
-
     }
+
     get height() {
         return this.helix.height;
     }
