@@ -1,0 +1,56 @@
+:root {
+    color-scheme: light dark;
+
+    --background-color: #fff;
+    --text-color: #2e2e2e;
+    
+    color: var(--text-color);
+    --cold-color: blue;
+    --zero-color: rgba(213, 252, 200, 0.796);
+    --warm-color: red;
+}
+
+:root .dark {
+    --background-color: #212121;
+    --text-color: #f7f7f7;
+    color: var(--text-color);
+
+    --cold-color: blue;
+    --zero-color: white;
+    --warm-color: red;
+}
+
+body {
+    margin: 0;
+    background-color: var(--background-color);
+
+    /* tell our scene container to take up the full page */
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.imprint {
+    display: block;
+    background-color: var(--background-color);
+    margin: 0;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    opacity: 1.0;
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+}
+
+.padding {
+    background-color: var(--background-color);
+    padding: 10px;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
