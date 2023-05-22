@@ -1,10 +1,11 @@
 ![Climate-helix](./src/images/climate-helix.png)
 # climate-helix
-This is an attempt to reproduce a 3D climate helix similar to the one shown in [Coding Train, How to Code a Climate Spiral](https://youtu.be/rVBTxnRyOuE?t=2384).
+This is an attempt creating a 3D climate helix similar to the one shown in [Coding Train, How to Code a Climate Spiral](https://youtu.be/rVBTxnRyOuE?t=2384).
 
-The climate helix uses data from [Coding Train, How to Code a Climate Spiral](https://youtu.be/rVBTxnRyOuE) retrieved in May-2023. You can view data for the
-* Northern Hemissphere
-* Southern Hemissphere
+The climate helix uses data from [NASA, Goddard Space Flight Center](https://data.giss.nasa.gov/gistemp/) retrieved in May-2023. You can view data for the
+
+* Northern Hemissphere,
+* Southern Hemissphere,
 * Globe
 
 The time ranges from 1880 until Mar-2023. Each year is visualized as a loop within the helix. This application uses [OrbitControls](https://threejs.org/docs/#examples/en/controls/OrbitControls) to navigate through the scene.
