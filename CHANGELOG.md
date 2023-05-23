@@ -1,4 +1,8 @@
 ## Changelog
+### v0.0.3
+* Wireframe color reacts on light/dark theme change
+* Display title div
+* Change position of controler UI to avoid title overlap. UI closed on start.
 ### v0.0.2
 * Configure wireframe color through CSS (--wireframe-color)
 * Remove obsolete console.log
