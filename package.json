@@ -1,6 +1,6 @@
 {
   "name": "climate-spiral",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "3D Climate Spiral",
   "main": "main.js",
   "scripts": {
@@ -16,10 +16,11 @@
   ],
   "devDependencies": {
     "@types/three": "^0.152.0",
-    "vite": "^4.3.5",
-    "@vitejs/plugin-basic-ssl": "^1.0.1"
+    "@vitejs/plugin-basic-ssl": "^1.0.1",
+    "vite": "^4.3.5"
   },
   "dependencies": {
+    "@fontsource/special-elite": "^5.0.0",
     "crypto-js": "^4.1.1",
     "html2canvas": "^1.4.1",
     "three": "^0.152.2"

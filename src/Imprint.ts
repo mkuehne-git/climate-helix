@@ -32,7 +32,6 @@ class Imprint {
       this.hide();
     });
     document.body.addEventListener("keydown", (e) => {
-      console.log(`keydown`)
       if (e.key === "Esc" || e.key === "Escape") {
         this.hide();
       }

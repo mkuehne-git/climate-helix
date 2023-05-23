@@ -21,21 +21,22 @@ class ClimateHelix {
     private csv: GISSParser;
     curve: Info[];
     years: number;
-    private helix: { minT: number, maxT: number, minR: number, maxR: number, height: number };
+    private helixConfiguration: { minT: number, maxT: number, minR: number, maxR: number, height: number };
     #mesh: THREE.Mesh;
     #cold: THREE.Color;
     #zero: THREE.Color;
     #warm: THREE.Color;
+    #titleDiv: HTMLElement;
     constructor(settings: Settings, minT: number = -1.0, maxT: number = 1.5, minR: number = 0.4, maxR: number = 1.0, height = 2.5) {
         this.settings = settings;
         this.csv = new GISSParser(settings.showcaseCSV);
-        this.helix = { minT, maxT, minR, maxR, height };
+        this.helixConfiguration = { minT, maxT, minR, maxR, height };
         this.#cold = this.styledColorByTemp('cold');
         this.#zero = this.styledColorByTemp('zero');
         this.#warm = this.styledColorByTemp('warm');
     }
 
-    public createMesh(options = { wireframe: false, vertexColors: true }): THREE.Mesh {
+    public createMesh(options: THREE.MeshBasicMaterialParameters = { wireframe: false, vertexColors: true }): THREE.Mesh {
         this.curve = [];
         this.years = this.csv.rowCount;
         // console.log(`Years: ${this.years}`)
@@ -47,19 +48,17 @@ class ClimateHelix {
                 }
             }
         }
-        const tubeRadius = this.settings.radiusFactor * this.helix.height / this.years;
         const geometry = this.createGeometry();
         if (options.wireframe) {
-            const style = window.getComputedStyle(document.body);
-            const color = style.getPropertyValue(`--wireframe-color`);
-            options.color = new THREE.Color(color);
+            options.color = this.styledColor('--wireframe-color')
         }
-        this.#mesh = new THREE.Mesh(geometry, createMaterial(options));
+        const material = new THREE.MeshBasicMaterial(options);
+        this.#mesh = new THREE.Mesh(geometry, material);
         return this.#mesh;
     }
 
     private createGeometry(): HelixGeometry {
-        const tubeRadius = this.settings.radiusFactor * this.helix.height / this.years;
+        const tubeRadius = this.settings.radiusFactor * this.helixConfiguration.height / this.years;
         const geometry = new HelixGeometry(new HelixCurve(this), this.settings.tubularSegments * (this.curve.length - 1), tubeRadius, this.settings.radialSegments, false);
         const vcolors = geometry.getAttribute('vColors');
         const colorAttribute = new THREE.BufferAttribute(new Float32Array(vcolors.array), 3)
@@ -71,7 +70,7 @@ class ClimateHelix {
         // First column contains year
         const temperature = this.csv.getNumber(year, month + 1);
         if (temperature) {
-            const radius = map(this.helix.minT, this.helix.maxT, this.helix.minR, this.helix.maxR, temperature);
+            const radius = map(this.helixConfiguration.minT, this.helixConfiguration.maxT, this.helixConfiguration.minR, this.helixConfiguration.maxR, temperature);
             const color = new THREE.Color();
             temperature < 0 ? color.lerpColors(this.#zero, this.#cold, Math.abs(temperature)) :
                 color.lerpColors(this.#zero, this.#warm, temperature);
@@ -86,13 +85,17 @@ class ClimateHelix {
     }
 
     private styledColorByTemp(temperature): THREE.Color {
+        return this.styledColor(`--${temperature}-color`);
+    }
+
+    private styledColor(propertyName: string): THREE.Color {
         const style = window.getComputedStyle(document.body);
-        const color = style.getPropertyValue(`--${temperature}-color`);
+        const color = style.getPropertyValue(propertyName);
         return new THREE.Color(color);
     }
 
     get height() {
-        return this.helix.height;
+        return this.helixConfiguration.height;
     }
     /**
      * @returns the length of the curve in fraction of years
@@ -106,6 +109,21 @@ class ClimateHelix {
 
     info(t: number): Info {
         return this.curve[this.curveIndex(t)];
+    }
+
+    createTitleDiv(container): HTMLElement {
+        const TITLE_DIV = 'title-div';
+        const oldTitleDiv = container.querySelector(`.${TITLE_DIV}`);
+        if (oldTitleDiv) {
+            container.removeChild(oldTitleDiv);
+        }
+        if (!this.#titleDiv) {
+            this.#titleDiv = document.createElement('DIV');
+            this.#titleDiv.setAttribute('class', TITLE_DIV);
+            container.appendChild(this.#titleDiv);
+        }
+        this.#titleDiv.innerText = this.csv.title;
+        return this.#titleDiv;
     }
 }
 
@@ -156,10 +174,5 @@ for (let m = 0; m < MONTHS; m++) {
 function map(a: number, b: number, c: number, d: number, x: number) {
     return b - a === 0 ? (c + d) / 2 : ((x - a) * (d - c) / (b - a)) + c
 }
-
-function createMaterial(options = { wireframe: false, vertexColors: true }): THREE.Material {
-    return new THREE.MeshBasicMaterial(options);
-}
-
 
 export { ClimateHelix };

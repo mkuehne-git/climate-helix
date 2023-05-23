@@ -87,6 +87,7 @@ class Settings {
         this.createCaptureFolder();
         this.createImprint();
         this.createShowHideListener();
+        this.gui.close();
     }
     createShowHideListener(): void {
         window.addEventListener('keydown', (e) => {

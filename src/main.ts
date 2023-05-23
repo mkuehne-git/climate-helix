@@ -7,6 +7,7 @@ https://data.giss.nasa.gov/gistemp/
 
 */
 
+import '@fontsource/special-elite';
 import * as THREE from 'three';
 import { Settings } from './Settings';
 
@@ -15,6 +16,9 @@ import { ClimateHelix } from './ClimateHelix';
 import { Events } from './Enums';
 import { ScreenCapture, CaptureControls } from './ScreenCapture';
 
+const containerDiv = document.createElement('DIV');
+containerDiv.setAttribute('class', 'container-div');
+document.body.appendChild(containerDiv);
 const settings = new Settings();
 
 let group: THREE.Group;
@@ -32,7 +36,7 @@ function init() {
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+    containerDiv.appendChild(renderer.domElement);
     observer = updateSceneBackgroundDueToThemeChange();
 
     // camera
@@ -99,6 +103,8 @@ function createHelix(): void {
         wireframeMesh = helix.createMesh({ wireframe: true, vertexColors: false })
         group.add(wireframeMesh);
     }
+    const container = document.querySelector('.container-div');
+    helix.createTitleDiv(container);
 }
 
 function animate() {

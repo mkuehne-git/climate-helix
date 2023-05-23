@@ -3,7 +3,7 @@
 
     --background-color: #fff;
     --text-color: #2e2e2e;
-    
+
     color: var(--text-color);
     --cold-color: blue;
     --zero-color: rgb(252, 247, 221);
@@ -24,6 +24,10 @@
     --wireframe-color: var(--text-color);
 }
 
+* {
+    box-sizing: border-box;
+}
+
 body {
     margin: 0;
     background-color: var(--background-color);
@@ -33,6 +37,33 @@ body {
     width: 100%;
     height: 100%;
     overflow: hidden;
+}
+
+#gui {
+    position: absolute;
+    top: 30px;
+    right: 0;
+}
+
+.container-div {
+    position: relative;
+    display: inline-block;
+}
+
+.title-div {
+    font-family: 'Special Elite', sans-serif;
+    font-size: 24px;
+
+    /* background-color: var(--background-color); */
+    background-color: rgba(255, 200, 0, 0);
+    color: var(--text-color);
+    margin: 5px;
+    position: absolute;
+    top: 0%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .imprint {

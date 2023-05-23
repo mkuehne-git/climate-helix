@@ -16,28 +16,28 @@ import * as THREE from "three";
  * @see https://data.giss.nasa.gov/gistemp/
  */
 class GISSParser {
-    private header: string[] | undefined;
-    rows: string[];
+    #title: string;
+    #header: string[] | undefined;
+    #rows: string[];
     constructor(data: string | undefined, linesToIgnore = 0, withHeader = true) {
         if (data) {
-            const { header, rows } = this.extract(data, linesToIgnore, withHeader);
-            this.header = header;
-            this.rows = rows;
+            const { title, header, rows } = this.extract(data);
+            this.#title = title;
+            this.#header = header;
+            this.#rows = rows;
         }
     }
 
-    private extract(data: string | ArrayBuffer, linesToIgnore: number, withHeader: boolean) {
-        let rows = data.toString().split(/\r?\n/).slice(linesToIgnore);
-        let header: string[] | undefined = undefined;
-        if (withHeader) {
-            header = rows[0].split(',');
-        }
+    private extract(data: string | ArrayBuffer) {
+        const rows = data.toString().split(/\r?\n/)
+        const title = rows[0];
+        const header = rows[1].split(',');
         const lastIndex = rows[rows.length - 1] === '' ? rows.length - 1 : rows.length;
-        return { header, rows: rows.slice(1, lastIndex) };
+        return { title, header, rows: rows.slice(1, lastIndex) };
     }
 
     get columnCount(): number {
-        return this.header ? this.header.length : this.rows[0].length;
+        return this.#header ? this.#header.length : this.#rows[0].length;
     }
 
     get rowCount(): number {
@@ -45,8 +45,14 @@ class GISSParser {
     }
 
     getNumber(r, c): number {
-        const row = this.rows[r];
+        const row = this.#rows[r];
         return parseFloat(row.split(',')[c]);
+    }
+    get title(): string {
+        return this.#title;
+    }
+    get rows(): string[] {
+        return this.#rows;
     }
 
 }
