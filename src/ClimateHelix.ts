@@ -31,9 +31,9 @@ class ClimateHelix {
         this.settings = settings;
         this.csv = new GISSParser(settings.showcaseCSV);
         this.helixConfiguration = { minT, maxT, minR, maxR, height };
-        this.#cold = this.styledColorByTemp('cold');
-        this.#zero = this.styledColorByTemp('zero');
-        this.#warm = this.styledColorByTemp('warm');
+        this.#cold = settings.cold;
+        this.#zero = settings.zero;
+        this.#warm = settings.warm;
     }
 
     public createMesh(options: THREE.MeshBasicMaterialParameters = { wireframe: false, vertexColors: true }): THREE.Mesh {
@@ -50,7 +50,7 @@ class ClimateHelix {
         }
         const geometry = this.createGeometry();
         if (options.wireframe) {
-            options.color = this.styledColor('--wireframe-color')
+            options.color = Settings.styledColor('--wireframe-color');
         }
         const material = new THREE.MeshBasicMaterial(options);
         this.#mesh = new THREE.Mesh(geometry, material);
@@ -82,16 +82,6 @@ class ClimateHelix {
                 color
             }
         }
-    }
-
-    private styledColorByTemp(temperature): THREE.Color {
-        return this.styledColor(`--${temperature}-color`);
-    }
-
-    private styledColor(propertyName: string): THREE.Color {
-        const style = window.getComputedStyle(document.body);
-        const color = style.getPropertyValue(propertyName);
-        return new THREE.Color(color);
     }
 
     get height() {

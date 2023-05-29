@@ -42,7 +42,7 @@ function init() {
 
     // camera
     const aspectRatio = window.innerWidth/window.innerHeight;
-    console.log(`Aspect ratio: ${aspectRatio}`);
+    // console.log(`Aspect ratio: ${aspectRatio}`);
     camera = new THREE.PerspectiveCamera(50, aspectRatio);
     camera.position.set(0, 0, 6.5);
     scene.add(camera);

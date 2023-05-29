@@ -2,6 +2,7 @@ import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min';
 import { Imprint } from './Imprint';
 import { Events, Showcase } from './Enums';
 import { ClassMutationObserver } from './ClassMutationObserver';
+import * as THREE from "three";
 
 // The icon
 import svgAsString from '../assets/images/Settings.svg?raw';
@@ -12,26 +13,47 @@ import southernHemisphereCSV from '../assets/SH.Ts+dSST.csv?raw';
 
 const csv = {
 }
-
 const SETTINGS = {
     showcaseCSV: undefined,
     radio: Showcase.GLOBAL,
     view: {
         dark_theme: preferredTheme(),
-        meshVisible: false,
-        facesVisible: true,
-        radialSegments: 8,
-        radius: 1,
-        radiusFactor: 0.9,
-        tubularSegments: 30,
+        geometry: {
+            meshVisible: false,
+            facesVisible: true,
+            radialSegments: 8,
+            radius: 1,
+            radiusFactor: 0.9,
+            tubularSegments: 30,
+        },
+        colors: {
+            cold: colorDescriptor('cold'),
+            zero: colorDescriptor('zero'),
+            warm: colorDescriptor('warm'),
+        }
     },
     capture: {},
     imprint: () => Settings.dispatchEvent(Events.SHOW_IMPRINT)
 }
+
+function colorDescriptor(temp: string) {
+    return { color: styledColorByTemp(temp), modified: false };
+}
+
 function preferredTheme() {
     const darkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
     // console.log(`Theme: ${darkTheme ? 'dark' : 'light'}`)
     return darkTheme;
+}
+
+function styledColorByTemp(temperature): THREE.Color {
+    return styledColor(`--${temperature}-color`);
+}
+
+function styledColor(propertyName: string): THREE.Color {
+    const style = window.getComputedStyle(document.body);
+    const color = style.getPropertyValue(propertyName);
+    return new THREE.Color(color);
 }
 
 class Settings {
@@ -40,6 +62,11 @@ class Settings {
     #hidden: boolean;
     #gui: GUI;
     #guiIcon: HTMLElement;
+
+    static styledColor(propertyName: string): THREE.Color {
+        return styledColor(propertyName);
+    }
+
     static addRadioButtonsFolder(
         parent: GUI,
         folderName: string,
@@ -87,7 +114,6 @@ class Settings {
     constructor() {
         this.#gui = new GUI({ container: document.querySelector('.container-div') as HTMLElement | undefined, autoPlace: false });
         this.#gui.domElement.id = "gui";
-
         this.createShowcaseFolder();
         this.createViewFolder();
         this.createCaptureFolder();
@@ -152,38 +178,86 @@ class Settings {
         folder
             .add(SETTINGS.view, "dark_theme")
             .name(`Dark theme`)
-            .onChange(() => Settings.dispatchEvent(Events.CHANGE_THEME));
+            .onChange(() => {
+                Settings.dispatchEvent(Events.CHANGE_THEME);
+            });
+        this.createViewGeometryFolder(folder);
+        this.createViewColorsFolder(folder);
+        folder.close();
+    }
+
+    createViewGeometryFolder(parent) {
+        const folder = parent.addFolder('Geometry');
+        const geometry =
+            SETTINGS.view.geometry;
         folder
-            .add(SETTINGS.view, "meshVisible")
+            .add(geometry, "meshVisible")
             .name("Wireframe")
             // .onChange(() => Settings.dispatchEvent(Events.UPDATE_VISIBLE));
             .onChange(() => Settings.dispatchEvent(Events.CREATE_HELIX));
         folder
-            .add(SETTINGS.view, "facesVisible")
+            .add(geometry, "facesVisible")
             .name("Faces")
             // .onChange(() => Settings.dispatchEvent(Events.UPDATE_VISIBLE));
             .onChange(() => Settings.dispatchEvent(Events.CREATE_HELIX));
         folder
-            .add(SETTINGS.view, "tubularSegments")
+            .add(geometry, "tubularSegments")
             .min(1)
             .max(31)
             .step(1)
             .name(`Monthly Segments`)
             .onChange(() => Settings.dispatchEvent(Events.CREATE_HELIX));
         folder
-            .add(SETTINGS.view, "radialSegments")
+            .add(geometry, "radialSegments")
             .min(3)
             .max(32)
             .step(1)
             .name(`Radius Segments`)
             .onChange(() => Settings.dispatchEvent(Events.CREATE_HELIX));
         folder
-            .add(SETTINGS.view, "radiusFactor")
+            .add(geometry, "radiusFactor")
             .min(0.1)
-            .max(3)
+            .max(2)
             .name(`Radius Factor`)
             .onChange(() => Settings.dispatchEvent(Events.CREATE_HELIX));
         folder.close();
+    }
+    createViewColorsFolder(parent) {
+        const folder = parent.addFolder('Colors');
+        const colors =
+            SETTINGS.view.colors;
+        folder
+            .addColor(colors.cold, "color")
+            .name("-1.0°C")
+            .listen()
+            .onChange(() => this.dispatchColorEvent('cold'));
+        folder
+            .addColor(colors.zero, "color")
+            .name("0°C")
+            .listen()
+            .onChange(() => this.dispatchColorEvent('zero'));
+        folder
+            .addColor(colors.warm, "color")
+            .name("+1.5°C")
+            .listen()
+            .onChange(() => this.dispatchColorEvent('warm'));
+
+        folder.close();
+    }
+    initializeColors() {
+        if (!SETTINGS.view.colors.cold.modified) {
+            SETTINGS.view.colors.cold.color = styledColorByTemp('cold');
+        }
+        if (!SETTINGS.view.colors.zero.modified) {
+            SETTINGS.view.colors.zero.color = styledColorByTemp('zero');
+        }
+        if (!SETTINGS.view.colors.warm.modified) {
+            SETTINGS.view.colors.warm.color = styledColorByTemp('warm');
+        }
+    }
+    dispatchColorEvent(temp: string) {
+        SETTINGS.view.colors[temp].modified = true;
+        Settings.dispatchEvent(Events.CREATE_HELIX);
     }
     createCaptureFolder(): void {
         const folder = this.#gui.addFolder("Screen capture");
@@ -214,6 +288,7 @@ class Settings {
         }
         element.classList.add(newThemeStyle);
         // console.log(`onThemeChange: ${newThemeStyle}`)
+        this.initializeColors();
     }
 
     get showcaseCSV(): string | undefined {
@@ -221,20 +296,30 @@ class Settings {
     }
 
     get radialSegments(): number {
-        return Math.floor(SETTINGS.view.radialSegments);
+        return Math.floor(SETTINGS.view.geometry.radialSegments);
     }
     get radiusFactor(): number {
-        return SETTINGS.view.radiusFactor;
+        return SETTINGS.view.geometry.radiusFactor;
     }
     get tubularSegments(): number {
-        return Math.floor(SETTINGS.view.tubularSegments);
+        return Math.floor(SETTINGS.view.geometry.tubularSegments);
     }
     get showFaces(): boolean {
-        return SETTINGS.view.facesVisible;
+        return SETTINGS.view.geometry.facesVisible;
     }
     get showWireframe(): boolean {
-        return SETTINGS.view.meshVisible;
+        return SETTINGS.view.geometry.meshVisible;
     }
+    get cold(): THREE.Color {
+        return SETTINGS.view.colors.cold.color;
+    }
+    get zero(): THREE.Color {
+        return SETTINGS.view.colors.zero.color;
+    }
+    get warm(): THREE.Color {
+        return SETTINGS.view.colors.warm.color;
+    }
+
     get theme(): string {
         return SETTINGS.view.dark_theme ? 'dark' : 'light';
     }
@@ -249,4 +334,5 @@ class Settings {
         }
     }
 }
+
 export { Settings };

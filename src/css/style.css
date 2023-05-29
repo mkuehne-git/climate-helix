@@ -11,8 +11,6 @@
 
     --wireframe-color: var(--text-color);
     --settings-size: 48px;
-    /* --title-font-size: 24px;
-    --title-height: var(--title-font-size); */
 }
 
 :root .dark {
