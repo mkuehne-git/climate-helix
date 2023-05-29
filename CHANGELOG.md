@@ -1,4 +1,7 @@
 ## Changelog
+### v0.1.0
+* Add header line explaining what you see
+* Controller UI starts as Settings icon. When closing controller, the UI is replaced by Settings icon.
 ### v0.0.3
 * Wireframe color reacts on light/dark theme change
 * Display title div

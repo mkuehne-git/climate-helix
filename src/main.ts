@@ -15,6 +15,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { ClimateHelix } from './ClimateHelix';
 import { Events } from './Enums';
 import { ScreenCapture, CaptureControls } from './ScreenCapture';
+import { ClassMutationObserver } from './ClassMutationObserver';
 
 const containerDiv = document.createElement('DIV');
 containerDiv.setAttribute('class', 'container-div');
@@ -27,7 +28,7 @@ let scene: THREE.Scene;
 let renderer: THREE.WebGLRenderer;
 let helixMesh: THREE.Mesh;
 let wireframeMesh: THREE.Mesh;
-let observer: MutationObserver;
+let observer: ClassMutationObserver;
 let capture: ScreenCapture;
 
 function init() {
@@ -40,8 +41,10 @@ function init() {
     observer = updateSceneBackgroundDueToThemeChange();
 
     // camera
-    camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight);
-    camera.position.set(0, 0, 5);
+    const aspectRatio = window.innerWidth/window.innerHeight;
+    console.log(`Aspect ratio: ${aspectRatio}`);
+    camera = new THREE.PerspectiveCamera(50, aspectRatio);
+    camera.position.set(0, 0, 6.5);
     scene.add(camera);
 
     group = new THREE.Group();
@@ -69,24 +72,14 @@ function init() {
  * This function is used to update scene background color due to theme changes.
  * Observe DOM for changing '<style class>' attribute. 
  */
-function updateSceneBackgroundDueToThemeChange(): MutationObserver {
-    let initialized = false;
-    const observer = new MutationObserver((mutations) => {
-        if (initialized) {
-            mutations.forEach((value: MutationRecord) => {
-                const style = window.getComputedStyle(document.body);
-                const backgroundColor = style.getPropertyValue("background-color");
-                scene.background = new THREE.Color(backgroundColor);
-            });
-        }
+function updateSceneBackgroundDueToThemeChange(): ClassMutationObserver {
+    return new ClassMutationObserver(document.body, (value: MutationRecord) => {
+        const style = window.getComputedStyle(document.body);
+        const backgroundColor = style.getPropertyValue("background-color");
+        scene.background = new THREE.Color(backgroundColor);
     });
-    observer.observe(document.body, {
-        attributes: true,
-        attributeFilter: ["class"],
-    });
-    initialized = true;
-    return observer;
 }
+
 function createHelix(): void {
     if (helixMesh) {
         group.remove(helixMesh);

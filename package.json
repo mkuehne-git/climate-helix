@@ -1,6 +1,6 @@
 {
   "name": "climate-spiral",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "3D Climate Spiral",
   "main": "main.js",
   "scripts": {

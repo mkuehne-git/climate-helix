@@ -26,7 +26,7 @@ class ClimateHelix {
     #cold: THREE.Color;
     #zero: THREE.Color;
     #warm: THREE.Color;
-    #titleDiv: HTMLElement;
+    #headingDiv: HTMLElement;
     constructor(settings: Settings, minT: number = -1.0, maxT: number = 1.5, minR: number = 0.4, maxR: number = 1.0, height = 2.5) {
         this.settings = settings;
         this.csv = new GISSParser(settings.showcaseCSV);
@@ -112,18 +112,18 @@ class ClimateHelix {
     }
 
     createTitleDiv(container): HTMLElement {
-        const TITLE_DIV = 'title-div';
-        const oldTitleDiv = container.querySelector(`.${TITLE_DIV}`);
-        if (oldTitleDiv) {
-            container.removeChild(oldTitleDiv);
+        const HEADING_DIV = 'heading-div';
+        const oldHeadingDiv = container.querySelector(`.${HEADING_DIV}`);
+        if (oldHeadingDiv) {
+            container.removeChild(oldHeadingDiv);
         }
-        if (!this.#titleDiv) {
-            this.#titleDiv = document.createElement('DIV');
-            this.#titleDiv.setAttribute('class', TITLE_DIV);
-            container.appendChild(this.#titleDiv);
+        if (!this.#headingDiv) {
+            this.#headingDiv = document.createElement('DIV');
+            this.#headingDiv.setAttribute('class', HEADING_DIV);
+            container.appendChild(this.#headingDiv);
         }
-        this.#titleDiv.innerText = this.csv.title;
-        return this.#titleDiv;
+        this.#headingDiv.innerText = this.csv.title;
+        return this.#headingDiv;
     }
 }
 
@@ -132,7 +132,6 @@ class HelixCurve extends THREE.Curve<THREE.Vector3> {
     constructor(helix: ClimateHelix) {
         super();
         this.helix = helix;
-        this.type = 'HelixCurve';
     }
 
     public getPoint(t: number, optionalTarget = new THREE.Vector3()): THREE.Vector3 {
