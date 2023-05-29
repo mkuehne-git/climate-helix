@@ -256,7 +256,7 @@ class Settings {
         }
     }
     dispatchColorEvent(temp: string) {
-        SETTINGS.view.colors[temp].modified = !(SETTINGS.view.colors[temp].color === styledColorByTemp(temp));
+        SETTINGS.view.colors[temp].modified = !SETTINGS.view.colors[temp].color.equals(styledColorByTemp(temp));
         Settings.dispatchEvent(Events.CREATE_HELIX);
     }
     createCaptureFolder(): void {
