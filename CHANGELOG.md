@@ -1,5 +1,8 @@
 ## Changelog
-### v0.1.0
+### v0.1.2
+* Translate helix's center of gravity to origin. This eases rotation without prior moving the helix.
+* Rename some UI labels.
+### v0.1.1
 * Restructure controller UI.
 * Add color choosers, for cold, zero and warm temperature
 ### v0.1.0

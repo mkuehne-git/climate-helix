@@ -159,13 +159,13 @@ class Settings {
         csv[Showcase.SOUTHERN_HEMISSPHERE] = southernHemisphereCSV;
         this.#showcaseFolder = Settings.addRadioButtonsFolder(
             this.#gui,
-            `Showcase: ${SETTINGS.radio}`,
+            `Region: ${SETTINGS.radio}`,
             SETTINGS.radio,
             csv,
             (object, property, key) => {
                 SETTINGS.showcaseCSV = csv[key];
                 Settings.dispatchEvent(Events.CREATE_HELIX);
-                this.#showcaseFolder.title(`Showcase: ${key}`);
+                this.#showcaseFolder.title(`Region: ${key}`);
                 this.#showcaseFolder.close();
             }
         );
