@@ -20,13 +20,16 @@ class ClimateHelix {
     private settings: Settings;
     private csv: GISSParser;
     curve: Info[];
+    #cog: THREE.Vector3;
     years: number;
+
     private helixConfiguration: { minT: number, maxT: number, minR: number, maxR: number, height: number };
     #mesh: THREE.Mesh;
     #cold: THREE.Color;
     #zero: THREE.Color;
     #warm: THREE.Color;
     #headingDiv: HTMLElement;
+
     constructor(settings: Settings, minT: number = -1.0, maxT: number = 1.5, minR: number = 0.4, maxR: number = 1.0, height = 2.5) {
         this.settings = settings;
         this.csv = new GISSParser(settings.showcaseCSV);
@@ -34,27 +37,52 @@ class ClimateHelix {
         this.#cold = settings.cold;
         this.#zero = settings.zero;
         this.#warm = settings.warm;
+        this.curve = [];
     }
 
     public createMesh(options: THREE.MeshBasicMaterialParameters = { wireframe: false, vertexColors: true }): THREE.Mesh {
-        this.curve = [];
-        this.years = this.csv.rowCount;
-        // console.log(`Years: ${this.years}`)
-        for (let year = 0; year < this.years; year++) {
-            for (let month = 0; month < 12; month++) {
-                const v = this.helixPoint(year, month);
-                if (v) {
-                    this.curve.push(v);
-                }
-            }
-        }
+        this.createCurve();
         const geometry = this.createGeometry();
         if (options.wireframe) {
             options.color = Settings.styledColor('--wireframe-color');
         }
+        const [x, y, z] = this.#cog.toArray();
+        geometry.translate(-x, -y, -z);
         const material = new THREE.MeshBasicMaterial(options);
         this.#mesh = new THREE.Mesh(geometry, material);
         return this.#mesh;
+    }
+
+    private createCurve(): void {
+        if (this.curve.length === 0) {
+            this.years = this.csv.rowCount;
+            // console.log(`Years: ${this.years}`)
+            for (let year = 0; year < this.years; year++) {
+                for (let month = 0; month < 12; month++) {
+                    const v = this.helixPoint(year, month);
+                    if (v) {
+                        this.curve.push(v);
+                    }
+                }
+            }
+            this.#cog = this.centerOfGravity();
+        }
+    }
+
+    private centerOfGravity(): THREE.Vector3 {
+        if (!this.curve || this.curve.length === 0) {
+            return new THREE.Vector3(0, 0, 0);
+        }
+        let x = 0;
+        let y = 0;
+        let z = 0;
+        const cnt = this.curve.length;
+        this.curve.forEach((p, index) => {
+            x += (p.radius * p.cosX);
+            y += (p.radius * p.sinX);
+            z += (index / cnt) * this.height;
+        });
+        return new THREE.Vector3(x / cnt, y / cnt, z / cnt);
     }
 
     private createGeometry(): HelixGeometry {
