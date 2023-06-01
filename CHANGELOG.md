@@ -1,4 +1,6 @@
 ## Changelog
+### v0.1.3
+* Add info button with info icon.
 ### v0.1.2
 * Translate helix's center of gravity to origin. This eases rotation without prior moving the helix.
 * Rename some UI labels.

@@ -10,6 +10,8 @@
     --warm-color: red;
 
     --wireframe-color: var(--text-color);
+
+    /* Size of the Settings icon, including empty margins around */
     --settings-size: 48px;
 }
 
@@ -42,6 +44,13 @@ body {
 
 canvas {
     z-index: 1;
+    transition: opacity 2s;
+}
+
+canvas.transparent {
+    z-index: 1;
+    opacity: 0.2;
+    transition: opacity 2s;
 }
 
 #gui {
@@ -61,7 +70,7 @@ canvas {
     display: block;
     top: 0;
     right: 0;
-    
+
     opacity: 0;
 
     /* Total of 48x48px, according material design guides. */
@@ -123,4 +132,47 @@ canvas {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+#info-icon {
+    /* Icon shall be on top. */
+    z-index: 0;
+
+    position: absolute;
+    display: block;
+    bottom: 8px;
+    left: calc(50% - 24px);
+
+    opacity: 0;
+
+    /* Total of 48x48px, according material design guides. */
+    width: 48px;
+    height: 48px;
+
+    fill: var(--text-color);
+}
+
+#info-icon.show {
+    opacity: 1;
+}
+
+#info-div {
+    z-index: 0;
+    position: absolute;
+    display: none;
+    left: 3%;
+    right: 3%;
+    bottom: 60px;
+
+    max-height: 50%;
+    overflow-y: scroll;
+
+    opacity: 0;
+    font-family: 'DejaVu', sans-serif;
+}
+
+#info-div.show {
+    z-index: 0;
+    display: block;
+    opacity: 0.7;
 }

@@ -4,7 +4,7 @@ import { Events, Showcase } from './Enums';
 import { ClassMutationObserver } from './ClassMutationObserver';
 import * as THREE from "three";
 
-// The icon
+// The settings icon
 import svgAsString from '../assets/images/Settings.svg?raw';
 
 import globalCSV from '../assets/GLB.Ts+dSST.csv?raw';
@@ -128,7 +128,7 @@ class Settings {
         this.#guiIcon = div.querySelector('#gui-icon') as HTMLElement;
         this.#guiIcon.classList.add('show');
         this.#gui.hide();
-        this.#gui.domElement.insertAdjacentElement('beforeBegin', this.#guiIcon);
+        this.#gui.domElement.insertAdjacentElement('beforebegin', this.#guiIcon);
         new ClassMutationObserver(this.#gui.domElement, (value: MutationRecord, index: number | undefined) => {
             const div = value.target as HTMLDivElement;
             if (index === 0 && !div?.classList.contains('transition') && div?.classList.contains('closed')) {

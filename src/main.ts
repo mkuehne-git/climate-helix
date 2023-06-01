@@ -17,6 +17,12 @@ import { Events } from './Enums';
 import { ScreenCapture, CaptureControls } from './ScreenCapture';
 import { ClassMutationObserver } from './ClassMutationObserver';
 
+// The info icon
+import svgAsString from '../assets/images/Info_icon.svg?raw';
+
+// The info div
+import infoDivAsString from '../assets/info.html?raw';
+
 const containerDiv = document.createElement('DIV');
 containerDiv.setAttribute('class', 'container-div');
 document.body.appendChild(containerDiv);
@@ -31,6 +37,8 @@ let wireframeMesh: THREE.Mesh;
 let observer: ClassMutationObserver;
 let capture: ScreenCapture;
 
+let infoIcon;
+
 function init() {
     scene = new THREE.Scene();
 
@@ -41,7 +49,7 @@ function init() {
     observer = updateSceneBackgroundDueToThemeChange();
 
     // camera
-    const aspectRatio = window.innerWidth/window.innerHeight;
+    const aspectRatio = window.innerWidth / window.innerHeight;
     // console.log(`Aspect ratio: ${aspectRatio}`);
     camera = new THREE.PerspectiveCamera(50, aspectRatio);
     camera.position.set(0, 0, 5);
@@ -64,6 +72,8 @@ function init() {
         Helix: renderer.domElement
     }
     capture = new ScreenCapture(settings.captureSettings(), captureControls);
+    infoIcon = createInfoIcon();
+    createInfoDiv();
     onThemeChange();
     animate();
 }
@@ -100,10 +110,34 @@ function createHelix(): void {
     helix.createTitleDiv(container);
 }
 
+function createInfoIcon(): void {
+    const div = document.createElement('DIV');
+    div.innerHTML = svgAsString;
+    infoIcon = div.querySelector('#info-icon') as HTMLElement;
+    infoIcon.classList.add('show');
+    infoIcon.addEventListener('click', () => {
+        const infoDiv = document.querySelector('#info-div');
+        infoDiv?.classList.toggle('show');
+        const canvas = document.querySelector('canvas');
+        canvas?.classList.toggle('transparent');
+    })
+    const parentDiv = document.querySelector('.container-div');
+    parentDiv?.appendChild(infoIcon);
+}
+function createInfoDiv() {
+    const div = document.createElement('DIV');
+    div.setAttribute('id', 'info-div');
+    div.innerHTML = infoDivAsString;
+    const infoIcon = document.querySelector('#info-icon');
+    infoIcon?.insertAdjacentElement('beforebegin', div);
+
+}
+
 function animate() {
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
 }
+
 function onThemeChange() {
     settings.onThemeChange(document.body);
     createHelix();
