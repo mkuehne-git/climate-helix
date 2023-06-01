@@ -1,4 +1,7 @@
 ## Changelog
+### v0.2.0
+* Add `favicon.png`
+* Add `manifest.json` to create PWA
 ### v0.1.3
 * Add info button with info icon.
 ### v0.1.2
