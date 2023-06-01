@@ -80,7 +80,6 @@ class ScreenCapture {
       const backgroundColor = style.getPropertyValue("background-color");
       html2canvas(elementToCapture, { backgroundColor }).then((canvas) => {
         const a = document.createElement("a");
-        // toDataURL defaults to png, so we need to request a jpeg, then convert for file download.
         a.href = canvas.toDataURL();
         a.download = "climate-helix.png";
         a.click();

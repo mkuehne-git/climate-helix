@@ -174,5 +174,5 @@ canvas.transparent {
 #info-div.show {
     z-index: 0;
     display: block;
-    opacity: 0.7;
+    opacity: 1.0;
 }

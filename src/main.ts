@@ -44,15 +44,17 @@ function init() {
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    renderer.setSize(width, height);
     containerDiv.appendChild(renderer.domElement);
     observer = updateSceneBackgroundDueToThemeChange();
 
     // camera
-    const aspectRatio = window.innerWidth / window.innerHeight;
+    const aspectRatio = width/height;
     // console.log(`Aspect ratio: ${aspectRatio}`);
     camera = new THREE.PerspectiveCamera(50, aspectRatio);
-    camera.position.set(0, 0, 5);
+    camera.position.set(0, 0, 5.5);
     scene.add(camera);
 
     group = new THREE.Group();
