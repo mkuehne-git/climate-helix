@@ -1,4 +1,6 @@
 ## Changelog
+### v0.2.1
+* Screen capture with ***alt-s***
 ### v0.2.0
 * Add `favicon.png`
 * Add `manifest.json` to create PWA
