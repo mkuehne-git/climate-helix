@@ -22,7 +22,7 @@ import svgAsString from '../assets/images/Info_icon.svg?raw';
 
 // The info div
 import infoDivAsString from '../assets/info.html?raw';
-
+console.log(`Climate-Helix: ${APP_VERSION}`);
 const containerDiv = document.createElement('DIV');
 containerDiv.setAttribute('class', 'container-div');
 document.body.appendChild(containerDiv);

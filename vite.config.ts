@@ -4,5 +4,8 @@ const isProduction = process.env['NODE_ENV'] === 'production';
 const base = isProduction ? '/climate-helix/' : '/';
 export default defineConfig({
     base,
-    plugins: [basicSsl()]
+    plugins: [basicSsl()],
+    define: {
+        APP_VERSION: JSON.stringify(process.env.npm_package_version),
+    },
 });
