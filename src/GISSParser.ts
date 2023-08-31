@@ -16,15 +16,15 @@ import * as THREE from "three";
  * @see https://data.giss.nasa.gov/gistemp/
  */
 class GISSParser {
-    #title: string;
-    #header: string[] | undefined;
-    #rows: string[];
+    private _title: string;
+    private _header: string[] | undefined;
+    private _rows: string[];
     constructor(data: string | undefined, linesToIgnore = 0, withHeader = true) {
         if (data) {
             const { title, header, rows } = this.extract(data);
-            this.#title = title;
-            this.#header = header;
-            this.#rows = rows;
+            this._title = title;
+            this._header = header;
+            this._rows = rows;
         }
     }
 
@@ -37,7 +37,7 @@ class GISSParser {
     }
 
     get columnCount(): number {
-        return this.#header ? this.#header.length : this.#rows[0].length;
+        return this.header ? this.header.length : this.rows[0].length;
     }
 
     get rowCount(): number {
@@ -45,14 +45,17 @@ class GISSParser {
     }
 
     getNumber(r, c): number {
-        const row = this.#rows[r];
+        const row = this.rows[r];
         return parseFloat(row.split(',')[c]);
     }
     get title(): string {
-        return this.#title;
+        return this._title;
+    }
+    get header(): string[] | undefined {
+        return this._header;
     }
     get rows(): string[] {
-        return this.#rows;
+        return this._rows;
     }
 
 }
