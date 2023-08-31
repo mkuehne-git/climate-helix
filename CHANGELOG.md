@@ -1,4 +1,10 @@
 ## Changelog
+### v0.2.2
+* Improve rendering of imprint
+  * Fix weird looking text if installed as PWA. Font used by imprint imported from local assets. Workaround for `html2canvas` issue.
+  * Fix styling of imprint, now all of the text should be displayed.
+* Add version info at the lower right corner .
+
 ### v0.2.1
 * Screen capture with ***alt-s***
 * Redraw imprint on theme change
