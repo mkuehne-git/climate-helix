@@ -130,4 +130,4 @@ dist
 .pnp.*
 
 # Dynamic import, generated
-./src/imprint-gen.js
+imprint-gen.js
