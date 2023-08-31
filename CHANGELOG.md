@@ -1,4 +1,6 @@
 ## Changelog
+### v0.2.3
+* Change PWA icons.
 ### v0.2.2
 * Improve rendering of imprint
   * Fix weird looking text if installed as PWA. Font used by imprint imported from local assets. Workaround for `html2canvas` issue.
@@ -14,7 +16,7 @@
 ### v0.1.3
 * Add info button with info icon.
 ### v0.1.2
-* Translate helix's center of gravity to origin. This eases rotation without prior moving the helix.
+* Translate helix's center of gra>vity to origin. This eases rotation without prior moving the helix.
 * Rename some UI labels.
 ### v0.1.1
 * Restructure controller UI.
