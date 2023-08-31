@@ -8,6 +8,7 @@ https://data.giss.nasa.gov/gistemp/
 */
 
 import '@fontsource/special-elite';
+import '@fontsource/dejavu-sans';
 import * as THREE from 'three';
 import { Settings } from './Settings';
 
@@ -22,7 +23,6 @@ import svgAsString from '../assets/images/Info_icon.svg?raw';
 
 // The info div
 import infoDivAsString from '../assets/info.html?raw';
-console.log(`Climate-Helix: ${APP_VERSION}`);
 const containerDiv = document.createElement('DIV');
 containerDiv.setAttribute('class', 'container-div');
 document.body.appendChild(containerDiv);
@@ -51,7 +51,7 @@ function init() {
     observer = updateSceneBackgroundDueToThemeChange();
 
     // camera
-    const aspectRatio = width/height;
+    const aspectRatio = width / height;
     // console.log(`Aspect ratio: ${aspectRatio}`);
     camera = new THREE.PerspectiveCamera(50, aspectRatio);
     camera.position.set(0, 0, 5.5);
@@ -133,6 +133,11 @@ function createInfoDiv() {
     const infoIcon = document.querySelector('#info-icon');
     infoIcon?.insertAdjacentElement('beforebegin', div);
 
+    // Version info before infoIcon
+    const span = document.createElement('SPAN');
+    span.setAttribute('id', 'version-info');
+    span.innerHTML = `v${APP_VERSION}`;
+    infoIcon?.insertAdjacentElement('beforebegin', span);
 }
 
 function animate() {

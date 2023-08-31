@@ -1,6 +1,6 @@
 {
   "name": "climate-helix",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "3D Climate Helix",
   "main": "main.js",
   "scripts": {
@@ -15,15 +15,18 @@
     "THREE.JS"
   ],
   "devDependencies": {
-    "@types/three": "^0.152.0",
+    "@types/crypto-js": "^4.1.1",
+    "@types/node": "^20.5.7",
+    "@types/three": "^0.155.1",
     "@vitejs/plugin-basic-ssl": "^1.0.1",
-    "vite": "^4.3.9"
+    "vite": "^4.4.9"
   },
   "dependencies": {
-    "@fontsource/special-elite": "^5.0.0",
+    "@fontsource/dejavu-sans": "^5.0.7",
+    "@fontsource/special-elite": "^5.0.8",
     "crypto-js": "^4.1.1",
     "html2canvas": "^1.4.1",
-    "three": "^0.152.2"
+    "three": "^0.155.0"
   },
   "author": "",
   "license": "MIT"

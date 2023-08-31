@@ -1,22 +1,26 @@
 :root {
     color-scheme: light dark;
-
+    
     --background-color: #fff;
     --text-color: #2e2e2e;
-
+    
     color: var(--text-color);
     --cold-color: blue;
     --zero-color: rgb(252, 247, 221);
     --warm-color: red;
-
+    
     --wireframe-color: var(--text-color);
-
+    
+    /* Default font, load via npm -i @fontsource/dejavu-sans */
+    font-family: "DejaVu Sans";
+    
     /* Size of the Settings icon, including empty margins around */
     --settings-size: 48px;
 }
 
 :root .dark {
     --background-color: #212121;
+
     --text-color: #f7f7f7;
     color: var(--text-color);
 
@@ -114,7 +118,6 @@ canvas.transparent {
     display: block;
     background-color: var(--background-color);
     margin: 0;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
     opacity: 1.0;
     position: absolute;
     top: 0px;
@@ -124,14 +127,27 @@ canvas.transparent {
 }
 
 .padding {
+    overflow: visible;
     background-color: var(--background-color);
-    padding: 10px;
+    margin: 0px;
+    padding-top: 0px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
 }
 
 .center {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+#version-info {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    font-size: x-small;
+    opacity: 0.5;
 }
 
 #info-icon {
@@ -168,7 +184,6 @@ canvas.transparent {
     overflow-y: scroll;
 
     opacity: 0;
-    font-family: 'DejaVu', sans-serif;
 }
 
 #info-div.show {
