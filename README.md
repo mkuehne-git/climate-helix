@@ -2,7 +2,7 @@
 # climate-helix
 This HTML-5 application features a 3D climate helix similar to the one shown in [Coding Train, How to Code a Climate Spiral](https://youtu.be/rVBTxnRyOuE?t=2384).
 
-Available on [Github Pages](https://mkuehne-git.github.io/climate-helix/).
+Available on [Github Pages](https://mkuehne-git.github.io/climate-helix/). The application can be installed as PWA (tested on Android).
 
 The climate helix uses data from [NASA, Goddard Space Flight Center](https://data.giss.nasa.gov/gistemp/) retrieved in May-2023. You can view data for the
 
@@ -36,7 +36,8 @@ The controller UI (Icon in the upper right corner) provides options to configure
 * [Vite](https://github.com/vitejs/vite) - Next Generation Frontend Tooling
 * WebGL [three.js](https://threejs.org/)
 * Settings with [lil-gui](https://github.com/georgealways/lil-gui)
-
+* [vite-plugin-pwa](https://vite-pwa-org.netlify.app/) - PWA Vite Plugin, used to transform the application into PWA, see `vite.config.ts`.
+* [FavIcon Generator](https://realfavicongenerator.net/) - I used this to generate the `favicons` and the related section in `index.html`. PWA icons were generated with `PWABuilder Studio` inside VS Code.
 # License
 
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/mkuehne-git/climate-helix/blob/main/LICENSE) file for details

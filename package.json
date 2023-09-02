@@ -1,6 +1,6 @@
 {
   "name": "climate-helix",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "3D Climate Helix",
   "main": "main.js",
   "scripts": {
@@ -19,7 +19,8 @@
     "@types/node": "^20.5.7",
     "@types/three": "^0.155.1",
     "@vitejs/plugin-basic-ssl": "^1.0.1",
-    "vite": "^4.4.9"
+    "vite": "^4.4.9",
+    "vite-plugin-pwa": "^0.16.4"
   },
   "dependencies": {
     "@fontsource/dejavu-sans": "^5.0.7",

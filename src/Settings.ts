@@ -5,11 +5,11 @@ import { ClassMutationObserver } from './ClassMutationObserver';
 import * as THREE from "three";
 
 // The settings icon
-import svgAsString from '../assets/images/Settings.svg?raw';
+import svgAsString from '/assets/images/Settings.svg?raw';
 
-import globalCSV from '../assets/GLB.Ts+dSST.csv?raw';
-import northernHemisphereCSV from '../assets/NH.Ts+dSST.csv?raw';
-import southernHemisphereCSV from '../assets/SH.Ts+dSST.csv?raw';
+import globalCSV from '/assets/csv/GLB.Ts+dSST.csv?url&raw';
+import northernHemisphereCSV from '/assets/csv/NH.Ts+dSST.csv?url&raw';
+import southernHemisphereCSV from '/assets/csv/SH.Ts+dSST.csv?url&raw';
 
 const csv = {
 }

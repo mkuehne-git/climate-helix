@@ -129,5 +129,8 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+# Vite PWA
+dev-dist
+
 # Dynamic import, generated
 imprint-gen.js
