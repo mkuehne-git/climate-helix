@@ -1,0 +1,193 @@
+:root {
+    color-scheme: light dark;
+    
+    --background-color: #fff;
+    --text-color: #2e2e2e;
+    
+    color: var(--text-color);
+    --cold-color: blue;
+    --zero-color: rgb(252, 247, 221);
+    --warm-color: red;
+    
+    --wireframe-color: var(--text-color);
+    
+    /* Default font, load via npm -i @fontsource/dejavu-sans */
+    font-family: "DejaVu Sans";
+    
+    /* Size of the Settings icon, including empty margins around */
+    --settings-size: 48px;
+}
+
+:root .dark {
+    --background-color: #212121;
+
+    --text-color: #f7f7f7;
+    color: var(--text-color);
+
+    --cold-color: blue;
+    --zero-color: white;
+    --warm-color: red;
+
+    --wireframe-color: var(--text-color);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background-color: var(--background-color);
+
+    /* tell our scene container to take up the full page */
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+canvas {
+    z-index: 1;
+    transition: opacity 2s;
+}
+
+canvas.transparent {
+    z-index: 1;
+    opacity: 0.2;
+    transition: opacity 2s;
+}
+
+#gui {
+    /* GUI shall be on top. */
+    z-index: 2;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 2;
+}
+
+#gui-icon {
+    /* Icon shall be on top. */
+    z-index: 2;
+
+    position: absolute;
+    display: block;
+    top: 0;
+    right: 0;
+
+    opacity: 0;
+
+    /* Total of 48x48px, according material design guides. */
+    margin: 12px;
+    width: calc(var(--settings-size)/2);
+    height: calc(var(--settings-size)/2);
+
+    fill: var(--text-color);
+}
+
+#gui-icon.show {
+    opacity: 1;
+}
+
+.container-div {
+    position: relative;
+    display: inline-block;
+}
+
+.heading-div {
+    position: absolute;
+    top: var(--settings-size);
+
+    font-family: 'Special Elite', sans-serif;
+    font-size: 28px;
+    text-align: center;
+
+    /* transparent */
+    background-color: rgba(255, 200, 0, 0);
+    color: var(--text-color);
+    margin: 0px;
+
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 0;
+}
+
+.imprint {
+    display: block;
+    background-color: var(--background-color);
+    margin: 0;
+    opacity: 1.0;
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+}
+
+.padding {
+    overflow: visible;
+    background-color: var(--background-color);
+    margin: 0px;
+    padding-top: 0px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#version-info {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    font-size: x-small;
+    opacity: 0.5;
+}
+
+#info-icon {
+    /* Icon shall be on top. */
+    z-index: 0;
+
+    position: absolute;
+    display: block;
+    bottom: 8px;
+    left: calc(50% - 24px);
+
+    opacity: 0;
+
+    /* Total of 48x48px, according material design guides. */
+    width: 48px;
+    height: 48px;
+
+    fill: var(--text-color);
+}
+
+#info-icon.show {
+    opacity: 1;
+}
+
+#info-div {
+    z-index: 0;
+    position: absolute;
+    display: none;
+    left: 3%;
+    right: 3%;
+    bottom: 60px;
+
+    max-height: 50%;
+    overflow-y: scroll;
+
+    opacity: 0;
+}
+
+#info-div.show {
+    z-index: 0;
+    display: block;
+    opacity: 1.0;
+}
