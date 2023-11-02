@@ -2,19 +2,22 @@ import { Events } from "./Enums";
 import { SVGToggleButton } from "./SVGToggleButton";
 import { icon as lightIcon } from "./icons/themes/lightIcon";
 import { icon as darkIcon } from "./icons/themes/darkIcon";
-import { Settings } from "./Settings";
+
+// Used by CSS to style dark/light mode
+const DARK_THEME = 'dark';
+const LIGHT_THEME = 'light';
 
 class ThemesSwitcher {
     #theme: boolean;
     #button: SVGToggleButton;
 
-    constructor(p: { container: Element }) {
-        this.#button = new SVGToggleButton({ container: p.container || document.body, icons: [lightIcon, darkIcon], classToken: 'themes', event: Events.CHANGE_THEME.toString() });
-        this.initTheme();
-
-        document.body.addEventListener(Events.CHANGE_THEME.toString(), () => {
-            this.onThemeChange(document.body);
+    constructor(p?: { container: Element }) {
+        this.#button = new SVGToggleButton({
+            container: p?.container || document.body,
+            icons: [lightIcon, darkIcon], classToken: 'themes', event: Events.CHANGE_THEME.toString()
         });
+        this.initTheme();
+        this.registerOnThemeChange(document.body);
     }
 
     /**
@@ -22,10 +25,10 @@ class ThemesSwitcher {
      */
     initTheme() {
         this.#theme = this.preferredTheme();
-        document.body.classList.add(this.#theme ? 'dark' : 'light');
+        document.body.classList.add(this.#theme ? DARK_THEME : LIGHT_THEME);
         this.#button.show(this.#theme ? 0 : 1);
 
-        Settings.dispatchEvent(Events.THEME_CHANGED)
+        Events.dispatchEvent(Events.THEME_CHANGED);
     }
 
     /**
@@ -37,9 +40,15 @@ class ThemesSwitcher {
         return window.matchMedia('(prefers-color-scheme: dark)').matches;
     }
 
+    registerOnThemeChange(element: HTMLElement) {
+        element.addEventListener(Events.CHANGE_THEME.toString(), () => {
+            this.onThemeChange(element);
+        });
+    }
+
     private onThemeChange(element: HTMLElement) {
-        const oldThemeStyle = this.#theme ? 'dark' : 'light';
-        const newThemeStyle = this.#theme ? 'light' : 'dark';
+        const oldThemeStyle = this.#theme ? DARK_THEME : LIGHT_THEME;
+        const newThemeStyle = this.#theme ? LIGHT_THEME : DARK_THEME;
         // console.log(`old-theme: ${oldThemeStyle} new-theme: ${newThemeStyle}`);
         if (!element.classList.replace(oldThemeStyle, newThemeStyle)) {
             element.classList.add(newThemeStyle);
@@ -47,11 +56,7 @@ class ThemesSwitcher {
         this.#theme = !this.#theme;
         this.#button.toggle();
 
-        Settings.dispatchEvent(Events.THEME_CHANGED)
-    }
-
-    get theme() {
-        return this.#theme;
+        Events.dispatchEvent(Events.THEME_CHANGED);
     }
 }
 
