@@ -11,6 +11,10 @@ class ThemesSwitcher {
     constructor(p: { container: Element }) {
         this.#button = new SVGToggleButton({ container: p.container || document.body, icons: [lightIcon, darkIcon], classToken: 'themes', event: Events.CHANGE_THEME.toString() });
         this.initTheme();
+
+        document.body.addEventListener(Events.CHANGE_THEME.toString(), () => {
+            this.onThemeChange(document.body);
+        });
     }
 
     /**
@@ -21,9 +25,7 @@ class ThemesSwitcher {
         document.body.classList.add(this.#theme ? 'dark' : 'light');
         this.#button.show(this.#theme ? 0 : 1);
 
-        document.body.addEventListener(Events.CHANGE_THEME.toString(), () => {
-            this.onThemeChange(document.body);
-        });
+        Settings.dispatchEvent(Events.THEME_CHANGED)
     }
 
     /**

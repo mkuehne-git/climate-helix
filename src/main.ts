@@ -24,13 +24,14 @@ import svgAsString from '/assets/images/Info_icon.svg?raw';
 
 // The info div
 import infoDivAsString from '/assets/info.html?url&raw';
+
 const containerDiv = document.createElement('DIV');
 const CONTAINER_DIV = '.container-div';
 containerDiv.setAttribute('class', 'container-div');
 document.body.appendChild(containerDiv);
 
 const settings = new Settings();
-const switcher = new ThemesSwitcher({ container: containerDiv});
+const switcher = new ThemesSwitcher({ container: containerDiv });
 
 let group: THREE.Group;
 let camera: THREE.PerspectiveCamera;
@@ -80,7 +81,7 @@ function init() {
     capture = new ScreenCapture(settings.captureSettings(), captureControls);
     infoIcon = createInfoIcon();
     createInfoDiv();
-    onThemeChanged();
+    Settings.dispatchEvent(Events.THEME_CHANGED);
     animate();
 }
 
@@ -161,6 +162,7 @@ function onWindowResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 init();
+switcher.initTheme()
 
 
 // Make empty module to allow top level await
