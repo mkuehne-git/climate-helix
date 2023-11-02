@@ -32,7 +32,7 @@ const SETTINGS = {
         }
     },
     capture: {},
-    imprint: () => Settings.dispatchEvent(Events.SHOW_IMPRINT)
+    imprint: () => Events.dispatchEvent(Events.SHOW_IMPRINT)
 }
 
 function colorDescriptor(temp: string) {
@@ -146,7 +146,7 @@ class Settings {
             csv,
             (object, property, key) => {
                 SETTINGS.showcaseCSV = csv[key];
-                Settings.dispatchEvent(Events.CREATE_HELIX);
+                Events.dispatchEvent(Events.CREATE_HELIX);
                 this.#showcaseFolder.title(`Region: ${key}`);
                 this.#showcaseFolder.close();
             }
@@ -170,32 +170,32 @@ class Settings {
             .add(geometry, "meshVisible")
             .name("Wireframe")
             // .onChange(() => Settings.dispatchEvent(Events.UPDATE_VISIBLE));
-            .onChange(() => Settings.dispatchEvent(Events.CREATE_HELIX));
+            .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
         folder
             .add(geometry, "facesVisible")
             .name("Faces")
             // .onChange(() => Settings.dispatchEvent(Events.UPDATE_VISIBLE));
-            .onChange(() => Settings.dispatchEvent(Events.CREATE_HELIX));
+            .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
         folder
             .add(geometry, "tubularSegments")
             .min(1)
             .max(31)
             .step(1)
             .name(`Monthly Segments`)
-            .onChange(() => Settings.dispatchEvent(Events.CREATE_HELIX));
+            .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
         folder
             .add(geometry, "radialSegments")
             .min(3)
             .max(32)
             .step(1)
             .name(`Radius Segments`)
-            .onChange(() => Settings.dispatchEvent(Events.CREATE_HELIX));
+            .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
         folder
             .add(geometry, "radiusFactor")
             .min(0.1)
             .max(2)
             .name(`Radius Factor`)
-            .onChange(() => Settings.dispatchEvent(Events.CREATE_HELIX));
+            .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
         folder.close();
     }
     createViewColorsFolder(parent) {
@@ -233,7 +233,7 @@ class Settings {
     }
     dispatchColorEvent(temp: string) {
         SETTINGS.view.colors[temp].modified = !SETTINGS.view.colors[temp].color.equals(styledColorByTemp(temp));
-        Settings.dispatchEvent(Events.CREATE_HELIX);
+        Events.dispatchEvent(Events.CREATE_HELIX);
     }
     createCaptureFolder(): void {
         const folder = this.#gui.addFolder("Screen capture");
@@ -249,11 +249,6 @@ class Settings {
                 this.#gui.add(SETTINGS, "imprint").name("Imprint");
             }
         });
-    }
-
-    static dispatchEvent(event: Events): void {
-        const evt = new Event(event.toString(), { bubbles: true });
-        document.body.dispatchEvent(evt);
     }
 
     get showcaseCSV(): string | undefined {

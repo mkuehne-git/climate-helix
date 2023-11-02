@@ -81,7 +81,7 @@ function init() {
     capture = new ScreenCapture(settings.captureSettings(), captureControls);
     infoIcon = createInfoIcon();
     createInfoDiv();
-    Settings.dispatchEvent(Events.THEME_CHANGED);
+    Events.dispatchEvent(Events.THEME_CHANGED);
     animate();
 }
 
