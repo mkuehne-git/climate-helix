@@ -3,9 +3,9 @@ import { Imprint } from './Imprint';
 import { Events, Showcase } from './Enums';
 import { ClassMutationObserver } from './ClassMutationObserver';
 import * as THREE from "three";
+import './css/lil-gui.css';
 
-// The settings icon
-import svgAsString from '/assets/images/Settings.svg?raw';
+import { SettingsButton } from "./SettingsButton";
 
 import globalCSV from '/assets/csv/GLB.Ts+dSST.csv?url&raw';
 import northernHemisphereCSV from '/assets/csv/NH.Ts+dSST.csv?url&raw';
@@ -17,7 +17,6 @@ const SETTINGS = {
     showcaseCSV: undefined,
     radio: Showcase.GLOBAL,
     view: {
-        dark_theme: preferredTheme(),
         geometry: {
             meshVisible: false,
             facesVisible: true,
@@ -40,12 +39,6 @@ function colorDescriptor(temp: string) {
     return { color: styledColorByTemp(temp), modified: false };
 }
 
-function preferredTheme() {
-    const darkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    // console.log(`Theme: ${darkTheme ? 'dark' : 'light'}`)
-    return darkTheme;
-}
-
 function styledColorByTemp(temperature): THREE.Color {
     return styledColor(`--${temperature}-color`);
 }
@@ -61,7 +54,6 @@ class Settings {
     #showcaseFolder: GUI;
     #hidden: boolean;
     #gui: GUI;
-    #guiIcon: HTMLElement;
 
     static styledColor(propertyName: string): THREE.Color {
         return styledColor(propertyName);
@@ -123,25 +115,15 @@ class Settings {
     }
 
     createSettingsIcon() {
-        const div = document.createElement('DIV');
-        div.innerHTML = svgAsString;
-        this.#guiIcon = div.querySelector('#gui-icon') as HTMLElement;
-        this.#guiIcon.classList.add('show');
-        this.#gui.hide();
-        this.#gui.domElement.insertAdjacentElement('beforebegin', this.#guiIcon);
+        const settingsButton = new SettingsButton(this.#gui);
         new ClassMutationObserver(this.#gui.domElement, (value: MutationRecord, index: number | undefined) => {
             const div = value.target as HTMLDivElement;
             if (index === 0 && !div?.classList.contains('transition') && div?.classList.contains('closed')) {
                 this.#gui.hide();
                 this.#gui.close();
-                this.#guiIcon.classList.toggle('show');
+
+                settingsButton.toggle();
             }
-        });
-        // Make Icon invisible, show open GUI
-        this.#guiIcon?.addEventListener('click', () => {
-            this.#guiIcon.classList.toggle('show');
-            this.#gui.show();
-            this.#gui.open();
         });
     }
     createShowHideListener(): void {
@@ -175,12 +157,6 @@ class Settings {
 
     createViewFolder() {
         const folder = this.#gui.addFolder("View");
-        folder
-            .add(SETTINGS.view, "dark_theme")
-            .name(`Dark theme`)
-            .onChange(() => {
-                Settings.dispatchEvent(Events.CHANGE_THEME);
-            });
         this.createViewGeometryFolder(folder);
         this.createViewColorsFolder(folder);
         folder.close();
@@ -280,17 +256,6 @@ class Settings {
         document.body.dispatchEvent(evt);
     }
 
-    onThemeChange(element: HTMLElement) {
-        const oldThemeStyle = this.inverseTheme;
-        const newThemeStyle = this.theme;
-        if (element.classList.contains(oldThemeStyle)) {
-            element.classList.remove(oldThemeStyle);
-        }
-        element.classList.add(newThemeStyle);
-        // console.log(`onThemeChange: ${newThemeStyle}`)
-        this.initializeColors();
-    }
-
     get showcaseCSV(): string | undefined {
         return SETTINGS.showcaseCSV;
     }
@@ -318,13 +283,6 @@ class Settings {
     }
     get warm(): THREE.Color {
         return SETTINGS.view.colors.warm.color;
-    }
-
-    get theme(): string {
-        return SETTINGS.view.dark_theme ? 'dark' : 'light';
-    }
-    get inverseTheme(): string {
-        return SETTINGS.view.dark_theme ? 'light' : 'dark';
     }
 
     captureSettings(): { folder: any, property: any } {

@@ -11,6 +11,7 @@ import '@fontsource/special-elite';
 import '@fontsource/dejavu-sans';
 import * as THREE from 'three';
 import { Settings } from './Settings';
+import { ThemesSwitcher } from './ThemesSwitcher';
 
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { ClimateHelix } from './ClimateHelix';
@@ -24,9 +25,12 @@ import svgAsString from '/assets/images/Info_icon.svg?raw';
 // The info div
 import infoDivAsString from '/assets/info.html?url&raw';
 const containerDiv = document.createElement('DIV');
+const CONTAINER_DIV = '.container-div';
 containerDiv.setAttribute('class', 'container-div');
 document.body.appendChild(containerDiv);
+
 const settings = new Settings();
+const switcher = new ThemesSwitcher({ container: containerDiv});
 
 let group: THREE.Group;
 let camera: THREE.PerspectiveCamera;
@@ -68,7 +72,7 @@ function init() {
 
     window.addEventListener('resize', onWindowResize);
     window.addEventListener(Events.CREATE_HELIX, createHelix);
-    document.body.addEventListener(Events.CHANGE_THEME.toString(), onThemeChange);
+    document.body.addEventListener(Events.THEME_CHANGED.toString(), onThemeChanged);
     const captureControls: CaptureControls = {
         All: document.body,
         Helix: renderer.domElement
@@ -76,7 +80,7 @@ function init() {
     capture = new ScreenCapture(settings.captureSettings(), captureControls);
     infoIcon = createInfoIcon();
     createInfoDiv();
-    onThemeChange();
+    onThemeChanged();
     animate();
 }
 
@@ -108,7 +112,7 @@ function createHelix(): void {
         wireframeMesh = helix.createMesh({ wireframe: true, vertexColors: false })
         group.add(wireframeMesh);
     }
-    const container = document.querySelector('.container-div');
+    const container = document.querySelector(CONTAINER_DIV);
     helix.createTitleDiv(container);
 }
 
@@ -123,7 +127,7 @@ function createInfoIcon(): void {
         const canvas = document.querySelector('canvas');
         canvas?.classList.toggle('transparent');
     })
-    const parentDiv = document.querySelector('.container-div');
+    const parentDiv = document.querySelector(CONTAINER_DIV);
     parentDiv?.appendChild(infoIcon);
 }
 function createInfoDiv() {
@@ -145,8 +149,8 @@ function animate() {
     renderer.render(scene, camera);
 }
 
-function onThemeChange() {
-    settings.onThemeChange(document.body);
+function onThemeChanged() {
+    settings.initializeColors();
     createHelix();
 }
 
