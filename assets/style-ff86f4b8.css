@@ -150,27 +150,11 @@ canvas.transparent {
     opacity: 0.5;
 }
 
-#info-icon {
-    /* Icon shall be on top. */
-    z-index: 0;
-
-    position: absolute;
-    display: block;
+.toggle-div.info-button {
     bottom: 8px;
     left: calc(50% - 24px);
-
-    opacity: 0;
-
-    /* Total of 48x48px, according material design guides. */
-    width: 48px;
-    height: 48px;
-
-    fill: var(--text-color);
 }
 
-#info-icon.show {
-    opacity: 1;
-}
 
 #info-div {
     z-index: 0;
