@@ -35,8 +35,7 @@ class SVGToggleButton {
         this.#event = p.event;
         this.#icons = p.icons;
         const div = document.createElement(DIV_ELEMENT);
-        div.classList.add(`${PREFIX}${DIV_SUFFIX}`);
-        div.classList.add(p.classToken);
+        div.classList.add(`${PREFIX}${DIV_SUFFIX}`, p.classToken);
         for (const icon of p.icons) {
             const svg = this.createSVGElement(icon, p.classToken);
             div.innerHTML += svg;
@@ -53,7 +52,7 @@ class SVGToggleButton {
             }
         });
         this.#div = div;
-    } 
+    }
 
     show(index: number): void {
         this.icon(index)?.classList.add(SHOW);
@@ -69,13 +68,12 @@ class SVGToggleButton {
         return this.#div.querySelector(`#${this.#icons[index].id}${ICON_SUFFIX}`);
     }
 
-    private createSVGElement(icon:IconDescriptor, classToken: string): string {
+    private createSVGElement(icon: IconDescriptor, classToken: string): string {
         const template = document.createElement('template');
         template.innerHTML = icon.svg;
         const svg = template.content.firstElementChild as SVGElement;
         svg.id = `${icon.id}${ICON_SUFFIX}`;
-        svg.classList.add(`${PREFIX}${ICON_SUFFIX}`);
-        svg.classList.add(classToken);
+        svg.classList.add(`${PREFIX}${ICON_SUFFIX}`, classToken);
         return svg.outerHTML;
     }
 

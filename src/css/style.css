@@ -150,27 +150,19 @@ canvas.transparent {
     opacity: 0.5;
 }
 
-#info-icon {
-    /* Icon shall be on top. */
-    z-index: 0;
-
-    position: absolute;
-    display: block;
-    bottom: 8px;
-    left: calc(50% - 24px);
-
-    opacity: 0;
-
-    /* Total of 48x48px, according material design guides. */
-    width: 48px;
-    height: 48px;
-
-    fill: var(--text-color);
+.toggle-div.info-button {
+    --div-size: calc(var(--settings-size)*1.5);
+    bottom: -16px;
+    left: calc(50% - calc(var(--div-size)/2));
+    width: var(--div-size);
+    height: var(--div-size);
 }
 
-#info-icon.show {
-    opacity: 1;
+.toggle-icon.info-button.show {
+    width: calc(var(--settings-size));
+    height: calc(var(--settings-size));
 }
+
 
 #info-div {
     z-index: 0;

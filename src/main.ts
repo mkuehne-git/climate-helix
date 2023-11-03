@@ -12,6 +12,7 @@ import '@fontsource/dejavu-sans';
 import * as THREE from 'three';
 import { Settings } from './Settings';
 import { ThemesSwitcher } from './ThemesSwitcher';
+import { InfoButton } from './InfoButton';
 
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { ClimateHelix } from './ClimateHelix';
@@ -19,8 +20,6 @@ import { Events } from './Enums';
 import { ScreenCapture, CaptureControls } from './ScreenCapture';
 import { ClassMutationObserver } from './ClassMutationObserver';
 
-// The info icon
-import svgAsString from '/assets/images/Info_icon.svg?raw';
 
 // The info div
 import infoDivAsString from '/assets/info.html?url&raw';
@@ -118,24 +117,15 @@ function createHelix(): void {
 }
 
 function createInfoIcon(): void {
-    const div = document.createElement('DIV');
-    div.innerHTML = svgAsString;
-    infoIcon = div.querySelector('#info-icon') as HTMLElement;
-    infoIcon.classList.add('show');
-    infoIcon.addEventListener('click', () => {
-        const infoDiv = document.querySelector('#info-div');
-        infoDiv?.classList.toggle('show');
-        const canvas = document.querySelector('canvas');
-        canvas?.classList.toggle('transparent');
-    })
-    const parentDiv = document.querySelector(CONTAINER_DIV);
-    parentDiv?.appendChild(infoIcon);
+    const parentDiv = document.querySelector(CONTAINER_DIV) || document.body;
+    const infoButton = new InfoButton(parentDiv);
 }
+
 function createInfoDiv() {
     const div = document.createElement('DIV');
     div.setAttribute('id', 'info-div');
     div.innerHTML = infoDivAsString;
-    const infoIcon = document.querySelector('#info-icon');
+    const infoIcon = document.querySelector('.info-button');
     infoIcon?.insertAdjacentElement('beforebegin', div);
 
     // Version info before infoIcon

@@ -1,4 +1,6 @@
 ## Changelog
+### v0.2.6
+* Info button now has two different icons.
 ### v0.2.5
 * Animate Themes/Settings buttons
 * Update packages, fixing `crypto-js` issue

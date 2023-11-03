@@ -99,8 +99,6 @@ div.toggle-div.clicked {
     align-self: center;
     justify-self: center;
 
-    /* Total of 48x48px, according material design guides. */
-    margin:48px;
     width: calc(var(--settings-size)/2);
     height: calc(var(--settings-size)/2);
 
