@@ -151,7 +151,7 @@ canvas.transparent {
 }
 
 .toggle-div.info-button {
-    bottom: -24px;
+    bottom: -16px;
     left: calc(50% - var(--settings-size));
     width: calc(var(--settings-size)*2);
     height: calc(var(--settings-size)*2);
