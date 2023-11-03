@@ -151,8 +151,15 @@ canvas.transparent {
 }
 
 .toggle-div.info-button {
-    bottom: 8px;
-    left: calc(50% - 24px);
+    bottom: -24px;
+    left: calc(50% - var(--settings-size));
+    width: calc(var(--settings-size)*2);
+    height: calc(var(--settings-size)*2);
+}
+
+.toggle-icon.info-button.show {
+    width: calc(var(--settings-size));
+    height: calc(var(--settings-size));
 }
 
 
