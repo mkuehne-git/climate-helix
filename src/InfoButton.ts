@@ -10,14 +10,16 @@ class InfoButton {
             container,
             icons: [infoIcon, closeIcon], classToken: 'info-button', event: 'info-clicked'
         });
-        container.addEventListener('click', () => {
-            const infoDiv = document.querySelector('#info-div');
-            infoDiv?.classList.toggle('show');
-            const canvas = document.querySelector('canvas');
-            canvas?.classList.toggle('transparent');
-            this.#button.toggle();
-        });
         this.#button.show(0);
+        this.#button.addOnClickListener(() => this.infoDivShowHide());
+    }
+
+    infoDivShowHide() {
+        const infoDiv = document.querySelector('#info-div');
+        infoDiv?.classList.toggle('show');
+        const canvas = document.querySelector('canvas');
+        canvas?.classList.toggle('transparent');
+        this.#button.toggle();
     }
 }
 
