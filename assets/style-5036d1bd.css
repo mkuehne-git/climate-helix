@@ -1,19 +1,19 @@
 :root {
     color-scheme: light dark;
-    
+
     --background-color: #fff;
     --text-color: #2e2e2e;
-    
+
     color: var(--text-color);
     --cold-color: blue;
     --zero-color: rgb(252, 247, 221);
     --warm-color: red;
-    
+
     --wireframe-color: var(--text-color);
-    
+
     /* Default font, load via npm -i @fontsource/dejavu-sans */
     font-family: "DejaVu Sans";
-    
+
     /* Size of the Settings icon, including empty margins around */
     --settings-size: 48px;
 }
@@ -59,7 +59,7 @@ canvas.transparent {
 
 #gui {
     /* GUI shall be on top. */
-    z-index: 2;
+    z-index: 3;
     position: absolute;
     top: 0;
     right: 0;
@@ -68,7 +68,7 @@ canvas.transparent {
 
 #gui-icon {
     /* Icon shall be on top. */
-    z-index: 2;
+    z-index: 3;
 
     position: absolute;
     display: block;
@@ -124,6 +124,7 @@ canvas.transparent {
     width: 100%;
     height: 100%;
     overflow-y: scroll;
+    z-index: 2;
 }
 
 .padding {
