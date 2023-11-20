@@ -49,7 +49,7 @@
 }
 
 div.toggle-div {
-    z-index: 2;
+    /* z-index: 2; */
     position: absolute;
     display: grid;
 
@@ -118,8 +118,6 @@ div.themes {
 }
 
 #gui {
-    /* GUI shall be on top. */
-    z-index: 2;
     position: absolute;
     top: var(--settings-size);
     right: 0;
