@@ -1,5 +1,7 @@
 ## Changelog
 ### v0.2.8
+* Fix: Upgrade `vite` and `three` packages.
+### v0.2.8
 * Fix: Info button blocks Imprint button.
 ### v0.2.7
 * Fix: Info button was clicked by clicking Themes button.
