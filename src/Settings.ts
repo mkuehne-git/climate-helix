@@ -7,9 +7,9 @@ import './css/lil-gui.css';
 
 import { SettingsButton } from "./SettingsButton";
 
-import globalCSV from '/assets/csv/GLB.Ts+dSST.csv?url&raw';
-import northernHemisphereCSV from '/assets/csv/NH.Ts+dSST.csv?url&raw';
-import southernHemisphereCSV from '/assets/csv/SH.Ts+dSST.csv?url&raw';
+import globalCSV from '/assets/csv/2024-10-22/GLB.Ts+dSST.csv?url&raw';
+import northernHemisphereCSV from '/assets/csv/2024-10-22/NH.Ts+dSST.csv?url&raw';
+import southernHemisphereCSV from '/assets/csv/2024-10-22/SH.Ts+dSST.csv?url&raw';
 
 const csv = {
 }

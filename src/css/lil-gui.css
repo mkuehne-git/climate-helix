@@ -21,21 +21,22 @@
 }
 
 .lil-gui {
-    --background-color: var(--background-color);
+    background-color:  #fff;
     --text-color: var(--text-color);
     --title-background-color: #e1e1e1;
     --title-text-color: var(--text-color);
-
+    
     --widget-color: #e0e0e0;
     --hover-color: #e8e8e8;
     --focus-color: #eee;
-
+    
     --number-color: #024e68;
     --string-color: #5a8d04;
 }
 
 .dark .lil-gui {
-    --background-color: var(--background-color);
+    /* --background-color: var(--background-color); */
+    background-color: #212121;
     --text-color: var(--text-color);
     --title-background-color: #111111;
     --title-text-color: var(--text-color);
