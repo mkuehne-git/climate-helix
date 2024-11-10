@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.2
+
+* Update three.js 0.161.0 -> 0.170.0
+
 ## v0.3.1
 
 * Fix: `Rollup` cve, upgrade packages
