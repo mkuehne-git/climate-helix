@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.3
+
+* Bump `vite` 5.4.10 -> 6.3.5
+
 ## v0.3.2
 
 * Update three.js 0.161.0 -> 0.170.0
