@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.4.0
+
+* Add selectable NASA GISS data snapshots.
+* Display the selected dataset end date in the info panel and helix title.
+
 ## v0.3.3
 
 * Bump `vite` 5.4.10 -> 6.3.5

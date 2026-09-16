@@ -114,6 +114,7 @@ function createHelix(): void {
     }
     const container = document.querySelector(CONTAINER_DIV);
     helix.createTitleDiv(container);
+    updateInfoEndDate();
 }
 
 function createInfoIcon(): void {
@@ -127,12 +128,20 @@ function createInfoDiv() {
     div.innerHTML = infoDivAsString;
     const infoIcon = document.querySelector('.info-button');
     infoIcon?.insertAdjacentElement('beforebegin', div);
+    updateInfoEndDate();
 
     // Version info before infoIcon
     const span = document.createElement('SPAN');
     span.setAttribute('id', 'version-info');
     span.innerHTML = `v${APP_VERSION}`;
     infoIcon?.insertAdjacentElement('beforebegin', span);
+}
+
+function updateInfoEndDate() {
+    const endDate = document.querySelector('#data-end-date');
+    if (endDate) {
+        endDate.textContent = settings.dataEndDate;
+    }
 }
 
 function animate() {

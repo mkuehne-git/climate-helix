@@ -140,7 +140,7 @@ class ClimateHelix {
             this.#headingDiv.setAttribute('class', HEADING_DIV);
             container.appendChild(this.#headingDiv);
         }
-        this.#headingDiv.innerText = this.csv.title;
+        this.#headingDiv.innerText = `${this.csv.title} (${this.settings.dataEndDate})`;
         return this.#headingDiv;
     }
 }

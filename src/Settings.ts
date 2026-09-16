@@ -7,15 +7,47 @@ import './css/lil-gui.css';
 
 import { SettingsButton } from "./SettingsButton";
 
-import globalCSV from '/assets/csv/2024-10-22/GLB.Ts+dSST.csv?url&raw';
-import northernHemisphereCSV from '/assets/csv/2024-10-22/NH.Ts+dSST.csv?url&raw';
-import southernHemisphereCSV from '/assets/csv/2024-10-22/SH.Ts+dSST.csv?url&raw';
+import globalCSV2023 from '/assets/csv/2023-09-03/GLB.Ts+dSST.csv?url&raw';
+import northernHemisphereCSV2023 from '/assets/csv/2023-09-03/NH.Ts+dSST.csv?url&raw';
+import southernHemisphereCSV2023 from '/assets/csv/2023-09-03/SH.Ts+dSST.csv?url&raw';
+import globalCSV2024 from '/assets/csv/2024-10-22/GLB.Ts+dSST.csv?url&raw';
+import northernHemisphereCSV2024 from '/assets/csv/2024-10-22/NH.Ts+dSST.csv?url&raw';
+import southernHemisphereCSV2024 from '/assets/csv/2024-10-22/SH.Ts+dSST.csv?url&raw';
+import globalCSV2026 from '/assets/csv/2026-09-16/GLB.Ts+dSST.csv?url&raw';
+import northernHemisphereCSV2026 from '/assets/csv/2026-09-16/NH.Ts+dSST.csv?url&raw';
+import southernHemisphereCSV2026 from '/assets/csv/2026-09-16/SH.Ts+dSST.csv?url&raw';
 
-const csv = {
-}
+const datasets = {
+    '2026-09-16': {
+        endDate: 'August 2026',
+        csv: {
+            [Showcase.GLOBAL]: globalCSV2026,
+            [Showcase.NORTHERN_HEMISSPHERE]: northernHemisphereCSV2026,
+            [Showcase.SOUTHERN_HEMISSPHERE]: southernHemisphereCSV2026,
+        },
+    },
+    '2024-10-22': {
+        endDate: 'October 2024',
+        csv: {
+            [Showcase.GLOBAL]: globalCSV2024,
+            [Showcase.NORTHERN_HEMISSPHERE]: northernHemisphereCSV2024,
+            [Showcase.SOUTHERN_HEMISSPHERE]: southernHemisphereCSV2024,
+        },
+    },
+    '2023-09-03': {
+        endDate: 'March 2023',
+        csv: {
+            [Showcase.GLOBAL]: globalCSV2023,
+            [Showcase.NORTHERN_HEMISSPHERE]: northernHemisphereCSV2023,
+            [Showcase.SOUTHERN_HEMISSPHERE]: southernHemisphereCSV2023,
+        },
+    },
+};
+const csv: Record<Showcase, string> = {} as Record<Showcase, string>;
 const SETTINGS = {
     showcaseCSV: undefined,
     radio: Showcase.GLOBAL,
+    date: '2026-09-16',
     view: {
         geometry: {
             meshVisible: false,
@@ -51,6 +83,7 @@ function styledColor(propertyName: string): THREE.Color {
 
 class Settings {
     #captureFolder: any;
+    #dateFolder: GUI;
     #showcaseFolder: GUI;
     #hidden: boolean;
     #gui: GUI;
@@ -106,6 +139,7 @@ class Settings {
     constructor() {
         this.#gui = new GUI({ container: document.querySelector('.container-div') as HTMLElement | undefined, autoPlace: false });
         this.#gui.domElement.id = "gui";
+        this.createDateFolder();
         this.createShowcaseFolder();
         this.createViewFolder();
         this.createCaptureFolder();
@@ -136,9 +170,7 @@ class Settings {
     }
 
     createShowcaseFolder(): void {
-        csv[Showcase.GLOBAL] = globalCSV;
-        csv[Showcase.NORTHERN_HEMISSPHERE] = northernHemisphereCSV;
-        csv[Showcase.SOUTHERN_HEMISSPHERE] = southernHemisphereCSV;
+        this.selectDate(SETTINGS.date);
         this.#showcaseFolder = Settings.addRadioButtonsFolder(
             this.#gui,
             `Region: ${SETTINGS.radio}`,
@@ -153,6 +185,32 @@ class Settings {
         );
         SETTINGS.showcaseCSV = csv[SETTINGS.radio];
         this.#showcaseFolder.close();
+    }
+
+    createDateFolder(): void {
+        this.#dateFolder = Settings.addRadioButtonsFolder(
+            this.#gui,
+            `Date: ${SETTINGS.date}`,
+            SETTINGS.date,
+            datasets,
+            (object, property, key) => {
+                SETTINGS.date = key;
+                this.selectDate(key);
+                this.#dateFolder.title(`Date: ${key}`);
+                this.#dateFolder.close();
+                Events.dispatchEvent(Events.CREATE_HELIX);
+            }
+        );
+        this.#dateFolder.close();
+    }
+
+    selectDate(date: string): void {
+        Object.assign(csv, datasets[date].csv);
+        SETTINGS.showcaseCSV = csv[SETTINGS.radio];
+    }
+
+    get dataEndDate(): string {
+        return datasets[SETTINGS.date].endDate;
     }
 
     createViewFolder() {
