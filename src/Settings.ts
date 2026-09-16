@@ -179,6 +179,7 @@ class Settings {
             SETTINGS.radio,
             csv,
             (object, property, key) => {
+                SETTINGS.radio = key;
                 SETTINGS.showcaseCSV = csv[key];
                 Events.dispatchEvent(Events.CREATE_HELIX);
                 this.#showcaseFolder.title(`Region: ${key}`);
