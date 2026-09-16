@@ -30,6 +30,16 @@ The app is shipped as a PWA and checks for newer versions after installation. Wh
 
 If you installed the app from a supported browser such as Chrome on Android, the settings menu also includes a manual **Check for updates** action. This triggers a service worker refresh check and shows a short status message when the app is already up to date or when a new version is available.
 
+# Dependency management
+
+Dependency updates are handled through GitHub Dependabot for npm packages. The repository is configured to check for weekly updates, keep runtime and build-tooling packages grouped, and keep the update noise focused on the packages that matter most for the app.
+
+Every dependency-related pull request is validated in GitHub Actions through a dedicated workflow that installs dependencies with `npm ci` and runs the production build with `npm run build`. This keeps routine upgrade PRs from landing without a fresh compile check.
+
+The automation is configured in [.github/dependabot.yml](.github/dependabot.yml) and [.github/workflows/dependency-check.yml](.github/workflows/dependency-check.yml).
+
+Major framework upgrades are still reviewed manually, especially for Vite, Three.js and the PWA plugin, because those are the most likely to affect app behavior or service-worker behavior.
+
 # References
 
 * [Coding Train, How to Code a Climate Spiral](https://youtu.be/rVBTxnRyOuE)
