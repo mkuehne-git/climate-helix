@@ -50,6 +50,7 @@ const SETTINGS = {
     radio: Showcase.GLOBAL,
     date: '2026-09-16',
     view: {
+        showDateButtons: true,
         geometry: {
             meshVisible: false,
             facesVisible: true,
@@ -195,19 +196,31 @@ class Settings {
             SETTINGS.date,
             datasets,
             (object, property, key) => {
-                SETTINGS.date = key;
-                this.selectDate(key);
-                this.#dateFolder.title(`Date: ${key}`);
-                this.#dateFolder.close();
-                Events.dispatchEvent(Events.CREATE_HELIX);
+                this.setDate(key);
             }
         );
         this.#dateFolder.close();
     }
 
+    setDate(date: string): void {
+        SETTINGS.date = date;
+        this.selectDate(date);
+        this.#dateFolder.title(`Date: ${date}`);
+        this.#dateFolder.close();
+        Events.dispatchEvent(Events.CREATE_HELIX);
+    }
+
     selectDate(date: string): void {
         Object.assign(csv, datasets[date].csv);
         SETTINGS.showcaseCSV = csv[SETTINGS.radio];
+    }
+
+    get dateOptions(): string[] {
+        return Object.keys(datasets).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+    }
+
+    get showDateButtons(): boolean {
+        return SETTINGS.view.showDateButtons;
     }
 
     get dataEndDate(): string {
@@ -216,6 +229,10 @@ class Settings {
 
     createViewFolder() {
         const folder = this.#gui.addFolder("View");
+        folder
+            .add(SETTINGS.view, 'showDateButtons')
+            .name('Show year buttons')
+            .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
         this.createViewGeometryFolder(folder);
         this.createViewColorsFolder(folder);
         folder.close();

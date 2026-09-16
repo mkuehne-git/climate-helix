@@ -150,6 +150,39 @@ canvas.transparent {
     opacity: 0.5;
 }
 
+#dataset-buttons {
+    position: absolute;
+    top: calc(var(--settings-size) + 72px);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 2;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 0 16px;
+    width: min(90vw, 600px);
+}
+
+.dataset-button {
+    border: none;
+    background: transparent;
+    color: var(--text-color);
+    padding: 0;
+    cursor: pointer;
+    font-family: 'Special Elite', sans-serif;
+    font-size: 0.9rem;
+    opacity: 0.72;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+}
+
+.dataset-button.active {
+    opacity: 1;
+    text-decoration-thickness: 2px;
+}
+
 .toggle-div.info-button {
     --div-size: calc(var(--settings-size)*1.5);
     bottom: -16px;

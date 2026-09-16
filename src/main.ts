@@ -43,6 +43,46 @@ let capture: ScreenCapture;
 
 let infoIcon;
 
+function createDateButtons(): void {
+    const existing = document.querySelector('#dataset-buttons');
+    if (existing) {
+        existing.remove();
+    }
+    if (!settings.showDateButtons) {
+        return;
+    }
+
+    const container = document.querySelector(CONTAINER_DIV);
+    const buttons = document.createElement('DIV');
+    buttons.id = 'dataset-buttons';
+
+    settings.dateOptions.forEach((dateKey: string) => {
+        const button = document.createElement('BUTTON');
+        const year = new Date(dateKey).getFullYear();
+        button.type = 'button';
+        button.textContent = String(year);
+        button.className = 'dataset-button';
+        if (dateKey === settings.date) {
+            button.classList.add('active');
+        }
+        button.addEventListener('click', () => {
+            settings.setDate(dateKey);
+            updateDateButtons();
+        });
+        buttons.appendChild(button);
+    });
+
+    container?.appendChild(buttons);
+}
+
+function updateDateButtons(): void {
+    const buttons = document.querySelectorAll<HTMLButtonElement>('#dataset-buttons .dataset-button');
+    buttons.forEach((button) => {
+        const isActive = button.textContent === String(new Date(settings.date).getFullYear());
+        button.classList.toggle('active', isActive);
+    });
+}
+
 function init() {
     scene = new THREE.Scene();
 
@@ -114,6 +154,7 @@ function createHelix(): void {
     }
     const container = document.querySelector(CONTAINER_DIV);
     helix.createTitleDiv(container);
+    createDateButtons();
     updateInfoEndDate();
 }
 
