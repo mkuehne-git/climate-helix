@@ -243,3 +243,32 @@ canvas.transparent {
     color: var(--text-color);
     border: 1px solid rgba(127, 127, 127, 0.5);
 }
+
+.pwa-status {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%);
+    min-width: 220px;
+    max-width: min(460px, calc(100vw - 24px));
+    padding: 10px 16px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    text-align: center;
+    z-index: 20;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    color: var(--text-color);
+    background: rgba(33, 33, 33, 0.9);
+}
+
+.pwa-status.success {
+    background: rgba(20, 120, 60, 0.9);
+}
+
+.pwa-status.warning {
+    background: rgba(168, 112, 0, 0.92);
+}
+
+.pwa-status.info {
+    background: rgba(33, 33, 33, 0.9);
+}

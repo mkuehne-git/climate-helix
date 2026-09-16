@@ -2,6 +2,22 @@ import { registerSW } from 'virtual:pwa-register';
 
 let updateServiceWorker: (() => Promise<void>) | undefined;
 
+export function showPwaStatus(message: string, variant: 'info' | 'success' | 'warning' = 'info'): void {
+    const existingStatus = document.getElementById('pwa-status');
+    existingStatus?.remove();
+
+    const status = document.createElement('div');
+    status.id = 'pwa-status';
+    status.className = `pwa-status ${variant}`;
+    status.textContent = message;
+    document.body.appendChild(status);
+
+    window.clearTimeout((status as any)._dismissTimer);
+    (status as any)._dismissTimer = window.setTimeout(() => {
+        status.remove();
+    }, 3500);
+}
+
 function createPwaUpdateDialog(): void {
     const existingDialog = document.getElementById('pwa-update-dialog');
     if (existingDialog) {
@@ -69,16 +85,32 @@ export function initPwaUpdate(): void {
 
 export async function checkForPwaUpdates(): Promise<boolean> {
     if (!('serviceWorker' in navigator)) {
+        showPwaStatus('Service workers are not supported in this browser.', 'warning');
         console.info('Service workers are not supported in this browser.');
         return false;
     }
 
     const registrations = await navigator.serviceWorker.getRegistrations();
     if (registrations.length === 0) {
+        showPwaStatus('No service worker is registered yet.', 'warning');
         console.info('No service worker is currently registered.');
         return false;
     }
 
-    await Promise.all(registrations.map((registration) => registration.update()));
-    return true;
+    let hasWaiting = false;
+    await Promise.all(registrations.map(async (registration) => {
+        await registration.update();
+        if (registration.waiting) {
+            hasWaiting = true;
+        }
+    }));
+
+    if (hasWaiting) {
+        showPwaStatus('Update ready. Reload to apply it.', 'success');
+        showPwaUpdatePrompt();
+        return true;
+    }
+
+    showPwaStatus('No update available.', 'info');
+    return false;
 }

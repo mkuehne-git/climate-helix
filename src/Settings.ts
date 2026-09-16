@@ -6,7 +6,7 @@ import * as THREE from "three";
 import './css/lil-gui.css';
 
 import { SettingsButton } from "./SettingsButton";
-import { checkForPwaUpdates } from './PwaUpdate';
+import { checkForPwaUpdates, showPwaStatus } from './PwaUpdate';
 
 import globalCSV2023 from '/assets/csv/2023-09-03/GLB.Ts+dSST.csv?url&raw';
 import northernHemisphereCSV2023 from '/assets/csv/2023-09-03/NH.Ts+dSST.csv?url&raw';
@@ -310,6 +310,7 @@ class Settings {
         });
         this.#gui.add({
             checkForUpdates: async () => {
+                showPwaStatus('Checking for updates...', 'info');
                 const wasChecked = await checkForPwaUpdates();
                 if (!wasChecked) {
                     console.info('No app update check was possible right now.');
