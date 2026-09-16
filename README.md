@@ -16,7 +16,6 @@ The use of [OrbitControls](https://threejs.org/docs/#examples/en/controls/OrbitC
 
 The controller UI (Icon in the upper right corner) provides options to configure the image. Not only can you choose, which region of the world you want to be visualized. With the ***View*** menu item you can change the coloring and some parameters controlling the geometry. With the ***Capture*** menu you can create images and download them to your computer.
 
-
 # Keyboard
 
 |Key|Description|
@@ -24,6 +23,12 @@ The controller UI (Icon in the upper right corner) provides options to configure
 |```h```, ```H```|Toggle visibility of control panel|
 |```CTRL + #```|Take screen capture|
 |```Esc```|Close imprint dialog|
+
+# PWA version updates
+
+The app is shipped as a PWA and checks for newer versions after installation. When a new build is detected, the app asks for confirmation before reloading and applying the update. This is handled through the service worker lifecycle and avoids unexpected restarts during normal use.
+
+If you installed the app from a supported browser such as Chrome on Android, the settings menu also includes a manual **Check for updates** action. This triggers a service worker refresh check and shows a short status message when the app is already up to date or when a new version is available.
 
 # References
 
