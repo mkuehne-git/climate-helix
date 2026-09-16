@@ -52,7 +52,19 @@ export default defineConfig({
             }
         }),
     ],
-    build: { assetsInlineLimit: 0 },
+    build: {
+        assetsInlineLimit: 0,
+        chunkSizeWarningLimit: 1000,
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    three: ['three', 'three/examples/jsm/controls/OrbitControls'],
+                    fonts: ['@fontsource/special-elite', '@fontsource/dejavu-sans'],
+                    extras: ['html2canvas', 'crypto-js'],
+                },
+            },
+        },
+    },
     define: {
         APP_VERSION: JSON.stringify(process.env.npm_package_version),
     },
