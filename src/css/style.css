@@ -152,8 +152,8 @@ canvas.transparent {
 
 #dataset-buttons {
     position: absolute;
-    top: calc(var(--settings-size) + 72px);
     left: 50%;
+    bottom: 15%;
     transform: translateX(-50%);
     display: flex;
     gap: 10px;
@@ -162,6 +162,16 @@ canvas.transparent {
     justify-content: center;
     padding: 0 16px;
     width: min(90vw, 600px);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 2s ease, visibility 2s ease;
+}
+
+#dataset-buttons.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 .dataset-button {
