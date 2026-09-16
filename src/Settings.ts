@@ -6,6 +6,7 @@ import * as THREE from "three";
 import './css/lil-gui.css';
 
 import { SettingsButton } from "./SettingsButton";
+import { checkForPwaUpdates } from './PwaUpdate';
 
 import globalCSV2023 from '/assets/csv/2023-09-03/GLB.Ts+dSST.csv?url&raw';
 import northernHemisphereCSV2023 from '/assets/csv/2023-09-03/NH.Ts+dSST.csv?url&raw';
@@ -307,6 +308,14 @@ class Settings {
                 this.#gui.add(SETTINGS, "imprint").name("Imprint");
             }
         });
+        this.#gui.add({
+            checkForUpdates: async () => {
+                const wasChecked = await checkForPwaUpdates();
+                if (!wasChecked) {
+                    console.info('No app update check was possible right now.');
+                }
+            }
+        }, 'checkForUpdates').name('Check for updates');
     }
 
     get showcaseCSV(): string | undefined {

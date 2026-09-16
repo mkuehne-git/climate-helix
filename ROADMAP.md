@@ -7,7 +7,7 @@ This file describes the planned improvements to Climate Helix. Work through the 
 1. **Dataset selection (implemented).** `src/Settings.ts` now uses a registry for the three dated snapshots and exposes a top-level `Date` control. Region selection remains separate, and both controls use the existing `Events` redraw flow. This provides the data model needed for later comparisons and morphing.
 2. **PWA update prompt.** Build on the existing `vite-plugin-pwa` registration and auto-update behavior. Detect a waiting service worker, present an explicit update decision to the user, and reload only after confirmation. Test first-install, update-available, offline, and declined-update states.
 3. **Automated deployment.** Move the commands in `deploy.sh` into a GitHub Actions workflow that installs dependencies, builds with the production base path, and publishes `dist/` to GitHub Pages. Keep deployment credentials and repository settings in GitHub configuration rather than source files. Retain `deploy.sh` until the workflow is proven.
-4. **Dependency maintenance.** Configure Dependabot or an equivalent scheduled update workflow, with build validation required for dependency pull requests. Review major Vite, Three.js, and PWA-plugin upgrades for behavioral changes instead of blindly accepting them.
+4. **Dependency maintenance (in progress).** Configure Dependabot or an equivalent scheduled update workflow, with build validation required for dependency pull requests. Review major Vite, Three.js, and PWA-plugin upgrades for behavioral changes instead of blindly accepting them. This repo now includes a weekly npm Dependabot policy and a GitHub Actions build gate for dependency-only pull requests.
 5. **Configurable axes.** Add axes as a scene/UI feature after dataset selection, reusing the existing settings and theme CSS variables. Keep axis visibility independent from helix geometry settings.
 6. **Animations.** Add creation and dataset-morph animations only after the dataset model and redraw lifecycle are stable. Prefer an explicit animation state in the scene controller so animation does not race with settings events or theme changes.
 
@@ -16,6 +16,7 @@ This file describes the planned improvements to Climate Helix. Work through the 
 - I want to have an automated way to update the packages to their latest save version.
   I am getting Dependabot emails on a weekly base. Most of the time they are related to `vite`.
   Perhaps it is possible to create skill that let's Claude do that.
+  A repo-level Dependabot schedule for npm updates is now configured, with grouped runtime and tooling updates and a CI build gate for dependency pull requests.
 - I am using a simple `deploy.sh` to deploy the app to Github pages. Perhaps there is a better way to do this
   with Github actions.
 - The app is a PWA. Upon startup the app shall check if a new version is available on Github pages, ask the user to update and do it

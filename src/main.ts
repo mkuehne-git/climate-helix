@@ -19,7 +19,7 @@ import { ClimateHelix } from './ClimateHelix';
 import { Events } from './Enums';
 import { ScreenCapture, CaptureControls } from './ScreenCapture';
 import { ClassMutationObserver } from './ClassMutationObserver';
-
+import { initPwaUpdate } from './PwaUpdate';
 
 // The info div
 import infoDivAsString from '/assets/info.html?url&raw';
@@ -160,6 +160,7 @@ function onWindowResize() {
 
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
+initPwaUpdate();
 init();
 switcher.initTheme()
 

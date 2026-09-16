@@ -46,7 +46,7 @@ export default defineConfig({
                 ]
 
             },
-            registerType: 'autoUpdate',
+            registerType: 'prompt',
             devOptions: {
                 enabled: true
             }
