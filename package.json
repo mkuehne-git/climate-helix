@@ -14,11 +14,11 @@
     "THREE.JS"
   ],
   "devDependencies": {
-    "@fontsource/dejavu-sans": "^5.1.0",
-    "@fontsource/special-elite": "^5.1.0",
+    "@fontsource/dejavu-sans": "^5.3.0",
+    "@fontsource/special-elite": "^5.3.0",
     "@types/crypto-js": "^4.2.2",
     "@types/node": "^20.17.6",
-    "@types/three": "^0.169.0",
+    "@types/three": "^0.186.0",
     "@vitejs/plugin-basic-ssl": "^1.1.0",
     "crypto-js": "^4.2.0",
     "html2canvas": "^1.4.1",
@@ -26,11 +26,11 @@
     "vite-plugin-pwa": "^1.0.0"
   },
   "dependencies": {
-    "@fontsource/dejavu-sans": "^5.1.0",
-    "@fontsource/special-elite": "^5.1.0",
+    "@fontsource/dejavu-sans": "^5.3.0",
+    "@fontsource/special-elite": "^5.3.0",
     "crypto-js": "^4.2.0",
     "html2canvas": "^1.4.1",
-    "three": "^0.170.0"
+    "three": "^0.186.0"
   },
   "author": "",
   "license": "MIT"
