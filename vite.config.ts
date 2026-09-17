@@ -57,10 +57,10 @@ export default defineConfig({
         chunkSizeWarningLimit: 1000,
         rollupOptions: {
             output: {
-                manualChunks: {
-                    three: ['three', 'three/examples/jsm/controls/OrbitControls'],
-                    fonts: ['@fontsource/special-elite', '@fontsource/dejavu-sans'],
-                    extras: ['html2canvas', 'crypto-js'],
+                manualChunks(id) {
+                    if (id.includes('node_modules/three/')) return 'three';
+                    if (id.includes('node_modules/@fontsource/')) return 'fonts';
+                    if (id.includes('node_modules/html2canvas/') || id.includes('node_modules/crypto-js/')) return 'extras';
                 },
             },
         },

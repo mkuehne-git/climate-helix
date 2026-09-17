@@ -14,7 +14,7 @@ import { Settings } from './Settings';
 import { ThemesSwitcher } from './ThemesSwitcher';
 import { InfoButton } from './InfoButton';
 
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { ClimateHelix } from './ClimateHelix';
 import { Events } from './Enums';
 import { ScreenCapture, CaptureControls } from './ScreenCapture';
@@ -22,14 +22,21 @@ import { ClassMutationObserver } from './ClassMutationObserver';
 import { initPwaUpdate } from './PwaUpdate';
 
 // The info div
-import infoDivAsString from '/assets/info.html?url&raw';
+//import infoDivAsString from '/assets/info.html?url&raw';
+const response = await fetch(`${import.meta.env.BASE_URL}assets/info.html`);
+
+if (!response.ok) {
+    throw new Error('Unable to load info.html');
+}
+
+const infoDivAsString = await response.text();
 
 const containerDiv = document.createElement('DIV');
 const CONTAINER_DIV = '.container-div';
 containerDiv.setAttribute('class', 'container-div');
 document.body.appendChild(containerDiv);
 
-const settings = new Settings();
+let settings: Settings;
 const switcher = new ThemesSwitcher({ container: containerDiv });
 
 let group: THREE.Group;
@@ -201,9 +208,14 @@ function onWindowResize() {
 
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
-initPwaUpdate();
-init();
-switcher.initTheme()
+async function start() {
+    settings = await Settings.create();
+    initPwaUpdate();
+    init();
+    switcher.initTheme();
+}
+
+start();
 
 
 // Make empty module to allow top level await

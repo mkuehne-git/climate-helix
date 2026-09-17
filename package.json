@@ -1,6 +1,6 @@
 {
   "name": "climate-helix",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "3D Climate Helix",
   "main": "main.js",
   "scripts": {
@@ -28,6 +28,7 @@
   "dependencies": {
     "crypto-js": "^4.2.0",
     "html2canvas": "^1.4.1",
+    "lil-gui": "^0.21.0",
     "three": "^0.170.0"
   },
   "author": "",

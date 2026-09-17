@@ -1,7 +1,7 @@
 export enum Showcase {
     GLOBAL = 'Global',
-    NORTHERN_HEMISSPHERE = 'Northern HS',
-    SOUTHERN_HEMISSPHERE = 'Southern HS',
+    NORTHERN_HEMISPHERE = 'Northern HS',
+    SOUTHERN_HEMISPHERE = 'Southern HS',
 }
 
 export enum Events {

@@ -1,4 +1,4 @@
-import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min';
+import { GUI } from 'lil-gui';
 import { Imprint } from './Imprint';
 import { Events, Showcase } from './Enums';
 import { ClassMutationObserver } from './ClassMutationObserver';
@@ -8,43 +8,26 @@ import './css/lil-gui.css';
 import { SettingsButton } from "./SettingsButton";
 import { checkForPwaUpdates, showPwaStatus } from './PwaUpdate';
 
-import globalCSV2023 from '/assets/csv/2023-09-03/GLB.Ts+dSST.csv?url&raw';
-import northernHemisphereCSV2023 from '/assets/csv/2023-09-03/NH.Ts+dSST.csv?url&raw';
-import southernHemisphereCSV2023 from '/assets/csv/2023-09-03/SH.Ts+dSST.csv?url&raw';
-import globalCSV2024 from '/assets/csv/2024-10-22/GLB.Ts+dSST.csv?url&raw';
-import northernHemisphereCSV2024 from '/assets/csv/2024-10-22/NH.Ts+dSST.csv?url&raw';
-import southernHemisphereCSV2024 from '/assets/csv/2024-10-22/SH.Ts+dSST.csv?url&raw';
-import globalCSV2026 from '/assets/csv/2026-09-16/GLB.Ts+dSST.csv?url&raw';
-import northernHemisphereCSV2026 from '/assets/csv/2026-09-16/NH.Ts+dSST.csv?url&raw';
-import southernHemisphereCSV2026 from '/assets/csv/2026-09-16/SH.Ts+dSST.csv?url&raw';
+type Dataset = { endDate: string, csv: Record<Showcase, string> };
 
-const datasets = {
-    '2026-09-16': {
-        endDate: 'August 2026',
-        csv: {
-            [Showcase.GLOBAL]: globalCSV2026,
-            [Showcase.NORTHERN_HEMISSPHERE]: northernHemisphereCSV2026,
-            [Showcase.SOUTHERN_HEMISSPHERE]: southernHemisphereCSV2026,
-        },
-    },
-    '2024-10-22': {
-        endDate: 'October 2024',
-        csv: {
-            [Showcase.GLOBAL]: globalCSV2024,
-            [Showcase.NORTHERN_HEMISSPHERE]: northernHemisphereCSV2024,
-            [Showcase.SOUTHERN_HEMISSPHERE]: southernHemisphereCSV2024,
-        },
-    },
-    '2023-09-03': {
-        endDate: 'March 2023',
-        csv: {
-            [Showcase.GLOBAL]: globalCSV2023,
-            [Showcase.NORTHERN_HEMISSPHERE]: northernHemisphereCSV2023,
-            [Showcase.SOUTHERN_HEMISSPHERE]: southernHemisphereCSV2023,
-        },
-    },
+const datasetPaths: Record<string, { endDate: string, files: Record<Showcase, string> }> = {
+    '2026-09-16': { endDate: 'August 2026', files: { [Showcase.GLOBAL]: 'GLB.Ts+dSST.csv', [Showcase.NORTHERN_HEMISPHERE]: 'NH.Ts+dSST.csv', [Showcase.SOUTHERN_HEMISPHERE]: 'SH.Ts+dSST.csv' } },
+    '2024-10-22': { endDate: 'October 2024', files: { [Showcase.GLOBAL]: 'GLB.Ts+dSST.csv', [Showcase.NORTHERN_HEMISPHERE]: 'NH.Ts+dSST.csv', [Showcase.SOUTHERN_HEMISPHERE]: 'SH.Ts+dSST.csv' } },
+    '2023-09-03': { endDate: 'March 2023', files: { [Showcase.GLOBAL]: 'GLB.Ts+dSST.csv', [Showcase.NORTHERN_HEMISPHERE]: 'NH.Ts+dSST.csv', [Showcase.SOUTHERN_HEMISPHERE]: 'SH.Ts+dSST.csv' } },
 };
-const csv: Record<Showcase, string> = {} as Record<Showcase, string>;
+
+async function loadDatasets(): Promise<Record<string, Dataset>> {
+    const entries = await Promise.all(Object.entries(datasetPaths).map(async ([date, definition]) => {
+        const csvEntries = await Promise.all(Object.entries(definition.files).map(async ([showcase, file]) => {
+            const url = `${import.meta.env.BASE_URL}assets/csv/${date}/${file}`;
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`Unable to load dataset: ${url}`);
+            return [showcase, await response.text()] as const;
+        }));
+        return [date, { endDate: definition.endDate, csv: Object.fromEntries(csvEntries) as Record<Showcase, string> }] as const;
+    }));
+    return Object.fromEntries(entries);
+}
 const SETTINGS = {
     showcaseCSV: undefined,
     radio: Showcase.GLOBAL,
@@ -84,11 +67,17 @@ function styledColor(propertyName: string): THREE.Color {
 }
 
 class Settings {
+    #datasets: Record<string, Dataset>;
+    #csv: Record<Showcase, string> = {} as Record<Showcase, string>;
     #captureFolder: any;
     #dateFolder: GUI;
     #showcaseFolder: GUI;
     #hidden: boolean;
     #gui: GUI;
+
+    static async create(): Promise<Settings> {
+        return new Settings(await loadDatasets());
+    }
 
     static styledColor(propertyName: string): THREE.Color {
         return styledColor(propertyName);
@@ -138,7 +127,8 @@ class Settings {
                 });
         });
     }
-    constructor() {
+    private constructor(datasets: Record<string, Dataset>) {
+        this.#datasets = datasets;
         this.#gui = new GUI({ container: document.querySelector('.container-div') as HTMLElement | undefined, autoPlace: false });
         this.#gui.domElement.id = "gui";
         this.createDateFolder();
@@ -177,16 +167,16 @@ class Settings {
             this.#gui,
             `Region: ${SETTINGS.radio}`,
             SETTINGS.radio,
-            csv,
+            this.#csv,
             (object, property, key) => {
                 SETTINGS.radio = key;
-                SETTINGS.showcaseCSV = csv[key];
+                SETTINGS.showcaseCSV = this.#csv[key];
                 Events.dispatchEvent(Events.CREATE_HELIX);
                 this.#showcaseFolder.title(`Region: ${key}`);
                 this.#showcaseFolder.close();
             }
         );
-        SETTINGS.showcaseCSV = csv[SETTINGS.radio];
+        SETTINGS.showcaseCSV = this.#csv[SETTINGS.radio];
         this.#showcaseFolder.close();
     }
 
@@ -195,7 +185,7 @@ class Settings {
             this.#gui,
             `Date: ${SETTINGS.date}`,
             SETTINGS.date,
-            datasets,
+            this.#datasets,
             (object, property, key) => {
                 this.setDate(key);
             }
@@ -212,12 +202,16 @@ class Settings {
     }
 
     selectDate(date: string): void {
-        Object.assign(csv, datasets[date].csv);
-        SETTINGS.showcaseCSV = csv[SETTINGS.radio];
+        Object.assign(this.#csv, this.#datasets[date].csv);
+        SETTINGS.showcaseCSV = this.#csv[SETTINGS.radio];
     }
 
     get dateOptions(): string[] {
-        return Object.keys(datasets).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+        return Object.keys(this.#datasets).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+    }
+
+    get date(): string {
+        return SETTINGS.date;
     }
 
     get showDateButtons(): boolean {
@@ -225,7 +219,7 @@ class Settings {
     }
 
     get dataEndDate(): string {
-        return datasets[SETTINGS.date].endDate;
+        return this.#datasets[SETTINGS.date].endDate;
     }
 
     createViewFolder() {
