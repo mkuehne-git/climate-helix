@@ -63,6 +63,8 @@ The current priorities and implementation notes are maintained separately in `RO
 
 `deploy.sh` builds the app and force-pushes the contents of `dist/` to the `gh-pages` branch of the configured GitHub repository. Review the generated build and remote configuration before running it. A production build sets the base path to `/climate-helix/`; local development uses `/`.
 
+Dynamic imports of local modules must remain analyzable by Vite. Do not use `@vite-ignore` for modules that need to be bundled for GitHub Pages, and verify that production builds emit their chunks under the `/climate-helix/` base path.
+
 ## Change Validation
 
 At minimum:

@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.5.5
+
+* Fix Imprint loading on GitHub Pages by bundling the local dynamic import.
+
 ## v0.5.4
 
 * Show Imprint content immediately on mobile and fall back to readable HTML if canvas rendering fails.
