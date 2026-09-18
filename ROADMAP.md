@@ -17,7 +17,7 @@ Deployment should move the commands in `deploy.sh` into GitHub Actions after the
 
 ## UI
 
-- I want to show x/y axis. Showing axis shall be configurable.
+1. I want to show x/y/z axis. Showing axis shall be configurable.
 
 Add axes as a scene/UI feature after dataset selection, reusing the existing settings and theme CSS variables. Axis visibility should remain independent from helix geometry settings.
 

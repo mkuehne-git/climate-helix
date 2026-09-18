@@ -5,6 +5,7 @@
   "main": "main.js",
   "scripts": {
     "dev": "vite --host",
+    "dev:http": "VITE_HTTPS=false vite --host",
     "build": "vite build",
     "serve": "vite preview"
   },

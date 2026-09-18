@@ -16,6 +16,7 @@ import { InfoButton } from './InfoButton';
 
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { ClimateHelix } from './ClimateHelix';
+import { ClimateAxes } from './ClimateAxes';
 import { Events } from './Enums';
 import { ScreenCapture, CaptureControls } from './ScreenCapture';
 import { ClassMutationObserver } from './ClassMutationObserver';
@@ -45,6 +46,7 @@ let scene: THREE.Scene;
 let renderer: THREE.WebGLRenderer;
 let helixMesh: THREE.Mesh;
 let wireframeMesh: THREE.Mesh;
+let climateAxes: ClimateAxes;
 let observer: ClassMutationObserver;
 let capture: ScreenCapture;
 
@@ -105,7 +107,8 @@ function init() {
     const aspectRatio = width / height;
     // console.log(`Aspect ratio: ${aspectRatio}`);
     camera = new THREE.PerspectiveCamera(50, aspectRatio);
-    camera.position.set(0, 0, 5.5);
+    camera.position.set(4.5, 4.5, 4.5);
+    camera.lookAt(0, 0, 0);
     scene.add(camera);
 
     group = new THREE.Group();
@@ -150,6 +153,10 @@ function createHelix(): void {
     if (wireframeMesh) {
         group.remove(wireframeMesh);
     }
+    if (climateAxes) {
+        group.remove(climateAxes);
+        climateAxes.dispose();
+    }
     const helix = new ClimateHelix(settings);
     if (settings.showFaces) {
         helixMesh = helix.createMesh();
@@ -158,6 +165,10 @@ function createHelix(): void {
     if (settings.showWireframe) {
         wireframeMesh = helix.createMesh({ wireframe: true, vertexColors: false })
         group.add(wireframeMesh);
+    }
+    if (settings.showYearAxis || settings.showTemperatureAxis || settings.showMonthAxis) {
+        climateAxes = new ClimateAxes(settings, helix.height, 1);
+        group.add(climateAxes);
     }
     const container = document.querySelector(CONTAINER_DIV);
     helix.createTitleDiv(container);

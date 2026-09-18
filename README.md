@@ -14,7 +14,7 @@ The time ranges from 1880 until March 2023. Each year is visualized as a loop wi
 
 The use of [OrbitControls](https://threejs.org/docs/#examples/en/controls/OrbitControls) makes it possible to easily navigate through the scene, by moving around a virtual camera. That means, you can scale, translate or rotate the image.
 
-The controller UI (Icon in the upper right corner) provides options to configure the image. Not only can you choose, which region of the world you want to be visualized. With the ***View*** menu item you can change the coloring and some parameters controlling the geometry. With the ***Capture*** menu you can create images and download them to your computer.
+The controller UI (Icon in the upper right corner) provides options to configure the image. Not only can you choose, which region of the world you want to be visualized. With the ***View*** menu item you can toggle the x/y/z axes, change the coloring, and adjust some parameters controlling the geometry. With the ***Capture*** menu you can create images and download them to your computer.
 
 # Keyboard
 
