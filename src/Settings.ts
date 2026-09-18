@@ -373,12 +373,7 @@ class Settings {
 
     createImprint(): void {
         const imprint = new Imprint();
-        const p = imprint.isAvailable();
-        p.then((available) => {
-            if (available) {
-                this.#gui.add(SETTINGS, "imprint").name("Imprint");
-            }
-        });
+        this.#gui.add(SETTINGS, "imprint").name("Imprint");
         this.#gui.add({
             checkForUpdates: async () => {
                 showPwaStatus('Checking for updates...', 'info');

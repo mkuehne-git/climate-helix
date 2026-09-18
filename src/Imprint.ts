@@ -19,6 +19,7 @@ const closeBtn = `<hr><div class="center" width=100%>
 class Imprint {
   private decryptedAES: () => string;
   private div: HTMLDivElement;
+  private loading: Promise<boolean> | undefined;
   constructor() {
     window.addEventListener("resize", () => this.redraw());
     new ClassMutationObserver(document.body, () => this.redraw());
@@ -38,16 +39,33 @@ class Imprint {
   }
 
   async isAvailable(): Promise<boolean> {
-    const m = await loadModule();
-    this.decryptedAES = m.decryptedAES;
-    return this.decryptedAES() !== undefined;
+    if (this.decryptedAES !== undefined) {
+      return true;
+    }
+    if (this.loading !== undefined) {
+      return this.loading;
+    }
+    this.loading = loadModule().then((m) => {
+      this.decryptedAES = m.decryptedAES;
+      return this.decryptedAES() !== undefined;
+    });
+    return this.loading;
   }
   show() {
+    if (this.decryptedAES === undefined) {
+      void this.isAvailable().then((available) => {
+        if (available) {
+          this.show();
+        }
+      });
+      return;
+    }
     if (this.div === undefined) {
       this.div = document.createElement("div");
       const div = this.div;
       div.classList.add("imprint");
-      div.innerHTML = this.decryptedAES();
+      const imprintHTML = this.decryptedAES();
+      div.innerHTML = imprintHTML;
       document.body.appendChild(div);
       const style = window.getComputedStyle(document.body);
       const width = div.scrollWidth;
@@ -61,6 +79,12 @@ class Imprint {
         canvas.classList.add("padding");
         div.innerHTML = "";
         div.appendChild(canvas);
+        const p = document.createElement("p");
+        p.classList.add("padding");
+        p.innerHTML = trailer + closeBtn;
+        div.appendChild(p);
+      }).catch(() => {
+        div.innerHTML = imprintHTML;
         const p = document.createElement("p");
         p.classList.add("padding");
         p.innerHTML = trailer + closeBtn;

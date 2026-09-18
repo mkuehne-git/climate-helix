@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.5.4
+
+* Show Imprint content immediately on mobile and fall back to readable HTML if canvas rendering fails.
+
 ## v0.5.2
 
 * Keep the Imprint control reachable in the mobile Settings menu.

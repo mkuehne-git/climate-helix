@@ -21,6 +21,8 @@ There is currently no automated test or lint script. After changes, run `npm run
 
 The app follows semantic versioning (`x.y.z`). Fixes and small improvements increase `z`; new features increase `y`. Increases to `x` are decided by the project owner.
 
+Always update the version number before creating a commit. Record the new version in `package.json` and add a corresponding entry to `CHANGELOG.md`.
+
 ## Git Workflow
 
 Always ask the project owner for approval before creating a commit. Do not commit changes without explicit approval.
