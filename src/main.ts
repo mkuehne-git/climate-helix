@@ -57,10 +57,6 @@ function createDateButtons(): void {
     if (existing) {
         existing.remove();
     }
-    if (!settings.showDateButtons) {
-        return;
-    }
-
     const container = document.querySelector(CONTAINER_DIV);
     const buttons = document.createElement('DIV');
     buttons.id = 'dataset-buttons';

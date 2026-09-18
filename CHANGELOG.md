@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.5.1
+
+* Remove the obsolete Show year buttons setting now that year visibility is controlled from the Legend settings.
+
 ## v0.5.0
 
 * Add configurable year, temperature, and month axes with legend controls.

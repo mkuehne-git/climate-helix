@@ -39,7 +39,6 @@ const SETTINGS = {
     radio: Showcase.GLOBAL,
     date: '2026-09-16',
     view: {
-        showDateButtons: true,
         axes: {
             yearVisible: false,
             temperatureVisible: false,
@@ -232,10 +231,6 @@ class Settings {
         return SETTINGS.date;
     }
 
-    get showDateButtons(): boolean {
-        return SETTINGS.view.showDateButtons;
-    }
-
     get showYearAxis(): boolean {
         return SETTINGS.view.axes.yearVisible;
     }
@@ -270,10 +265,6 @@ class Settings {
 
     createViewFolder() {
         const folder = this.#gui.addFolder("View");
-        folder
-            .add(SETTINGS.view, 'showDateButtons')
-            .name('Show year buttons')
-            .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
         this.createViewLegendFolder(folder);
         this.createViewGeometryFolder(folder);
         this.createViewColorsFolder(folder);
