@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.5.6
+
+* Move the year axis closer to the helix on mobile-sized views.
+
 ## v0.5.5
 
 * Fix Imprint loading on GitHub Pages by bundling the local dynamic import.

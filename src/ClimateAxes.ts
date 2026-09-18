@@ -45,7 +45,7 @@ class ClimateAxes extends THREE.Group {
     }
 
     private addYearAxis(settings: Settings, height: number, color: THREE.Color, material: THREE.LineBasicMaterial): void {
-        const axisX = radiusForAxis(settings) + 0.55;
+        const axisX = radiusForAxis(settings) + 0.3;
         const bottom = -height / 2;
         const top = height / 2;
         this.addLine([[axisX, 0, bottom], [axisX, 0, top]], material);
