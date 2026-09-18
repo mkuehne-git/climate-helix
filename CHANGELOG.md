@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.5.0
+
+* Add configurable year, temperature, and month axes with legend controls.
+* Add configurable year-label spacing and temperature-ring count.
+* Add plain HTTP development mode with `npm run dev:http`.
+* Fix the lil-gui root control remaining visible alongside the Settings icon.
+
 ## v0.4.0
 
 * Add selectable NASA GISS data snapshots.

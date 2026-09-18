@@ -8,7 +8,7 @@ import './css/lil-gui.css';
 import { SettingsButton } from "./SettingsButton";
 import { checkForPwaUpdates, showPwaStatus } from './PwaUpdate';
 
-type Dataset = { endDate: string, csv: Record<Showcase, string> };
+type Dataset = { endDate: string, csv: Record<Showcase, string>, firstYear: number, lastYear: number };
 
 const datasetPaths: Record<string, { endDate: string, files: Record<Showcase, string> }> = {
     '2026-09-16': { endDate: 'August 2026', files: { [Showcase.GLOBAL]: 'GLB.Ts+dSST.csv', [Showcase.NORTHERN_HEMISPHERE]: 'NH.Ts+dSST.csv', [Showcase.SOUTHERN_HEMISPHERE]: 'SH.Ts+dSST.csv' } },
@@ -24,7 +24,13 @@ async function loadDatasets(): Promise<Record<string, Dataset>> {
             if (!response.ok) throw new Error(`Unable to load dataset: ${url}`);
             return [showcase, await response.text()] as const;
         }));
-        return [date, { endDate: definition.endDate, csv: Object.fromEntries(csvEntries) as Record<Showcase, string> }] as const;
+        const csv = Object.fromEntries(csvEntries) as Record<Showcase, string>;
+        const years = Object.values(csv).flatMap((value) => value.split(/\r?\n/)
+            .slice(2)
+            .map((row) => row.split(',')[0].trim())
+            .filter((year) => /^\d{4}$/.test(year))
+            .map(Number));
+        return [date, { endDate: definition.endDate, csv, firstYear: Math.min(...years), lastYear: Math.max(...years) }] as const;
     }));
     return Object.fromEntries(entries);
 }
@@ -34,6 +40,13 @@ const SETTINGS = {
     date: '2026-09-16',
     view: {
         showDateButtons: true,
+        axes: {
+            yearVisible: false,
+            temperatureVisible: false,
+            monthVisible: false,
+            yearLabelInterval: 25,
+            temperatureRingCount: 5,
+        },
         geometry: {
             meshVisible: false,
             facesVisible: true,
@@ -74,6 +87,8 @@ class Settings {
     #showcaseFolder: GUI;
     #hidden: boolean;
     #gui: GUI;
+    #firstYear: number;
+    #lastYear: number;
 
     static async create(): Promise<Settings> {
         return new Settings(await loadDatasets());
@@ -129,6 +144,9 @@ class Settings {
     }
     private constructor(datasets: Record<string, Dataset>) {
         this.#datasets = datasets;
+        const years = Object.values(datasets).flatMap((dataset) => [dataset.firstYear, dataset.lastYear]);
+        this.#firstYear = Math.min(...years);
+        this.#lastYear = Math.max(...years);
         this.#gui = new GUI({ container: document.querySelector('.container-div') as HTMLElement | undefined, autoPlace: false });
         this.#gui.domElement.id = "gui";
         this.createDateFolder();
@@ -218,6 +236,34 @@ class Settings {
         return SETTINGS.view.showDateButtons;
     }
 
+    get showYearAxis(): boolean {
+        return SETTINGS.view.axes.yearVisible;
+    }
+
+    get showTemperatureAxis(): boolean {
+        return SETTINGS.view.axes.temperatureVisible;
+    }
+
+    get showMonthAxis(): boolean {
+        return SETTINGS.view.axes.monthVisible;
+    }
+
+    get yearLabelInterval(): number {
+        return Math.max(1, Math.floor(SETTINGS.view.axes.yearLabelInterval));
+    }
+
+    get temperatureRingCount(): number {
+        return Math.max(2, Math.min(10, Math.floor(SETTINGS.view.axes.temperatureRingCount)));
+    }
+
+    get firstYear(): number {
+        return this.#firstYear;
+    }
+
+    get lastYear(): number {
+        return this.#lastYear;
+    }
+
     get dataEndDate(): string {
         return this.#datasets[SETTINGS.date].endDate;
     }
@@ -228,8 +274,40 @@ class Settings {
             .add(SETTINGS.view, 'showDateButtons')
             .name('Show year buttons')
             .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
+        this.createViewLegendFolder(folder);
         this.createViewGeometryFolder(folder);
         this.createViewColorsFolder(folder);
+        folder.close();
+    }
+
+    createViewLegendFolder(parent) {
+        const folder = parent.addFolder('Legend');
+        folder
+            .add(SETTINGS.view.axes, 'yearVisible')
+            .name('Year axis')
+            .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
+        folder
+            .add(SETTINGS.view.axes, 'temperatureVisible')
+            .name('Temperature axis')
+            .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
+        folder
+            .add(SETTINGS.view.axes, 'monthVisible')
+            .name('Month axis')
+            .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
+        folder
+            .add(SETTINGS.view.axes, 'yearLabelInterval')
+            .min(1)
+            .max(100)
+            .step(1)
+            .name('Year label interval')
+            .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
+        folder
+            .add(SETTINGS.view.axes, 'temperatureRingCount')
+            .min(2)
+            .max(10)
+            .step(1)
+            .name('Temperature rings')
+            .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
         folder.close();
     }
 

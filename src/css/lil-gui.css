@@ -16,7 +16,7 @@
 }
 
 /* Remove title control, which usually closes the GUI. */
-.lil-gui.root>.title:first-of-type {
+#gui > .lil-title:first-of-type {
     display: none
 }
 

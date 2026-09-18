@@ -3,10 +3,11 @@ import { VitePWA } from 'vite-plugin-pwa';
 import { defineConfig } from 'vite';
 const isProduction = process.env['NODE_ENV'] === 'production';
 const base = isProduction ? '/climate-helix/' : '/';
+const useHttps = process.env['VITE_HTTPS'] !== 'false';
 export default defineConfig({
     base,
     plugins: [
-        basicSsl(),
+        ...(useHttps ? [basicSsl()] : []),
         VitePWA({
             manifest: {
                 "lang": "en",
