@@ -122,4 +122,6 @@ div.themes {
     position: absolute;
     top: var(--settings-size);
     right: 0;
+    max-height: calc(100vh - var(--settings-size));
+    overflow-y: auto;
 }

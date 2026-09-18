@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.5.2
+
+* Keep the Imprint control reachable in the mobile Settings menu.
+* Restore the Settings icon after closing the menu with the X icon.
+
 ## v0.5.1
 
 * Remove the obsolete Show year buttons setting now that year visibility is controlled from the Legend settings.

@@ -1,7 +1,6 @@
 import { GUI } from 'lil-gui';
 import { Imprint } from './Imprint';
 import { Events, Showcase } from './Enums';
-import { ClassMutationObserver } from './ClassMutationObserver';
 import * as THREE from "three";
 import './css/lil-gui.css';
 
@@ -158,16 +157,7 @@ class Settings {
     }
 
     createSettingsIcon() {
-        const settingsButton = new SettingsButton(this.#gui);
-        new ClassMutationObserver(this.#gui.domElement, (value: MutationRecord, index: number | undefined) => {
-            const div = value.target as HTMLDivElement;
-            if (index === 0 && !div?.classList.contains('transition') && div?.classList.contains('closed')) {
-                this.#gui.hide();
-                this.#gui.close();
-
-                settingsButton.toggle();
-            }
-        });
+        new SettingsButton(this.#gui);
     }
     createShowHideListener(): void {
         window.addEventListener('keydown', (e) => {

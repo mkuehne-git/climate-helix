@@ -26,6 +26,9 @@ class SettingsButton {
             this.#gui.open();
         } else {
             this.#gui.$title.click();
+            this.#gui.hide();
+            this.#gui.close();
+            this.toggle();
         }
     }
 
