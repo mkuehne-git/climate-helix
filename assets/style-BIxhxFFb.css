@@ -113,6 +113,98 @@ canvas.transparent {
     z-index: 0;
 }
 
+.year-slider {
+    position: absolute;
+    top: calc(var(--settings-size) + 58px);
+    left: 50%;
+    width: min(70vw, 560px);
+    height: 42px;
+    transform: translateX(-50%);
+    color: var(--text-color);
+    z-index: 2;
+}
+
+.year-slider-track {
+    position: absolute;
+    top: 8px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--text-color);
+    opacity: 0.55;
+}
+
+.year-slider-input {
+    position: absolute;
+    top: 0;
+    left: -7px;
+    width: calc(100% + 14px);
+    height: 18px;
+    margin: 0;
+    appearance: none;
+    background: transparent;
+    pointer-events: none;
+}
+
+.year-slider-input::-webkit-slider-runnable-track {
+    height: 2px;
+    background: transparent;
+}
+
+.year-slider-input::-moz-range-track {
+    height: 2px;
+    background: transparent;
+}
+
+.year-slider-input::-webkit-slider-thumb {
+    width: 14px;
+    height: 14px;
+    margin-top: -6px;
+    border: 2px solid var(--text-color);
+    border-radius: 50%;
+    background: var(--background-color);
+    cursor: pointer;
+    appearance: none;
+    pointer-events: auto;
+}
+
+.year-slider-input::-moz-range-thumb {
+    width: 10px;
+    height: 10px;
+    border: 2px solid var(--text-color);
+    border-radius: 50%;
+    background: var(--background-color);
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.year-slider-input:focus-visible::-webkit-slider-thumb,
+.year-slider-input:focus-visible::-moz-range-thumb {
+    outline: 2px solid var(--text-color);
+    outline-offset: 3px;
+}
+
+.year-slider-labels {
+    position: absolute;
+    top: 21px;
+    left: 0;
+    right: 0;
+    font-family: 'Special Elite', sans-serif;
+    font-size: 0.8rem;
+}
+
+.year-slider-label {
+    position: absolute;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+    .year-slider {
+        width: min(84vw, 560px);
+    }
+}
+
 .imprint {
     display: block;
     background-color: var(--background-color);
