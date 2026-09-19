@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.5.8
+
+* Prepare the year range slider and configurable year ticks for release.
+
+## v0.5.7
+
+* Add a dataset-aware year range slider for the helix.
+* Keep helix diameter stable while changing the selected year range.
+* Replace year-label interval configuration with an evenly distributed year tick count.
+* Add an HTTP development-server fallback for browsers that reject the local HTTPS certificate.
+
 ## v0.5.6
 
 * Move the year axis closer to the helix on mobile-sized views.

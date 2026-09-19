@@ -17,9 +17,9 @@ Deployment should move the commands in `deploy.sh` into GitHub Actions after the
 
 ## UI
 
-1. I want to show x/y/z axis. Showing axis shall be configurable.
-
 Add axes as a scene/UI feature after dataset selection, reusing the existing settings and theme CSS variables. Axis visibility should remain independent from helix geometry settings.
+
+Add a horizontal slider below the title and above the helix. The slider should be a simple line with a two movable knobs. The left knob shall indicate the start year of the helix rendering and the right knob the end year. The actual years shall be written underneath each knob. A knob-value change shall trigger a live update of the helix.
 
 ### Animations
 

@@ -42,9 +42,10 @@ const SETTINGS = {
             yearVisible: false,
             temperatureVisible: false,
             monthVisible: false,
-            yearLabelInterval: 25,
+            yearTickCount: 5,
             temperatureRingCount: 5,
         },
+        yearSliderVisible: true,
         geometry: {
             meshVisible: false,
             facesVisible: true,
@@ -87,6 +88,8 @@ class Settings {
     #gui: GUI;
     #firstYear: number;
     #lastYear: number;
+    #datasetFirstYear: number;
+    #datasetLastYear: number;
 
     static async create(): Promise<Settings> {
         return new Settings(await loadDatasets());
@@ -142,9 +145,10 @@ class Settings {
     }
     private constructor(datasets: Record<string, Dataset>) {
         this.#datasets = datasets;
-        const years = Object.values(datasets).flatMap((dataset) => [dataset.firstYear, dataset.lastYear]);
-        this.#firstYear = Math.min(...years);
-        this.#lastYear = Math.max(...years);
+        this.#datasetFirstYear = datasets[SETTINGS.date].firstYear;
+        this.#datasetLastYear = datasets[SETTINGS.date].lastYear;
+        this.#firstYear = this.#datasetFirstYear;
+        this.#lastYear = this.#datasetLastYear;
         this.#gui = new GUI({ container: document.querySelector('.container-div') as HTMLElement | undefined, autoPlace: false });
         this.#gui.domElement.id = "gui";
         this.createDateFolder();
@@ -178,6 +182,7 @@ class Settings {
             (object, property, key) => {
                 SETTINGS.radio = key;
                 SETTINGS.showcaseCSV = this.#csv[key];
+                this.resetYearRange();
                 Events.dispatchEvent(Events.CREATE_HELIX);
                 this.#showcaseFolder.title(`Region: ${key}`);
                 this.#showcaseFolder.close();
@@ -211,6 +216,15 @@ class Settings {
     selectDate(date: string): void {
         Object.assign(this.#csv, this.#datasets[date].csv);
         SETTINGS.showcaseCSV = this.#csv[SETTINGS.radio];
+        this.resetYearRange();
+    }
+
+    private resetYearRange(): void {
+        const dataset = this.#datasets[SETTINGS.date];
+        this.#datasetFirstYear = dataset.firstYear;
+        this.#datasetLastYear = dataset.lastYear;
+        this.#firstYear = this.#datasetFirstYear;
+        this.#lastYear = this.#datasetLastYear;
     }
 
     get dateOptions(): string[] {
@@ -233,8 +247,8 @@ class Settings {
         return SETTINGS.view.axes.monthVisible;
     }
 
-    get yearLabelInterval(): number {
-        return Math.max(1, Math.floor(SETTINGS.view.axes.yearLabelInterval));
+    get yearTickCount(): number {
+        return Math.max(2, Math.min(10, Math.floor(SETTINGS.view.axes.yearTickCount)));
     }
 
     get temperatureRingCount(): number {
@@ -249,12 +263,36 @@ class Settings {
         return this.#lastYear;
     }
 
+    get datasetFirstYear(): number {
+        return this.#datasetFirstYear;
+    }
+
+    get datasetLastYear(): number {
+        return this.#datasetLastYear;
+    }
+
+    get yearSliderVisible(): boolean {
+        return SETTINGS.view.yearSliderVisible;
+    }
+
+    setStartYear(year: number): void {
+        this.#firstYear = Math.max(this.#datasetFirstYear, Math.min(year, this.#lastYear));
+    }
+
+    setEndYear(year: number): void {
+        this.#lastYear = Math.min(this.#datasetLastYear, Math.max(year, this.#firstYear));
+    }
+
     get dataEndDate(): string {
         return this.#datasets[SETTINGS.date].endDate;
     }
 
     createViewFolder() {
         const folder = this.#gui.addFolder("View");
+        folder
+            .add(SETTINGS.view, 'yearSliderVisible')
+            .name('Year slider')
+            .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
         this.createViewLegendFolder(folder);
         this.createViewGeometryFolder(folder);
         this.createViewColorsFolder(folder);
@@ -276,11 +314,11 @@ class Settings {
             .name('Month axis')
             .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
         folder
-            .add(SETTINGS.view.axes, 'yearLabelInterval')
-            .min(1)
-            .max(100)
+            .add(SETTINGS.view.axes, 'yearTickCount')
+            .min(2)
+            .max(10)
             .step(1)
-            .name('Year label interval')
+            .name('Year ticks')
             .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
         folder
             .add(SETTINGS.view.axes, 'temperatureRingCount')

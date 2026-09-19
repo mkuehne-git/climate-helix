@@ -52,14 +52,14 @@ class ClimateAxes extends THREE.Group {
 
         const firstYear = settings.firstYear;
         const lastYear = settings.lastYear;
-        const yearCount = lastYear - firstYear;
-        const labelInterval = settings.yearLabelInterval;
-        for (let year = firstYear; year <= lastYear; year++) {
-            if ((year - firstYear) % labelInterval === 0 || year === lastYear) {
-                const position = bottom + (year - firstYear) / Math.max(yearCount, 1) * height;
-                this.addLine([[axisX - 0.08, 0, position], [axisX + 0.08, 0, position]], material);
-                this.addLabel(String(year), new THREE.Vector3(axisX + 0.15, 0, position), color, 0.5, 0.14);
-            }
+        const tickCount = settings.yearTickCount;
+        const yearSpan = lastYear - firstYear;
+        for (let tick = 0; tick < tickCount; tick++) {
+            const fraction = tick / (tickCount - 1);
+            const year = Math.round(firstYear + fraction * yearSpan);
+            const position = bottom + fraction * height;
+            this.addLine([[axisX - 0.08, 0, position], [axisX + 0.08, 0, position]], material);
+            this.addLabel(String(year), new THREE.Vector3(axisX + 0.15, 0, position), color, 0.5, 0.14);
         }
     }
 

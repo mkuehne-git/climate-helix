@@ -21,6 +21,7 @@ import { Events } from './Enums';
 import { ScreenCapture, CaptureControls } from './ScreenCapture';
 import { ClassMutationObserver } from './ClassMutationObserver';
 import { initPwaUpdate } from './PwaUpdate';
+import { YearRangeSlider } from './YearRangeSlider';
 
 // The info div
 //import infoDivAsString from '/assets/info.html?url&raw';
@@ -49,6 +50,7 @@ let wireframeMesh: THREE.Mesh;
 let climateAxes: ClimateAxes;
 let observer: ClassMutationObserver;
 let capture: ScreenCapture;
+let yearRangeSlider: YearRangeSlider;
 
 let infoIcon;
 
@@ -168,6 +170,16 @@ function createHelix(): void {
     }
     const container = document.querySelector(CONTAINER_DIV);
     helix.createTitleDiv(container);
+    if (settings.yearSliderVisible && container) {
+        if (yearRangeSlider) {
+            yearRangeSlider.refresh();
+        } else {
+            yearRangeSlider = new YearRangeSlider(container, settings);
+        }
+    } else {
+        yearRangeSlider?.dispose();
+        yearRangeSlider = undefined;
+    }
     createDateButtons();
     updateInfoEndDate();
 }

@@ -55,11 +55,11 @@ class ClimateHelix {
 
     private createCurve(): void {
         if (this.curve.length === 0) {
-            this.years = this.csv.rowCount;
-            // console.log(`Years: ${this.years}`)
-            for (let year = 0; year < this.years; year++) {
+            this.years = this.settings.lastYear - this.settings.firstYear + 1;
+            for (let year = this.settings.firstYear; year <= this.settings.lastYear; year++) {
                 for (let month = 0; month < 12; month++) {
-                    const v = this.helixPoint(year, month);
+                    const row = year - this.settings.datasetFirstYear + 1;
+                    const v = this.helixPoint(row, month);
                     if (v) {
                         this.curve.push(v);
                     }
@@ -86,7 +86,8 @@ class ClimateHelix {
     }
 
     private createGeometry(): HelixGeometry {
-        const tubeRadius = this.settings.radiusFactor * this.helixConfiguration.height / this.years;
+        const datasetYears = this.settings.datasetLastYear - this.settings.datasetFirstYear + 1;
+        const tubeRadius = this.settings.radiusFactor * this.helixConfiguration.height / datasetYears;
         const geometry = new HelixGeometry(new HelixCurve(this), this.settings.tubularSegments * (this.curve.length - 1), tubeRadius, this.settings.radialSegments, false);
         const vcolors = geometry.getAttribute('vColors');
         const colorAttribute = new THREE.BufferAttribute(new Float32Array(vcolors.array), 3)
