@@ -62,7 +62,6 @@ canvas.transparent {
     position: absolute;
     top: 0;
     right: 0;
-    z-index: 2;
 }
 
 #gui-icon {
@@ -114,19 +113,15 @@ canvas.transparent {
 }
 
 .year-slider {
-    position: absolute;
-    top: calc(var(--settings-size) + 58px);
-    left: 50%;
+    position: relative;
     width: min(70vw, 560px);
     height: 42px;
-    transform: translateX(-50%);
     color: var(--text-color);
-    z-index: 2;
 }
 
 .year-slider-track {
     position: absolute;
-    top: 8px;
+    top: 24px;
     left: 0;
     right: 0;
     height: 2px;
@@ -136,7 +131,7 @@ canvas.transparent {
 
 .year-slider-input {
     position: absolute;
-    top: 0;
+    top: 16px;
     left: -7px;
     width: calc(100% + 14px);
     height: 18px;
@@ -186,7 +181,7 @@ canvas.transparent {
 
 .year-slider-labels {
     position: absolute;
-    top: 21px;
+    top: 0;
     left: 0;
     right: 0;
     font-family: 'Special Elite', sans-serif;
@@ -242,28 +237,34 @@ canvas.transparent {
     opacity: 0.5;
 }
 
-#dataset-buttons {
+#dataset-controls {
     position: absolute;
     left: 50%;
     bottom: 15%;
     transform: translateX(-50%);
     display: flex;
-    gap: 10px;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
     z-index: 2;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 2s ease, visibility 2s ease;
+}
+
+#dataset-controls.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+#dataset-buttons {
+    display: flex;
+    gap: 10px;
     flex-wrap: wrap;
     justify-content: center;
     padding: 0 16px;
     width: min(90vw, 600px);
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-    transition: opacity 2s ease, visibility 2s ease;
-}
-
-#dataset-buttons.hidden {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
 }
 
 .dataset-button {

@@ -33,7 +33,7 @@ class YearRangeSlider {
         labels.append(this.startLabel, this.endLabel);
         this.element.appendChild(labels);
 
-        container.appendChild(this.element);
+        container.insertBefore(this.element, container.firstChild);
         this.refresh();
     }
 

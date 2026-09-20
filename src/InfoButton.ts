@@ -16,13 +16,13 @@ class InfoButton {
 
     infoDivShowHide() {
         const infoDiv = document.querySelector('#info-div');
-        const datasetButtons = document.querySelector('#dataset-buttons');
+        const datasetControls = document.querySelector('#dataset-controls');
         const isVisible = infoDiv?.classList.toggle('show');
         const canvas = document.querySelector('canvas');
         canvas?.classList.toggle('transparent');
 
-        if (datasetButtons) {
-            datasetButtons.classList.toggle('hidden', infoDiv?.classList.contains('show') ?? false);
+        if (datasetControls) {
+            datasetControls.classList.toggle('hidden', infoDiv?.classList.contains('show') ?? false);
         }
 
         this.#button.toggle();

@@ -55,11 +55,13 @@ let yearRangeSlider: YearRangeSlider;
 let infoIcon;
 
 function createDateButtons(): void {
-    const existing = document.querySelector('#dataset-buttons');
-    if (existing) {
-        existing.remove();
-    }
     const container = document.querySelector(CONTAINER_DIV);
+    const controls = document.querySelector('#dataset-controls') || document.createElement('DIV');
+    controls.id = 'dataset-controls';
+    if (!controls.parentElement) {
+        container?.appendChild(controls);
+    }
+    document.querySelector('#dataset-buttons')?.remove();
     const buttons = document.createElement('DIV');
     buttons.id = 'dataset-buttons';
 
@@ -79,7 +81,7 @@ function createDateButtons(): void {
         buttons.appendChild(button);
     });
 
-    container?.appendChild(buttons);
+    controls.appendChild(buttons);
 }
 
 function updateDateButtons(): void {
@@ -170,17 +172,16 @@ function createHelix(): void {
     }
     const container = document.querySelector(CONTAINER_DIV);
     helix.createTitleDiv(container);
-    if (settings.yearSliderVisible && container) {
+    createDateButtons();
+    const controls = document.querySelector('#dataset-controls');
+    controls?.classList.toggle('hidden', !settings.yearRangeVisible);
+    if (settings.yearRangeVisible && controls) {
         if (yearRangeSlider) {
             yearRangeSlider.refresh();
         } else {
-            yearRangeSlider = new YearRangeSlider(container, settings);
+            yearRangeSlider = new YearRangeSlider(controls, settings);
         }
-    } else {
-        yearRangeSlider?.dispose();
-        yearRangeSlider = undefined;
     }
-    createDateButtons();
     updateInfoEndDate();
 }
 

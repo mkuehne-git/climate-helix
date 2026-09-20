@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.5.9
+
+* Group the year range slider and dataset selector under one visibility control.
+* Preserve selected years when switching datasets and keep the controls aligned on mobile.
+
 ## v0.5.8
 
 * Prepare the year range slider and configurable year ticks for release.

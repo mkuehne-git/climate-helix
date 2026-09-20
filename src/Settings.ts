@@ -45,7 +45,7 @@ const SETTINGS = {
             yearTickCount: 5,
             temperatureRingCount: 5,
         },
-        yearSliderVisible: true,
+        yearRangeVisible: true,
         geometry: {
             meshVisible: false,
             facesVisible: true,
@@ -221,10 +221,12 @@ class Settings {
 
     private resetYearRange(): void {
         const dataset = this.#datasets[SETTINGS.date];
+        const selectedFirstYear = this.#firstYear;
+        const selectedLastYear = this.#lastYear;
         this.#datasetFirstYear = dataset.firstYear;
         this.#datasetLastYear = dataset.lastYear;
-        this.#firstYear = this.#datasetFirstYear;
-        this.#lastYear = this.#datasetLastYear;
+        this.#firstYear = Math.max(this.#datasetFirstYear, Math.min(selectedFirstYear, this.#datasetLastYear));
+        this.#lastYear = Math.max(this.#firstYear, Math.min(selectedLastYear, this.#datasetLastYear));
     }
 
     get dateOptions(): string[] {
@@ -271,8 +273,8 @@ class Settings {
         return this.#datasetLastYear;
     }
 
-    get yearSliderVisible(): boolean {
-        return SETTINGS.view.yearSliderVisible;
+    get yearRangeVisible(): boolean {
+        return SETTINGS.view.yearRangeVisible;
     }
 
     setStartYear(year: number): void {
@@ -290,8 +292,8 @@ class Settings {
     createViewFolder() {
         const folder = this.#gui.addFolder("View");
         folder
-            .add(SETTINGS.view, 'yearSliderVisible')
-            .name('Year slider')
+            .add(SETTINGS.view, 'yearRangeVisible')
+            .name('Year range')
             .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
         this.createViewLegendFolder(folder);
         this.createViewGeometryFolder(folder);
