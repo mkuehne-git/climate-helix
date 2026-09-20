@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.5.10
+
+* Document the dataset selector, year range slider, and legend in the README.
+* Replace the README screenshot with a mobile, light-theme capture and add a second one showing the legend enabled.
+
 ## v0.5.9
 
 * Group the year range slider and dataset selector under one visibility control.

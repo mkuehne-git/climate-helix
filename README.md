@@ -16,6 +16,20 @@ The use of [OrbitControls](https://threejs.org/docs/#examples/en/controls/OrbitC
 
 The controller UI (Icon in the upper right corner) provides options to configure the image. Not only can you choose, which region of the world you want to be visualized. With the ***View*** menu item you can toggle the x/y/z axes, change the coloring, and adjust some parameters controlling the geometry. With the ***Capture*** menu you can create images and download them to your computer.
 
+# Dataset selector
+
+Climate Helix bundles multiple retrievals of the NASA GISS data (currently March 2023, October 2024 and August 2026). Buttons below the helix let you jump directly between these snapshots, and the same choice is available as a **Date** section in the settings panel. Switching datasets keeps your selected region and year range, clamping it to whatever years are available in the newly selected snapshot.
+
+# Year range slider
+
+A dual-handle slider below the helix lets you narrow the displayed years to any range within the selected dataset. Dragging either handle updates the start or end year and redraws the helix immediately. The slider itself can be shown or hidden with the **Year range** toggle under the ***View*** menu.
+
+# Legend
+
+![Climate-helix with legend](./src/images/climate-helix-legend.png)
+
+The ***View > Legend*** section in the settings panel adds optional reference axes around the helix: a **Year axis** marking the year range along the side, a **Temperature axis** of concentric rings labeling anomaly values from -1.0°C to +1.5°C, and a **Month axis** labeling Jan/Apr/Jul/Oct around the outer rim. The number of year ticks and temperature rings shown is configurable.
+
 # Keyboard
 
 |Key|Description|
