@@ -100,9 +100,7 @@ class ClimateHelix {
         const temperature = this.csv.getNumber(year, month + 1);
         if (temperature) {
             const radius = map(this.helixConfiguration.minT, this.helixConfiguration.maxT, this.helixConfiguration.minR, this.helixConfiguration.maxR, temperature);
-            const color = new THREE.Color();
-            temperature < 0 ? color.lerpColors(this.#zero, this.#cold, Math.abs(temperature)) :
-                color.lerpColors(this.#zero, this.#warm, temperature);
+            const color = temperatureColor(temperature, this.#cold, this.#zero, this.#warm);
             return {
                 sinX: sin[month],
                 cosX: cos[month],
@@ -193,4 +191,12 @@ function map(a: number, b: number, c: number, d: number, x: number) {
     return b - a === 0 ? (c + d) / 2 : ((x - a) * (d - c) / (b - a)) + c
 }
 
-export { ClimateHelix };
+/**
+ * Maps a temperature to the same cold/zero/warm gradient used by the helix.
+ */
+function temperatureColor(temperature: number, cold: THREE.Color, zero: THREE.Color, warm: THREE.Color): THREE.Color {
+    const color = new THREE.Color();
+    return temperature < 0 ? color.lerpColors(zero, cold, Math.abs(temperature)) : color.lerpColors(zero, warm, temperature);
+}
+
+export { ClimateHelix, temperatureColor };

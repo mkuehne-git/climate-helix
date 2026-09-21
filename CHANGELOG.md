@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.6.0
+
+* Add a "Colored rings" legend setting (on by default) that renders the temperature rings using the same cold/zero/warm gradient as the helix.
+* Color the month axis ticks and labels to match the outermost temperature ring, and color each temperature ring's label to match its ring.
+* Move temperature ring labels slightly below their rings for better separation.
+* Update the legend screenshot in the README.
+
 ## v0.5.10
 
 * Document the dataset selector, year range slider, and legend in the README.

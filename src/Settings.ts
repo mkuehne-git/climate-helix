@@ -44,6 +44,7 @@ const SETTINGS = {
             monthVisible: false,
             yearTickCount: 5,
             temperatureRingCount: 5,
+            temperatureRingsColored: true,
         },
         yearRangeVisible: true,
         geometry: {
@@ -257,6 +258,10 @@ class Settings {
         return Math.max(2, Math.min(10, Math.floor(SETTINGS.view.axes.temperatureRingCount)));
     }
 
+    get temperatureRingsColored(): boolean {
+        return SETTINGS.view.axes.temperatureRingsColored;
+    }
+
     get firstYear(): number {
         return this.#firstYear;
     }
@@ -328,6 +333,10 @@ class Settings {
             .max(10)
             .step(1)
             .name('Temperature rings')
+            .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
+        folder
+            .add(SETTINGS.view.axes, 'temperatureRingsColored')
+            .name('Colored rings')
             .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
         folder.close();
     }

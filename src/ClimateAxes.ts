@@ -1,8 +1,12 @@
 import * as THREE from 'three';
 import { Settings } from './Settings';
+import { temperatureColor } from './ClimateHelix';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const LABELED_MONTHS = new Set([0, 3, 6, 9]);
+const MIN_LEGEND_TEMPERATURE = -1;
+const MAX_LEGEND_TEMPERATURE = 1.5;
+const RING_LABEL_Z_OFFSET = 0.12;
 
 class ClimateAxes extends THREE.Group {
     private readonly lineMaterial: THREE.LineBasicMaterial;
@@ -23,7 +27,7 @@ class ClimateAxes extends THREE.Group {
             this.addTemperatureLegend(settings, height, radius, textColor, temperatureZ);
         }
         if (settings.showMonthAxis) {
-            this.addMonthAxis(radius, textColor, temperatureZ);
+            this.addMonthAxis(settings, radius, textColor, temperatureZ);
         }
     }
 
@@ -65,44 +69,53 @@ class ClimateAxes extends THREE.Group {
 
     private addTemperatureLegend(settings: Settings, height: number, radius: number, color: THREE.Color, centerZ: number): void {
         const circleCount = settings.temperatureRingCount;
-        const minTemperature = -1;
-        const maxTemperature = 1.5;
         const labelAngles = Array.from({ length: circleCount }, (_, index) => index * Math.PI * 2 / circleCount);
+        const labelZ = centerZ - RING_LABEL_Z_OFFSET;
         for (let index = 0; index < circleCount; index++) {
             const fraction = index / (circleCount - 1);
-            const temperature = minTemperature + fraction * (maxTemperature - minTemperature);
+            const temperature = MIN_LEGEND_TEMPERATURE + fraction * (MAX_LEGEND_TEMPERATURE - MIN_LEGEND_TEMPERATURE);
             const circleRadius = 0.4 + fraction * (radius - 0.4);
+            const ringColor = this.legendColor(settings, temperature, color);
             const points = [];
             for (let point = 0; point < 48; point++) {
                 const angle = point / 48 * Math.PI * 2;
                 points.push(new THREE.Vector3(Math.cos(angle) * circleRadius, Math.sin(angle) * circleRadius, centerZ));
             }
-            const ring = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({ color }));
+            const ring = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({ color: ringColor }));
             this.add(ring);
             const labelAngle = labelAngles[index];
             this.addLabel(
                 `${temperature >= 0 ? '+' : ''}${temperature.toFixed(2)}°C`,
-                new THREE.Vector3(Math.cos(labelAngle) * (circleRadius + 0.08), Math.sin(labelAngle) * (circleRadius + 0.08), centerZ),
-                color,
+                new THREE.Vector3(Math.cos(labelAngle) * (circleRadius + 0.08), Math.sin(labelAngle) * (circleRadius + 0.08), labelZ),
+                ringColor,
                 0.5,
                 0.14
             );
         }
     }
 
-    private addMonthAxis(radius: number, color: THREE.Color, z: number): void {
+    private addMonthAxis(settings: Settings, radius: number, color: THREE.Color, z: number): void {
         const outerRadius = radius + 0.08;
+        const monthColor = this.legendColor(settings, MAX_LEGEND_TEMPERATURE, color);
         for (let month = 0; month < MONTHS.length; month++) {
             const angle = month / MONTHS.length * Math.PI * 2;
             const innerRadius = radius;
             this.addLine([
                 [Math.cos(angle) * innerRadius, Math.sin(angle) * innerRadius, z],
                 [Math.cos(angle) * outerRadius, Math.sin(angle) * outerRadius, z]
-            ], new THREE.LineBasicMaterial({ color }));
+            ], new THREE.LineBasicMaterial({ color: monthColor }));
             if (LABELED_MONTHS.has(month)) {
-                this.addLabel(MONTHS[month], new THREE.Vector3(Math.cos(angle) * (outerRadius + 0.14), Math.sin(angle) * (outerRadius + 0.14), z), color, 0.4, 0.12);
+                this.addLabel(MONTHS[month], new THREE.Vector3(Math.cos(angle) * (outerRadius + 0.14), Math.sin(angle) * (outerRadius + 0.14), z), monthColor, 0.4, 0.12);
             }
         }
+    }
+
+    /**
+     * Colors legend elements to match the helix's cold/zero/warm gradient when
+     * the "Colored rings" setting is enabled; otherwise falls back to the plain text color.
+     */
+    private legendColor(settings: Settings, temperature: number, fallback: THREE.Color): THREE.Color {
+        return settings.temperatureRingsColored ? temperatureColor(temperature, settings.cold, settings.zero, settings.warm) : fallback;
     }
 
     private addLine(points: number[][], material: THREE.LineBasicMaterial): void {
