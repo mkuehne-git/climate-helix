@@ -6,13 +6,14 @@ import './css/lil-gui.css';
 
 import { SettingsButton } from "./SettingsButton";
 import { checkForPwaUpdates, showPwaStatus } from './PwaUpdate';
+import { GISSParser } from './GISSParser';
 
 type Dataset = { endDate: string, csv: Record<Showcase, string>, firstYear: number, lastYear: number };
 
-const datasetPaths: Record<string, { endDate: string, files: Record<Showcase, string> }> = {
-    '2026-09-16': { endDate: 'August 2026', files: { [Showcase.GLOBAL]: 'GLB.Ts+dSST.csv', [Showcase.NORTHERN_HEMISPHERE]: 'NH.Ts+dSST.csv', [Showcase.SOUTHERN_HEMISPHERE]: 'SH.Ts+dSST.csv' } },
-    '2024-10-22': { endDate: 'October 2024', files: { [Showcase.GLOBAL]: 'GLB.Ts+dSST.csv', [Showcase.NORTHERN_HEMISPHERE]: 'NH.Ts+dSST.csv', [Showcase.SOUTHERN_HEMISPHERE]: 'SH.Ts+dSST.csv' } },
-    '2023-09-03': { endDate: 'March 2023', files: { [Showcase.GLOBAL]: 'GLB.Ts+dSST.csv', [Showcase.NORTHERN_HEMISPHERE]: 'NH.Ts+dSST.csv', [Showcase.SOUTHERN_HEMISPHERE]: 'SH.Ts+dSST.csv' } },
+const datasetPaths: Record<string, { files: Record<Showcase, string> }> = {
+    '2026-09-16': { files: { [Showcase.GLOBAL]: 'GLB.Ts+dSST.csv', [Showcase.NORTHERN_HEMISPHERE]: 'NH.Ts+dSST.csv', [Showcase.SOUTHERN_HEMISPHERE]: 'SH.Ts+dSST.csv' } },
+    '2024-10-22': { files: { [Showcase.GLOBAL]: 'GLB.Ts+dSST.csv', [Showcase.NORTHERN_HEMISPHERE]: 'NH.Ts+dSST.csv', [Showcase.SOUTHERN_HEMISPHERE]: 'SH.Ts+dSST.csv' } },
+    '2023-09-03': { files: { [Showcase.GLOBAL]: 'GLB.Ts+dSST.csv', [Showcase.NORTHERN_HEMISPHERE]: 'NH.Ts+dSST.csv', [Showcase.SOUTHERN_HEMISPHERE]: 'SH.Ts+dSST.csv' } },
 };
 
 async function loadDatasets(): Promise<Record<string, Dataset>> {
@@ -29,7 +30,8 @@ async function loadDatasets(): Promise<Record<string, Dataset>> {
             .map((row) => row.split(',')[0].trim())
             .filter((year) => /^\d{4}$/.test(year))
             .map(Number));
-        return [date, { endDate: definition.endDate, csv, firstYear: Math.min(...years), lastYear: Math.max(...years) }] as const;
+        const endDate = new GISSParser(csv[Showcase.GLOBAL]).lastValidDate ?? '';
+        return [date, { endDate, csv, firstYear: Math.min(...years), lastYear: Math.max(...years) }] as const;
     }));
     return Object.fromEntries(entries);
 }

@@ -15,6 +15,8 @@ import * as THREE from "three";
  * 
  * @see https://data.giss.nasa.gov/gistemp/
  */
+const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
 class GISSParser {
     private _title: string | undefined;
     private _header: string[] | undefined;
@@ -56,6 +58,24 @@ class GISSParser {
     }
     get rows(): string[] {
         return this._rows || [];
+    }
+
+    /**
+     * The most recent "Month YYYY" for which this dataset has an actual (non-"***") value.
+     * GISS snapshots are retrieved mid-month, so the row for the current year is often
+     * still missing its most recent months.
+     */
+    get lastValidDate(): string | undefined {
+        for (let r = this.rows.length - 1; r >= 1; r--) {
+            const columns = this.rows[r].split(',');
+            const year = columns[0];
+            for (let month = 12; month >= 1; month--) {
+                if (!Number.isNaN(parseFloat(columns[month]))) {
+                    return `${MONTH_NAMES[month - 1]} ${year}`;
+                }
+            }
+        }
+        return undefined;
     }
 
 }

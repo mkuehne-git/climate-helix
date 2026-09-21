@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.6.1
+
+* Fix the info panel and helix title showing a mismatched end date for the 2024-10-22 dataset (labeled October, but the CSV's last actual value is September). The end date is now derived from the dataset itself instead of a hand-maintained string.
+
 ## v0.6.0
 
 * Add a "Colored rings" legend setting (on by default) that renders the temperature rings using the same cold/zero/warm gradient as the helix.
