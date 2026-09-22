@@ -165,7 +165,7 @@ function createHelix(): void {
         group.add(wireframeMesh);
     }
     if (settings.showYearAxis || settings.showTemperatureAxis || settings.showMonthAxis) {
-        climateAxes = new ClimateAxes(settings, helix.height, 1);
+        climateAxes = new ClimateAxes(settings, helix.selectedHeight, 1);
         group.add(climateAxes);
     }
     const container = document.querySelector(CONTAINER_DIV);

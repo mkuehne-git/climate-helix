@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.6.5
+
+* Scale the helix's z-axis (years) against the full span of the longest available dataset instead of the active dataset's own span, so a given calendar year renders at the same z position regardless of which dataset (or default full-range selection) is shown. Datasets shorter than the longest one now render proportionally shorter rather than being stretched to fill the full configured height. Prep work for future dataset-morph animations.
+
 ## v0.6.4
 
 * Replace the runtime `fetch()` of `public/assets/info.html` (and the version-query workaround added in v0.6.3) with a static `?raw` import of `src/info.html`. It's now bundled into the hashed JS chunk, so it cache-busts the same way the rest of the app already does, and the service worker has nothing left to mis-cache with `revision:null`.

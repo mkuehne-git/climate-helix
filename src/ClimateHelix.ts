@@ -80,14 +80,13 @@ class ClimateHelix {
         this.curve.forEach((p, index) => {
             x += (p.radius * p.cosX);
             y += (p.radius * p.sinX);
-            z += (index / cnt) * this.height;
+            z += (index / cnt) * this.selectedHeight;
         });
-        return new THREE.Vector3(x / cnt, y / cnt, z / cnt);
+        return new THREE.Vector3(x / cnt, y / cnt, z / cnt + this.zOffset);
     }
 
     private createGeometry(): HelixGeometry {
-        const datasetYears = this.settings.datasetLastYear - this.settings.datasetFirstYear + 1;
-        const tubeRadius = this.settings.radiusFactor * this.helixConfiguration.height / datasetYears;
+        const tubeRadius = this.settings.radiusFactor * this.yearHeight;
         const geometry = new HelixGeometry(new HelixCurve(this), this.settings.tubularSegments * (this.curve.length - 1), tubeRadius, this.settings.radialSegments, false);
         const vcolors = geometry.getAttribute('vColors');
         const colorAttribute = new THREE.BufferAttribute(new Float32Array(vcolors.array), 3)
@@ -114,6 +113,28 @@ class ClimateHelix {
     get height() {
         return this.helixConfiguration.height;
     }
+
+    /**
+     * The z-height of one calendar year, held constant across all datasets
+     * and year-range selections (based on the full span of the longest
+     * available dataset) so that a given year always renders at the same z
+     * position, regardless of which dataset or sub-range is shown.
+     */
+    get yearHeight(): number {
+        const globalSpan = this.settings.globalLastYear - this.settings.globalFirstYear;
+        return globalSpan > 0 ? this.helixConfiguration.height / globalSpan : this.helixConfiguration.height;
+    }
+
+    /** The z-height actually spanned by the currently selected year range. */
+    get selectedHeight(): number {
+        return this.yearHeight * (this.settings.lastYear - this.settings.firstYear);
+    }
+
+    /** The z-offset of the first selected year relative to the oldest year across all datasets. */
+    get zOffset(): number {
+        return this.yearHeight * (this.settings.firstYear - this.settings.globalFirstYear);
+    }
+
     /**
      * @returns the length of the curve in fraction of years
      */
@@ -163,7 +184,7 @@ class HelixCurve extends THREE.Curve<THREE.Vector3> {
 
         const x = r * Math.cos(phi);
         const y = r * Math.sin(phi);
-        const z = this.helix.height * t;
+        const z = this.helix.zOffset + this.helix.selectedHeight * t;
 
         return optionalTarget.set(x, y, z);
     }

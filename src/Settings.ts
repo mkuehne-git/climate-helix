@@ -280,6 +280,21 @@ class Settings {
         return this.#datasetLastYear;
     }
 
+    /**
+     * The earliest/latest year across *all* datasets, not just the active
+     * one. The helix scales its z-axis against this fixed range (rather
+     * than the active dataset's own range) so that a given calendar year
+     * renders at the same z position no matter which dataset is selected -
+     * important for morphing between datasets in future animations.
+     */
+    get globalFirstYear(): number {
+        return Math.min(...Object.values(this.#datasets).map((dataset) => dataset.firstYear));
+    }
+
+    get globalLastYear(): number {
+        return Math.max(...Object.values(this.#datasets).map((dataset) => dataset.lastYear));
+    }
+
     get yearRangeVisible(): boolean {
         return SETTINGS.view.yearRangeVisible;
     }
