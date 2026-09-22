@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.6.4
+
+* Replace the runtime `fetch()` of `public/assets/info.html` (and the version-query workaround added in v0.6.3) with a static `?raw` import of `src/info.html`. It's now bundled into the hashed JS chunk, so it cache-busts the same way the rest of the app already does, and the service worker has nothing left to mis-cache with `revision:null`.
+
 ## v0.6.3
 
 * Fix axis labels silently falling back to the default font on slower connections: canvas-drawn text needs the webfont file itself loaded before it's drawn, since (unlike CSS text) a canvas snapshot never redraws once the font arrives later. The font is now force-loaded before the scene is built.

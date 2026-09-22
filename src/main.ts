@@ -23,20 +23,10 @@ import { ClassMutationObserver } from './ClassMutationObserver';
 import { initPwaUpdate } from './PwaUpdate';
 import { YearRangeSlider } from './YearRangeSlider';
 
-// The info div
-//import infoDivAsString from '/assets/info.html?url&raw';
-// vite-plugin-pwa precaches this file with revision:null (it assumes files
-// under assets/ are already content-hashed, which this one isn't since it's
-// copied verbatim from public/). Without the version query, updates to this
-// file are invisible to the service worker's cache forever, and only the
-// very first-ever cached copy a client fetched is ever served again.
-const response = await fetch(`${import.meta.env.BASE_URL}assets/info.html?v=${APP_VERSION}`);
-
-if (!response.ok) {
-    throw new Error('Unable to load info.html');
-}
-
-const infoDivAsString = await response.text();
+// The info div. A static import (not a public/ asset fetched at runtime) so
+// it's bundled into the hashed JS chunk and cache-busts the same way the
+// rest of the app already does, instead of needing its own workaround.
+import infoDivAsString from './info.html?raw';
 
 const containerDiv = document.createElement('DIV');
 const CONTAINER_DIV = '.container-div';
