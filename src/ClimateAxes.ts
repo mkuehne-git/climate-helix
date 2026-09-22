@@ -84,9 +84,12 @@ class ClimateAxes extends THREE.Group {
             const ring = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({ color: ringColor }));
             this.add(ring);
             const labelAngle = labelAngles[index];
+            // Placed exactly on the ring (not offset outward): viewed
+            // top-down this overlaps the ring, but the Z offset below the
+            // ring's plane keeps it legible from the actual camera angle.
             this.addLabel(
                 `${temperature >= 0 ? '+' : ''}${temperature.toFixed(2)}°C`,
-                new THREE.Vector3(Math.cos(labelAngle) * (circleRadius + 0.08), Math.sin(labelAngle) * (circleRadius + 0.08), labelZ),
+                new THREE.Vector3(Math.cos(labelAngle) * circleRadius, Math.sin(labelAngle) * circleRadius, labelZ),
                 ringColor,
                 0.5,
                 0.14
@@ -128,7 +131,7 @@ class ClimateAxes extends THREE.Group {
         canvas.height = 64;
         const context = canvas.getContext('2d');
         if (!context) return;
-        context.font = '32px DejaVu Sans';
+        context.font = "32px 'Special Elite'";
         context.fillStyle = `#${color.getHexString()}`;
         context.textAlign = 'center';
         context.textBaseline = 'middle';

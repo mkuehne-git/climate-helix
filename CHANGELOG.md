@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.6.2
+
+* Enable the year, temperature, and month axes by default.
+* Render axis labels in the same font used by the title, year slider, and dataset selector.
+* Rotate the helix's initial orientation so the year axis renders vertically on the right side of the screen.
+* Position each temperature ring's label exactly on its ring (relying on the existing Z offset for legibility) instead of padding it outward.
+* Update the README screenshots to reflect the new default view.
+
 ## v0.6.1
 
 * Fix the info panel and helix title showing a mismatched end date for the 2024-10-22 dataset (labeled October, but the CSV's last actual value is September). The end date is now derived from the dataset itself instead of a hand-maintained string.

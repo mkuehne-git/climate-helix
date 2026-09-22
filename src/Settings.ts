@@ -41,9 +41,9 @@ const SETTINGS = {
     date: '2026-09-16',
     view: {
         axes: {
-            yearVisible: false,
-            temperatureVisible: false,
-            monthVisible: false,
+            yearVisible: true,
+            temperatureVisible: true,
+            monthVisible: true,
             yearTickCount: 5,
             temperatureRingCount: 5,
             temperatureRingsColored: true,

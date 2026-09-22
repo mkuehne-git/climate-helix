@@ -112,6 +112,9 @@ function init() {
     scene.add(camera);
 
     group = new THREE.Group();
+    // The helix and its axes are built with years running along local Z.
+    // Rotate so that axis renders vertically on the right side of the screen.
+    group.rotation.x = -Math.PI / 2;
     scene.add(group);
 
     const orbitControls = new OrbitControls(
