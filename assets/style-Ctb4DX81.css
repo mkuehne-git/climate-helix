@@ -298,7 +298,7 @@ canvas.transparent {
 }
 
 .toggle-div.info-button {
-    /* Above .chart-scene (z-index 2) so it stays usable - and visible - in
+    /* Above .full-scene (z-index 2) so it stays usable - and visible - in
        both scenes, per InfoButton needing to work while Charts is active. */
     z-index: 5;
     --div-size: calc(var(--settings-size)*1.5);
@@ -429,7 +429,7 @@ canvas.transparent {
    itself stays available in both scenes: besides the helix-specific View
    folder, it also hosts Screen capture and Imprint, which apply to either
    scene. */
-.container-div.scene-charts #dataset-controls {
+.container-div.scene-not-helix #dataset-controls {
     display: none;
 }
 
@@ -441,6 +441,15 @@ canvas.transparent {
     display: flex;
     gap: 4px;
     margin: 12px;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 2s ease, visibility 2s ease;
+}
+
+.scene-switcher.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 .scene-button {
@@ -464,6 +473,10 @@ canvas.transparent {
 
 .scene-button.active {
     opacity: 1;
+    cursor: default;
+}
+
+.scene-button:disabled {
     cursor: default;
 }
 
@@ -496,21 +509,27 @@ canvas.transparent {
     opacity: 1;
 }
 
-.chart-scene {
+.full-scene {
     display: none;
     position: absolute;
     inset: 0;
     z-index: 2;
     overflow-y: auto;
+    /* Always fully opaque, even while dimmed (see .full-scene-content below)
+       - the canvas keeps rendering behind every scene, so a translucent
+       *container* would let it bleed through instead of just receding. */
     background: var(--background-color);
-    padding: calc(var(--settings-size) + 16px) 16px 64px;
 }
 
-.chart-scene.show {
+.full-scene.show {
     display: block;
 }
 
-.chart-scene.transparent {
+.full-scene-content {
+    padding: calc(var(--settings-size) + 16px) 16px 64px;
+}
+
+.full-scene-content.transparent {
     opacity: 0.2;
     transition: opacity 2s;
 }
@@ -519,11 +538,22 @@ canvas.transparent {
     font-family: 'Special Elite', sans-serif;
     font-weight: normal;
     text-align: center;
-    margin: 0 0 24px;
+    margin: 48px 0 24px;
+}
+
+.chart-scene-heading:first-child {
+    margin-top: 0;
+}
+
+.chart-baseline-picker {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px 16px;
+    margin: 0 0 32px;
 }
 
 .chart-block {
-    max-width: 900px;
     margin: 0 auto 48px;
 }
 
@@ -536,6 +566,29 @@ canvas.transparent {
 
 .chart-plot-wrapper {
     position: relative;
+}
+
+.chart-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    margin: 0 0 4px;
+}
+
+.chart-option-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: fit-content;
+    font-family: 'Special Elite', sans-serif;
+    font-size: 0.8rem;
+    opacity: 0.75;
+    cursor: pointer;
+}
+
+.chart-option-toggle input {
+    margin: 0;
+    cursor: pointer;
 }
 
 .chart-svg {
@@ -581,6 +634,20 @@ canvas.transparent {
 .chart-series-line {
     fill: none;
     stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: opacity 0.2s ease;
+}
+
+/* Raw lines recede while their moving average overlays are shown, so the
+   smoothed trend reads clearly instead of competing with the monthly noise. */
+.chart-svg.showing-average .chart-series-line {
+    opacity: 0.3;
+}
+
+.chart-series-average {
+    fill: none;
+    stroke-width: 2.5;
     stroke-linecap: round;
     stroke-linejoin: round;
 }
