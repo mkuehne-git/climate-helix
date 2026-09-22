@@ -4,18 +4,18 @@ This file describes the planned improvements to Climate Helix. Work through the 
 
 ## Priorities
 
-1. **Charts.** Distinguish between the `ClimateHelix` view and a chart view. A button similar to the info-button shall perform the switch. If Charts view is active the ClimateHelix view shall be replaced by a chart view. The chart view shall render different charts.
+1. **Animations.** Add creation and dataset-morph animations only after the redraw lifecycle is stable. Prefer an explicit animation state in the scene controller so animation does not race with settings events or theme changes.
+2. **Automated deployment.** Move the commands in `deploy.sh` into a GitHub Actions workflow that installs dependencies, builds with the production base path, and publishes `dist/` to GitHub Pages. Keep deployment credentials and repository settings in GitHub configuration rather than source files. Retain `deploy.sh` until the workflow is proven.
 
-   - Time series charts, rendering all regions Global, Northern, South in one single chart. X-axis is time, Y-axis is temperature difference from mean.
-   - Render chart for each dataset.
-   - Create a chart showing the differences between the datasets - naively, you would expect only new data added, but they have altered historic
-     data too.
-   - All charts shall be rendering vertically one after the other, which may require vertical scrolling.
-   - There shall be a ChartControl, to be reused by all charts. The ChartControl could SVG or Canvas based - I don't want to add an additional, external
-     chart module.
-  
-2. **Animations.** Add creation and dataset-morph animations only after the redraw lifecycle is stable. Prefer an explicit animation state in the scene controller so animation does not race with settings events or theme changes.
-3. **Automated deployment.** Move the commands in `deploy.sh` into a GitHub Actions workflow that installs dependencies, builds with the production base path, and publishes `dist/` to GitHub Pages. Keep deployment credentials and repository settings in GitHub configuration rather than source files. Retain `deploy.sh` until the workflow is proven.
+## Completed
+
+### Charts (v0.7.0)
+
+Helix, Charts, and Diff are equal peer scenes, reachable via icon-buttons at the lower-left; the info button's content and the helix-only controls (snapshot/year picker) adapt to whichever scene is active.
+
+- **Charts** scene (`src/ChartsScene.ts`): one time-series chart per dataset snapshot, all three regions (Global, Northern HS, Southern HS) overlaid, annual-mean resolution.
+- **Diff** scene (`src/DiffChartsScene.ts`): a baseline-snapshot picker, then one chart per region showing how each other snapshot differs from that baseline - monthly resolution, so per-month revisions aren't averaged away like they would be in an annual mean. Each chart has a per-instance auto-scale toggle (rescales the y-axis to whichever legend series are checked) and a moving-average toggle (a centered 12-month trend line that dims the raw noisy series).
+- **ChartControl** (`src/ChartControl.ts`): the reusable, dependency-free SVG line chart - gridlines, legend checkboxes to show/hide series, a hover crosshair/tooltip, and a viewBox that tracks the container's real pixel width via `ResizeObserver` so wider charts show more axis detail instead of just scaling up.
 
 ## Infrastructure
 

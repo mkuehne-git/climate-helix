@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.7.1
+
+* Add a link to download the GISS CSV data to the Charts and Diff scenes' info panels, matching the one already in the Helix info panel.
+
+## v0.7.0
+
+* Add a Charts scene: a time-series chart per dataset snapshot, all three regions (Global, Northern HS, Southern HS) overlaid, reachable via a new icon-button scene switcher alongside the Helix view.
+* Add a Diff scene: pick a baseline snapshot and see how each other snapshot's monthly values differ from it, revealing that NASA revises historical data between snapshots rather than only appending new months. Includes a per-chart auto-scale toggle and a 12-month moving-average overlay.
+* Add `ChartControl`, a reusable, dependency-free SVG line chart with gridlines, a legend with per-series show/hide checkboxes, and a hover crosshair/tooltip. Its viewBox tracks the container's real pixel width, so wider charts show more axis detail instead of just scaling up.
+* Show scene-specific content in the info panel, and hide the helix-only snapshot/year controls while a chart scene is active; the settings panel (Screen capture, Imprint) stays available in every scene.
+* Fix a race where clicking the info button and a scene button in quick succession could briefly show two scenes overlaid at different opacities: the scene switcher is now genuinely disabled while the info panel is open, and the info panel now dims each scene's own content instead of the scene container, so the always-rendering helix canvas can no longer bleed through it.
+
 ## v0.6.5
 
 * Scale the helix's z-axis (years) against the full span of the longest available dataset instead of the active dataset's own span, so a given calendar year renders at the same z position regardless of which dataset (or default full-range selection) is shown. Datasets shorter than the longest one now render proportionally shorter rather than being stretched to fill the full configured height. Prep work for future dataset-morph animations.

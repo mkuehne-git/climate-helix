@@ -30,6 +30,20 @@ A dual-handle slider below the helix lets you narrow the displayed years to any 
 
 The ***View > Legend*** section in the settings panel adds optional reference axes around the helix: a **Year axis** marking the year range along the side, a **Temperature axis** of concentric rings labeling anomaly values from -1.0°C to +1.5°C, and a **Month axis** labeling Jan/Apr/Jul/Oct around the outer rim. The number of year ticks and temperature rings shown is configurable.
 
+# Charts
+
+Three icon-buttons at the lower-left switch between equal peer scenes: **Helix** (the 3D view described above), **Charts**, and **Diff**. The info button and settings panel stay available in every scene; the info panel's content follows whichever scene is active.
+
+* **Charts** renders one time-series chart per dataset snapshot, all three regions (Global, Northern HS, Southern HS) overlaid on a shared year axis.
+
+  ![Climate-helix charts](./src/images/climate-helix-charts.png)
+
+* **Diff** lets you pick a baseline snapshot, then shows one chart per region with a line for every other snapshot's monthly difference from that baseline - revealing that NASA revises historical data between snapshots, not just appends new months. Each chart has an **Auto-scale** toggle (rescales the y-axis to whichever lines are checked) and a **Moving average** toggle (overlays a smoothed 12-month trend and dims the raw line).
+
+  ![Climate-helix diff charts](./src/images/climate-helix-diff.png)
+
+* Every chart has a legend with a checkbox per series to show or hide it, and a hover crosshair with a tooltip showing exact values.
+
 # Keyboard
 
 |Key|Description|
