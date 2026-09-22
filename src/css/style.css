@@ -441,6 +441,15 @@ canvas.transparent {
     display: flex;
     gap: 4px;
     margin: 12px;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 2s ease, visibility 2s ease;
+}
+
+.scene-switcher.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 .scene-button {

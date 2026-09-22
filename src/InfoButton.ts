@@ -25,6 +25,7 @@ class InfoButton {
         if (datasetControls) {
             datasetControls.classList.toggle('hidden', infoDiv?.classList.contains('show') ?? false);
         }
+        document.querySelector('.scene-switcher')?.classList.toggle('hidden', infoDiv?.classList.contains('show') ?? false);
 
         this.#button.toggle();
         return isVisible;
