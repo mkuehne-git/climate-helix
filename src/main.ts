@@ -25,7 +25,12 @@ import { YearRangeSlider } from './YearRangeSlider';
 
 // The info div
 //import infoDivAsString from '/assets/info.html?url&raw';
-const response = await fetch(`${import.meta.env.BASE_URL}assets/info.html`);
+// vite-plugin-pwa precaches this file with revision:null (it assumes files
+// under assets/ are already content-hashed, which this one isn't since it's
+// copied verbatim from public/). Without the version query, updates to this
+// file are invisible to the service worker's cache forever, and only the
+// very first-ever cached copy a client fetched is ever served again.
+const response = await fetch(`${import.meta.env.BASE_URL}assets/info.html?v=${APP_VERSION}`);
 
 if (!response.ok) {
     throw new Error('Unable to load info.html');
@@ -234,6 +239,12 @@ function onWindowResize() {
 async function start() {
     settings = await Settings.create();
     initPwaUpdate();
+    // Canvas-drawn axis labels need the webfont file itself to be loaded
+    // before they render; otherwise the browser silently falls back to a
+    // default font for that one draw and never redraws it once the font
+    // arrives. Force-load it up front, especially important on slower
+    // mobile connections.
+    await document.fonts.load("32px 'Special Elite'").catch(() => undefined);
     init();
     switcher.initTheme();
 }

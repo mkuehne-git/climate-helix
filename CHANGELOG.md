@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.6.3
+
+* Fix axis labels silently falling back to the default font on slower connections: canvas-drawn text needs the webfont file itself loaded before it's drawn, since (unlike CSS text) a canvas snapshot never redraws once the font arrives later. The font is now force-loaded before the scene is built.
+* Fix the info panel's end date being stuck on a stale, pre-multi-dataset value ("October 2024") on installed PWAs. `assets/info.html` was being precached by the service worker with `revision:null`, which tells it the file is immutable and never needs to be re-fetched, so no update ever reached clients that had already cached it. The fetch now includes a version query so its URL changes with each release, the same way hashed JS/CSS chunks already do.
+
 ## v0.6.2
 
 * Enable the year, temperature, and month axes by default.
