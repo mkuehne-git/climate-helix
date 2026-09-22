@@ -24,12 +24,14 @@ import { initPwaUpdate } from './PwaUpdate';
 import { YearRangeSlider } from './YearRangeSlider';
 import { SceneSwitcher } from './SceneSwitcher';
 import { ChartsScene } from './ChartsScene';
+import { DiffChartsScene } from './DiffChartsScene';
 
 // The info div. A static import (not a public/ asset fetched at runtime) so
 // it's bundled into the hashed JS chunk and cache-busts the same way the
 // rest of the app already does, instead of needing its own workaround.
 import infoDivAsString from './info.html?raw';
 import chartInfoDivAsString from './chart-info.html?raw';
+import diffInfoDivAsString from './diff-info.html?raw';
 
 const containerDiv = document.createElement('DIV');
 const CONTAINER_DIV = '.container-div';
@@ -51,6 +53,7 @@ let capture: ScreenCapture;
 let yearRangeSlider: YearRangeSlider;
 let sceneSwitcher: SceneSwitcher;
 let chartsScene: ChartsScene;
+let diffChartsScene: DiffChartsScene;
 
 let infoIcon;
 
@@ -131,9 +134,9 @@ function init() {
         Helix: renderer.domElement
     }
     capture = new ScreenCapture(settings.captureSettings(), captureControls);
+    createSceneSwitcher();
     infoIcon = createInfoIcon();
     createInfoDiv();
-    createSceneSwitcher();
     document.body.addEventListener(Events.SCENE_CHANGED.toString(), onSceneChanged);
     Events.dispatchEvent(Events.THEME_CHANGED);
     animate();
@@ -143,21 +146,27 @@ function createSceneSwitcher(): void {
     const parentDiv = document.querySelector(CONTAINER_DIV) || document.body;
     sceneSwitcher = new SceneSwitcher(parentDiv);
     chartsScene = new ChartsScene(settings, sceneSwitcher);
+    diffChartsScene = new DiffChartsScene(settings, sceneSwitcher);
 }
 
 function onSceneChanged(): void {
     const helixActive = sceneSwitcher.scene === Scene.HELIX;
-    document.querySelector(CONTAINER_DIV)?.classList.toggle('scene-charts', !helixActive);
+    document.querySelector(CONTAINER_DIV)?.classList.toggle('scene-not-helix', !helixActive);
     updateInfoContent();
 }
+
+const INFO_CONTENT_BY_SCENE: Record<Scene, string> = {
+    [Scene.HELIX]: infoDivAsString,
+    [Scene.CHARTS]: chartInfoDivAsString,
+    [Scene.DIFF]: diffInfoDivAsString,
+};
 
 function updateInfoContent(): void {
     const infoDiv = document.querySelector('#info-div');
     if (!infoDiv) {
         return;
     }
-    const helixActive = sceneSwitcher.scene === Scene.HELIX;
-    infoDiv.innerHTML = helixActive ? infoDivAsString : chartInfoDivAsString;
+    infoDiv.innerHTML = INFO_CONTENT_BY_SCENE[sceneSwitcher.scene];
     updateInfoEndDate();
 }
 
@@ -214,7 +223,7 @@ function createHelix(): void {
 
 function createInfoIcon(): void {
     const parentDiv = document.querySelector(CONTAINER_DIV) || document.body;
-    const infoButton = new InfoButton(parentDiv);
+    const infoButton = new InfoButton(parentDiv, sceneSwitcher);
 }
 
 function createInfoDiv() {

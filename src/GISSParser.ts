@@ -81,6 +81,30 @@ class GISSParser {
     }
 
     /**
+     * Every monthly anomaly value, one point per calendar month, skipping
+     * "***" placeholders. `x` is the year plus a fraction for the month
+     * (Jan = .0, Dec = 11/12) so points plot on the same year-numbered axis
+     * the annual series uses.
+     */
+    get monthlySeries(): { x: number, value: number }[] {
+        const series: { x: number, value: number }[] = [];
+        for (let r = 1; r < this.rows.length; r++) {
+            const columns = this.rows[r].split(',');
+            const year = parseInt(columns[0], 10);
+            if (Number.isNaN(year)) {
+                continue;
+            }
+            for (let month = 1; month <= 12; month++) {
+                const value = parseFloat(columns[month]);
+                if (!Number.isNaN(value)) {
+                    series.push({ x: year + (month - 1) / 12, value });
+                }
+            }
+        }
+        return series;
+    }
+
+    /**
      * The most recent "Month YYYY" for which this dataset has an actual (non-"***") value.
      * GISS snapshots are retrieved mid-month, so the row for the current year is often
      * still missing its most recent months.

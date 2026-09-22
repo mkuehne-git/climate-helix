@@ -11,11 +11,11 @@ const REGION_COLOR_VARS: Record<Showcase, string> = {
 };
 
 /**
- * The Charts scene's content (Section A: one time-series chart per dataset
- * snapshot, all three regions overlaid). Built lazily on first activation and
- * then just shown/hidden on later scene switches, so CSV parsing and SVG
- * rendering happen once, not on every toggle - the same caching approach
- * {@link Imprint} already uses for its own content.
+ * The Charts scene's content: one time-series chart per dataset snapshot,
+ * all three regions overlaid. Built lazily on first activation and then just
+ * shown/hidden on later scene switches, so CSV parsing and SVG rendering
+ * happen once, not on every toggle - the same caching approach {@link
+ * Imprint} already uses for its own content.
  */
 class ChartsScene {
     #settings: Settings;
@@ -39,21 +39,28 @@ class ChartsScene {
     private build(): void {
         const parentDiv = document.querySelector('.container-div') || document.body;
         const container = document.createElement('div');
-        container.className = 'chart-scene';
+        container.className = 'full-scene';
         parentDiv.appendChild(container);
         this.#container = container;
+
+        // The info panel dims this inner wrapper, not `container` itself -
+        // `container`'s own background must stay fully opaque so it keeps
+        // fully hiding the (always-rendering) helix canvas behind it.
+        const content = document.createElement('div');
+        content.className = 'full-scene-content';
+        container.appendChild(content);
 
         const heading = document.createElement('h2');
         heading.className = 'chart-scene-heading';
         heading.textContent = 'Temperature anomaly per dataset snapshot';
-        container.appendChild(heading);
+        content.appendChild(heading);
 
         const xDomain: [number, number] = [this.#settings.globalFirstYear, this.#settings.globalLastYear];
         const datesNewestFirst = [...this.#settings.dateOptions].reverse();
         for (const date of datesNewestFirst) {
             const dataset = this.#settings.datasets[date];
             const block = document.createElement('div');
-            container.appendChild(block);
+            content.appendChild(block);
             const series = Object.values(Showcase).map((showcase) => ({
                 label: showcase,
                 color: REGION_COLOR_VARS[showcase],

@@ -7,6 +7,7 @@ export enum Showcase {
 export enum Scene {
     HELIX = 'helix',
     CHARTS = 'charts',
+    DIFF = 'diff',
 }
 
 export enum Events {

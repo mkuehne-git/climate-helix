@@ -109,13 +109,13 @@ div.toggle-div.clicked {
 
 div.themes {
     /* Theme is a global preference, usable in every scene - keep it above
-       .chart-scene (z-index 2). */
+       .full-scene (z-index 2). */
     z-index: 5;
     right: var(--settings-size);
 }
 
 .toggle-div.settings {
-    /* Stays usable in the Charts scene too - above .chart-scene (z-index 2). */
+    /* Stays usable in the Charts scene too - above .full-scene (z-index 2). */
     z-index: 5;
 }
 
@@ -128,7 +128,7 @@ div.themes {
 
 #gui {
     /* Stays usable in the Charts scene too (Screen capture, Imprint) - above
-       .chart-scene (z-index 2). */
+       .full-scene (z-index 2). */
     z-index: 5;
     position: absolute;
     top: var(--settings-size);

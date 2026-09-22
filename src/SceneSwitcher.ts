@@ -1,19 +1,21 @@
 import { Events, Scene } from "./Enums";
 import { icon as helixIcon } from "./icons/helix/helixIcon";
 import { icon as chartIcon } from "./icons/charts/chartIcon";
+import { icon as diffIcon } from "./icons/diff/diffIcon";
 
 type SceneDescriptor = { scene: Scene, label: string, icon: { id: string, svg: string } };
 
 const SCENES: SceneDescriptor[] = [
     { scene: Scene.HELIX, label: 'Helix', icon: helixIcon },
     { scene: Scene.CHARTS, label: 'Charts', icon: chartIcon },
+    { scene: Scene.DIFF, label: 'Diff', icon: diffIcon },
 ];
 
 /**
- * Two persistent icon-buttons that switch between the app's equal peer scenes
- * (Helix, Charts). Unlike {@link SVGToggleButton}, both icons stay visible at
- * all times and are independently clickable, so this owns its DOM directly
- * rather than reusing that toggle mechanism.
+ * Persistent icon-buttons that switch between the app's equal peer scenes
+ * (Helix, Charts, Diff). Unlike {@link SVGToggleButton}, all icons stay
+ * visible at all times and are independently clickable, so this owns its DOM
+ * directly rather than reusing that toggle mechanism.
  */
 class SceneSwitcher {
     #scene: Scene = Scene.HELIX;
@@ -33,6 +35,19 @@ class SceneSwitcher {
 
     get scene(): Scene {
         return this.#scene;
+    }
+
+    /**
+     * Disables (or re-enables) every scene button, including keyboard
+     * activation - CSS `pointer-events: none` alone only blocks the mouse,
+     * so a focused button could still be triggered with Enter/Space. Used
+     * while the info panel is open so a scene switch can't race its fade,
+     * which would otherwise briefly show two scenes at different alphas.
+     */
+    setEnabled(enabled: boolean): void {
+        this.#buttons.forEach((button) => {
+            button.disabled = !enabled;
+        });
     }
 
     private createButton(descriptor: SceneDescriptor): HTMLButtonElement {
