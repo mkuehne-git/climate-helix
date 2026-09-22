@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.7.2
+
+* Vertically center the scene-switcher icons on the info button instead of on the bottom edge, without moving the info button itself.
+
 ## v0.7.1
 
 * Add a link to download the GISS CSV data to the Charts and Diff scenes' info panels, matching the one already in the Helix info panel.
