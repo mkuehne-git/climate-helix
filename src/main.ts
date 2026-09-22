@@ -17,16 +17,19 @@ import { InfoButton } from './InfoButton';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { ClimateHelix } from './ClimateHelix';
 import { ClimateAxes } from './ClimateAxes';
-import { Events } from './Enums';
+import { Events, Scene } from './Enums';
 import { ScreenCapture, CaptureControls } from './ScreenCapture';
 import { ClassMutationObserver } from './ClassMutationObserver';
 import { initPwaUpdate } from './PwaUpdate';
 import { YearRangeSlider } from './YearRangeSlider';
+import { SceneSwitcher } from './SceneSwitcher';
+import { ChartsScene } from './ChartsScene';
 
 // The info div. A static import (not a public/ asset fetched at runtime) so
 // it's bundled into the hashed JS chunk and cache-busts the same way the
 // rest of the app already does, instead of needing its own workaround.
 import infoDivAsString from './info.html?raw';
+import chartInfoDivAsString from './chart-info.html?raw';
 
 const containerDiv = document.createElement('DIV');
 const CONTAINER_DIV = '.container-div';
@@ -46,6 +49,8 @@ let climateAxes: ClimateAxes;
 let observer: ClassMutationObserver;
 let capture: ScreenCapture;
 let yearRangeSlider: YearRangeSlider;
+let sceneSwitcher: SceneSwitcher;
+let chartsScene: ChartsScene;
 
 let infoIcon;
 
@@ -128,8 +133,32 @@ function init() {
     capture = new ScreenCapture(settings.captureSettings(), captureControls);
     infoIcon = createInfoIcon();
     createInfoDiv();
+    createSceneSwitcher();
+    document.body.addEventListener(Events.SCENE_CHANGED.toString(), onSceneChanged);
     Events.dispatchEvent(Events.THEME_CHANGED);
     animate();
+}
+
+function createSceneSwitcher(): void {
+    const parentDiv = document.querySelector(CONTAINER_DIV) || document.body;
+    sceneSwitcher = new SceneSwitcher(parentDiv);
+    chartsScene = new ChartsScene(settings, sceneSwitcher);
+}
+
+function onSceneChanged(): void {
+    const helixActive = sceneSwitcher.scene === Scene.HELIX;
+    document.querySelector(CONTAINER_DIV)?.classList.toggle('scene-charts', !helixActive);
+    updateInfoContent();
+}
+
+function updateInfoContent(): void {
+    const infoDiv = document.querySelector('#info-div');
+    if (!infoDiv) {
+        return;
+    }
+    const helixActive = sceneSwitcher.scene === Scene.HELIX;
+    infoDiv.innerHTML = helixActive ? infoDivAsString : chartInfoDivAsString;
+    updateInfoEndDate();
 }
 
 /** 

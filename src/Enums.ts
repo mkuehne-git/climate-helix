@@ -4,6 +4,11 @@ export enum Showcase {
     SOUTHERN_HEMISPHERE = 'Southern HS',
 }
 
+export enum Scene {
+    HELIX = 'helix',
+    CHARTS = 'charts',
+}
+
 export enum Events {
     SETTINGS_CHANGED = "settings-changed",
     CHANGE_THEME = "change-theme",
@@ -13,6 +18,8 @@ export enum Events {
     HIDE_IMPRINT = "hide-imprint",
 
     CREATE_HELIX = "create-helix",
+
+    SCENE_CHANGED = "scene-changed",
 }
 export namespace Events {
     export function dispatchEvent(event: Events): void {

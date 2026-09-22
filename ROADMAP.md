@@ -10,9 +10,12 @@ This file describes the planned improvements to Climate Helix. Work through the 
    - Render chart for each dataset.
    - Create a chart showing the differences between the datasets - naively, you would expect only new data added, but they have altered historic
      data too.
+   - All charts shall be rendering vertically one after the other, which may require vertical scrolling.
+   - There shall be a ChartControl, to be reused by all charts. The ChartControl could SVG or Canvas based - I don't want to add an additional, external
+     chart module.
   
-3. **Animations.** Add creation and dataset-morph animations only after the redraw lifecycle is stable. Prefer an explicit animation state in the scene controller so animation does not race with settings events or theme changes.
-1. **Automated deployment.** Move the commands in `deploy.sh` into a GitHub Actions workflow that installs dependencies, builds with the production base path, and publishes `dist/` to GitHub Pages. Keep deployment credentials and repository settings in GitHub configuration rather than source files. Retain `deploy.sh` until the workflow is proven.
+2. **Animations.** Add creation and dataset-morph animations only after the redraw lifecycle is stable. Prefer an explicit animation state in the scene controller so animation does not race with settings events or theme changes.
+3. **Automated deployment.** Move the commands in `deploy.sh` into a GitHub Actions workflow that installs dependencies, builds with the production base path, and publishes `dist/` to GitHub Pages. Keep deployment credentials and repository settings in GitHub configuration rather than source files. Retain `deploy.sh` until the workflow is proven.
 
 ## Infrastructure
 

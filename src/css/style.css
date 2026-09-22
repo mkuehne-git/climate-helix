@@ -16,6 +16,12 @@
 
     /* Size of the Settings icon, including empty margins around */
     --settings-size: 48px;
+
+    /* Categorical chart colors, validated for CVD-safety and contrast against
+       this theme's background (see ROADMAP.md Charts implementation notes). */
+    --chart-color-1: #2a78d6;
+    --chart-color-2: #eb6834;
+    --chart-color-3: #1baf7a;
 }
 
 :root .dark {
@@ -29,6 +35,10 @@
     --warm-color: red;
 
     --wireframe-color: var(--text-color);
+
+    --chart-color-1: #3987e5;
+    --chart-color-2: #d95926;
+    --chart-color-3: #199e70;
 }
 
 * {
@@ -230,6 +240,7 @@ canvas.transparent {
 }
 
 #version-info {
+    z-index: 5;
     position: absolute;
     right: 8px;
     bottom: 8px;
@@ -287,6 +298,9 @@ canvas.transparent {
 }
 
 .toggle-div.info-button {
+    /* Above .chart-scene (z-index 2) so it stays usable - and visible - in
+       both scenes, per InfoButton needing to work while Charts is active. */
+    z-index: 5;
     --div-size: calc(var(--settings-size)*1.5);
     bottom: -16px;
     left: calc(50% - calc(var(--div-size)/2));
@@ -301,7 +315,7 @@ canvas.transparent {
 
 
 #info-div {
-    z-index: 0;
+    z-index: 5;
     position: absolute;
     display: none;
     left: 3%;
@@ -315,7 +329,7 @@ canvas.transparent {
 }
 
 #info-div.show {
-    z-index: 0;
+    z-index: 5;
     display: block;
     opacity: 1.0;
 }
@@ -407,4 +421,239 @@ canvas.transparent {
 
 .pwa-status.info {
     background: rgba(33, 33, 33, 0.9);
+}
+
+/* The snapshot/year-range picker is helix-only navigation (it drives the 3D
+   z-axis) and is hidden while the Charts scene is active - the charts scene
+   gets its own dataset controls where it needs them. The settings button
+   itself stays available in both scenes: besides the helix-specific View
+   folder, it also hosts Screen capture and Imprint, which apply to either
+   scene. */
+.container-div.scene-charts #dataset-controls {
+    display: none;
+}
+
+.scene-switcher {
+    z-index: 5;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    gap: 4px;
+    margin: 12px;
+}
+
+.scene-button {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: var(--settings-size);
+    height: var(--settings-size);
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+    opacity: 0.55;
+}
+
+.scene-button:hover,
+.scene-button:focus-visible {
+    opacity: 0.85;
+}
+
+.scene-button.active {
+    opacity: 1;
+    cursor: default;
+}
+
+.scene-icon {
+    width: calc(var(--settings-size)/2);
+    height: calc(var(--settings-size)/2);
+    fill: var(--text-color);
+}
+
+.scene-tooltip {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-family: 'Special Elite', sans-serif;
+    font-size: 0.8rem;
+    padding: 3px 8px;
+    border-radius: 4px;
+    color: var(--text-color);
+    background: var(--background-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+}
+
+.scene-button:hover .scene-tooltip,
+.scene-button:focus-visible .scene-tooltip {
+    opacity: 1;
+}
+
+.chart-scene {
+    display: none;
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    overflow-y: auto;
+    background: var(--background-color);
+    padding: calc(var(--settings-size) + 16px) 16px 64px;
+}
+
+.chart-scene.show {
+    display: block;
+}
+
+.chart-scene.transparent {
+    opacity: 0.2;
+    transition: opacity 2s;
+}
+
+.chart-scene-heading {
+    font-family: 'Special Elite', sans-serif;
+    font-weight: normal;
+    text-align: center;
+    margin: 0 0 24px;
+}
+
+.chart-block {
+    max-width: 900px;
+    margin: 0 auto 48px;
+}
+
+.chart-title {
+    font-family: 'Special Elite', sans-serif;
+    font-size: 1rem;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.chart-plot-wrapper {
+    position: relative;
+}
+
+.chart-svg {
+    width: 100%;
+    display: block;
+}
+
+.chart-gridline {
+    stroke: var(--text-color);
+    stroke-opacity: 0.12;
+    stroke-width: 1;
+}
+
+.chart-axis {
+    stroke: var(--text-color);
+    stroke-opacity: 0.55;
+    stroke-width: 1;
+}
+
+.chart-zero-line {
+    stroke: var(--text-color);
+    stroke-opacity: 0.55;
+    stroke-width: 1;
+    stroke-dasharray: 4 3;
+}
+
+.chart-axis-label {
+    fill: var(--text-color);
+    opacity: 0.65;
+    font-family: 'DejaVu Sans', sans-serif;
+    font-size: 11px;
+}
+
+.chart-axis-label-y {
+    text-anchor: end;
+    dominant-baseline: middle;
+}
+
+.chart-axis-label-x {
+    text-anchor: middle;
+}
+
+.chart-series-line {
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.chart-crosshair {
+    stroke: var(--text-color);
+    stroke-opacity: 0.35;
+    stroke-width: 1;
+}
+
+.chart-hover-marker {
+    stroke: var(--background-color);
+    stroke-width: 1.5;
+}
+
+.chart-hover-capture {
+    fill: transparent;
+    cursor: crosshair;
+}
+
+.chart-tooltip {
+    position: absolute;
+    top: 4px;
+    transform: translateX(-50%);
+    min-width: 140px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: var(--text-color);
+    background: var(--background-color);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.chart-tooltip-title {
+    font-weight: bold;
+    margin-bottom: 2px;
+}
+
+.chart-tooltip-swatch {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    margin-right: 6px;
+}
+
+.chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px 20px;
+    margin-top: 10px;
+    font-size: 0.85rem;
+}
+
+.chart-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.chart-legend-checkbox {
+    width: 12px;
+    height: 12px;
+    margin: 0;
+    cursor: pointer;
+}
+
+.chart-legend-item:has(.chart-legend-checkbox:not(:checked)) {
+    opacity: 0.5;
 }

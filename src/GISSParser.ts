@@ -61,6 +61,26 @@ class GISSParser {
     }
 
     /**
+     * The annual mean anomaly (the "J-D" column) per year, skipping years without
+     * a valid annual mean yet (GISS writes "***" until all 12 months are in).
+     */
+    get annualSeries(): { year: number, value: number }[] {
+        const jdIndex = this.header.findIndex((column) => column.trim() === 'J-D');
+        if (jdIndex < 0) {
+            return [];
+        }
+        const series: { year: number, value: number }[] = [];
+        for (let r = 1; r < this.rows.length; r++) {
+            const year = parseInt(this.rows[r].split(',')[0], 10);
+            const value = this.getNumber(r, jdIndex);
+            if (!Number.isNaN(year) && !Number.isNaN(value)) {
+                series.push({ year, value });
+            }
+        }
+        return series;
+    }
+
+    /**
      * The most recent "Month YYYY" for which this dataset has an actual (non-"***") value.
      * GISS snapshots are retrieved mid-month, so the row for the current year is often
      * still missing its most recent months.

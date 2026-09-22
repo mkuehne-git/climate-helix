@@ -8,7 +8,7 @@ import { SettingsButton } from "./SettingsButton";
 import { checkForPwaUpdates, showPwaStatus } from './PwaUpdate';
 import { GISSParser } from './GISSParser';
 
-type Dataset = { endDate: string, csv: Record<Showcase, string>, firstYear: number, lastYear: number };
+export type Dataset = { endDate: string, csv: Record<Showcase, string>, firstYear: number, lastYear: number };
 
 const datasetPaths: Record<string, { files: Record<Showcase, string> }> = {
     '2026-09-16': { files: { [Showcase.GLOBAL]: 'GLB.Ts+dSST.csv', [Showcase.NORTHERN_HEMISPHERE]: 'NH.Ts+dSST.csv', [Showcase.SOUTHERN_HEMISPHERE]: 'SH.Ts+dSST.csv' } },
@@ -234,6 +234,10 @@ class Settings {
 
     get dateOptions(): string[] {
         return Object.keys(this.#datasets).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+    }
+
+    get datasets(): Readonly<Record<string, Dataset>> {
+        return this.#datasets;
     }
 
     get date(): string {

@@ -20,6 +20,7 @@ class InfoButton {
         const isVisible = infoDiv?.classList.toggle('show');
         const canvas = document.querySelector('canvas');
         canvas?.classList.toggle('transparent');
+        document.querySelector('.chart-scene')?.classList.toggle('transparent');
 
         if (datasetControls) {
             datasetControls.classList.toggle('hidden', infoDiv?.classList.contains('show') ?? false);
