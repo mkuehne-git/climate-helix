@@ -436,11 +436,15 @@ canvas.transparent {
 .scene-switcher {
     z-index: 5;
     position: absolute;
-    left: 0;
-    bottom: 0;
+    left: 12px;
+    /* Vertically centered on the info button, which must stay put: that
+       button's own center sits (--div-size/2 - 16px) above the container's
+       bottom edge (--div-size is --settings-size*1.5, see .toggle-div
+       .info-button), so this row's bottom is solved to center its
+       --settings-size-tall buttons on that same point. */
+    bottom: calc(var(--settings-size) * 0.25 - 16px);
     display: flex;
     gap: 4px;
-    margin: 12px;
     opacity: 1;
     visibility: visible;
     transition: opacity 2s ease, visibility 2s ease;
