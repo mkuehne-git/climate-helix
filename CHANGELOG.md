@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.8.4
+
+* Fix the x-axis of monthly charts having almost no labels when zoomed in: below about one tick per year, the Diff charts now use month-aligned ticks (every 1, 2, 3 or 6 months, January showing the year, other months their abbreviation) instead of only whole years.
+
 ## v0.8.3
 
 * Fix the failing "Dependency validation" CI build (and with it every Dependabot PR check): the gitignored, private `src/imprint-gen.js` is bundled through a static import since the v0.5.5 GitHub Pages fix, so CI now writes a stub module before building. The stub only lets the import resolve - the CI build is never deployed, and local/deploy builds still fail loudly when the real imprint file is missing.

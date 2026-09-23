@@ -314,14 +314,14 @@ class ChartControl {
         // detail (finer year gridlines) instead of just a bigger version of
         // the same handful of labels.
         const xTickCount = Math.max(6, Math.round(this.plotWidth / 150));
-        const xTicks = niceTicks(this.#xDomain[0], this.#xDomain[1], xTickCount, 1);
+        const xTicks = this.xTicks(xTickCount);
         for (const tick of xTicks) {
-            const x = this.scaleX(tick);
+            const x = this.scaleX(tick.x);
             const label = document.createElementNS(SVG_NS, 'text');
             label.setAttribute('x', String(x));
             label.setAttribute('y', String(HEIGHT - MARGIN.bottom + 18));
             label.setAttribute('class', 'chart-axis-label chart-axis-label-x');
-            label.textContent = String(Math.round(tick));
+            label.textContent = tick.label;
             svg.appendChild(label);
         }
 
@@ -332,6 +332,15 @@ class ChartControl {
         axis.setAttribute('y2', String(HEIGHT - MARGIN.bottom));
         axis.setAttribute('class', 'chart-axis');
         svg.appendChild(axis);
+    }
+
+    /** Whole-year ticks; a monthly chart zoomed in to fewer years than it has ticks switches to month-aligned ticks instead. */
+    private xTicks(count: number): { x: number, label: string }[] {
+        const [min, max] = this.#xDomain;
+        if (this.#config.xResolution === 'month' && (max - min) / count < 1) {
+            return monthTicks(min, max, count);
+        }
+        return niceTicks(min, max, count, 1).map((tick) => ({ x: tick, label: String(Math.round(tick)) }));
     }
 
     private drawZeroLine(svg: SVGSVGElement): void {
@@ -499,6 +508,20 @@ function decimalsForStep(step: number): number {
         return 0;
     }
     return Math.ceil(-Math.log10(step));
+}
+
+/** Month-aligned ticks (every 1, 2, 3 or 6 months) covering [min, max]; January shows the year, other months their abbreviation. */
+function monthTicks(min: number, max: number, count: number): { x: number, label: string }[] {
+    const rawStepMonths = ((max - min) * 12) / count;
+    const step = [1, 2, 3, 6].find((candidate) => candidate >= rawStepMonths) ?? 6;
+    const first = Math.ceil(min * 12 - 1e-6);
+    const last = Math.floor(max * 12 + 1e-6);
+    const ticks: { x: number, label: string }[] = [];
+    for (let k = Math.ceil(first / step) * step; k <= last; k += step) {
+        const month = ((k % 12) + 12) % 12;
+        ticks.push({ x: k / 12, label: month === 0 ? String(k / 12) : MONTH_ABBR[month] });
+    }
+    return ticks;
 }
 
 /** Generates ~`count` "nice" round tick values covering [min, max]. */
