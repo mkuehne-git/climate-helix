@@ -147,7 +147,6 @@ class DiffChartsScene {
                 series,
                 xDomain: this.xDomain(),
                 yZeroLine: true,
-                autoScaleVisible: true,
                 autoScaleDefault: true,
                 movingAverageVisible: true,
                 movingAverageDefault: true,

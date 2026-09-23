@@ -38,7 +38,7 @@ Three icon-buttons at the lower-left switch between equal peer scenes: **Helix**
 
   ![Climate-helix charts](./src/images/climate-helix-charts.png)
 
-* **Diff** lets you pick a baseline snapshot (shown by year, like the Helix dataset selector), then shows one chart per region with a line for every other snapshot's monthly difference from that baseline - revealing that NASA revises historical data between snapshots, not just appends new months. Each chart has an **Auto-scale** toggle (rescales the y-axis to whichever lines are checked) and a **Moving average** toggle (overlays a smoothed 12-month trend and dims the raw line). The same year range slider as in the Helix view zooms the x-axis of all charts.
+* **Diff** lets you pick a baseline snapshot (shown by year, like the Helix dataset selector), then shows one chart per region with a line for every other snapshot's monthly difference from that baseline - revealing that NASA revises historical data between snapshots, not just appends new months. The y-axis always rescales to the lines that are checked and the years in view, and each chart has a **Moving average** toggle (overlays a smoothed 12-month trend and dims the raw line). The same year range slider as in the Helix view zooms the x-axis of all charts.
 
   ![Climate-helix diff charts](./src/images/climate-helix-diff.png)
 

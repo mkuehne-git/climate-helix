@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.8.2
+
+* Make the chart lines thinner (raw lines 1.5px, or 1px while a moving average is overlaid; moving-average lines 1.75px) so the dense monthly Diff charts read more clearly.
+* Remove the Auto-scale checkbox from the Diff charts, since toggling it barely changed anything; the y-axis now always auto-scales to the checked legend lines and the years in view. `ChartControl` applies `autoScaleDefault` even when the checkbox isn't shown.
+
 ## v0.8.1
 
 * Fix the scene-switcher tooltips staying on screen for a long time on touch devices: hover styling now applies only on devices that can hover, since touch browsers keep `:hover` on the last tapped button.

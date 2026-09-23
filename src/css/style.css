@@ -649,7 +649,7 @@ canvas.transparent {
 
 .chart-series-line {
     fill: none;
-    stroke-width: 2;
+    stroke-width: 1.5;
     stroke-linecap: round;
     stroke-linejoin: round;
     transition: opacity 0.2s ease;
@@ -659,11 +659,12 @@ canvas.transparent {
    smoothed trend reads clearly instead of competing with the monthly noise. */
 .chart-svg.showing-average .chart-series-line {
     opacity: 0.3;
+    stroke-width: 1;
 }
 
 .chart-series-average {
     fill: none;
-    stroke-width: 2.5;
+    stroke-width: 1.75;
     stroke-linecap: round;
     stroke-linejoin: round;
 }

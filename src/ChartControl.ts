@@ -24,7 +24,7 @@ type ChartConfig = {
     xDomain?: [number, number],
     /** Shows the "Auto-scale" checkbox above the y-axis, letting the viewer rescale it to only the currently-checked legend series. */
     autoScaleVisible?: boolean,
-    /** The auto-scale checkbox's initial state. Only meaningful when `autoScaleVisible` is set. */
+    /** Whether the y-axis fits only the currently-checked legend series (and, with an explicit `xDomain`, only the years in view). Its initial state when the checkbox is shown; without the checkbox it stays fixed. */
     autoScaleDefault?: boolean,
     /** Shows the "Moving average" checkbox, overlaying a smoothed trend line per visible series and dimming the raw (noisy) lines. */
     movingAverageVisible?: boolean,
@@ -97,7 +97,7 @@ class ChartControl {
     private render(config: ChartConfig): void {
         this.#config = config;
         this.#visible = config.series.map(() => true);
-        this.#autoScale = config.autoScaleVisible ? (config.autoScaleDefault ?? false) : false;
+        this.#autoScale = config.autoScaleDefault ?? false;
         this.#movingAverage = config.movingAverageVisible ? (config.movingAverageDefault ?? false) : false;
 
         const title = document.createElement('div');
