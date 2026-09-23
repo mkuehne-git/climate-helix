@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.8.5
+
+* Document a possible future hardening of the imprint's text source in the roadmap (serving it on demand from a Turnstile-gated Cloudflare Worker instead of bundling it encrypted). No functional change.
+
 ## v0.8.4
 
 * Fix the x-axis of monthly charts having almost no labels when zoomed in: below about one tick per year, the Diff charts now use month-aligned ticks (every 1, 2, 3 or 6 months, January showing the year, other months their abbreviation) instead of only whole years.

@@ -24,6 +24,15 @@ Helix, Charts, and Diff are equal peer scenes, reachable via icon-buttons at the
 
 Deployment should move the commands in `deploy.sh` into GitHub Actions after the workflow can install dependencies, build with the production base path, and publish `dist/` to GitHub Pages. Keep `deploy.sh` until the replacement is proven, and keep credentials and repository settings in GitHub configuration.
 
+### Imprint text source (eventually)
+
+Today the imprint text ships as AES-encrypted text inside the gitignored `src/imprint-gen.js`, which `Imprint.ts` bundles and renders through `html2canvas`. The key necessarily ships in the public bundle too, so this only deters naive scrapers - and the CI build needs a stub for the missing file (see v0.8.3). The rendering (`html2canvas`: crisp, resizable, theme-aware) is worth keeping; only the text's source could be hardened:
+
+- Serve the text on demand from a small Cloudflare Worker behind a Turnstile "I'm human" check. `Imprint.ts` would `fetch()` it where `loadModule()` is called today and render it with `html2canvas` exactly as now.
+- The address would then never appear in the bundle or on `gh-pages`; the encryption code, the `imprint-gen.js` build dependency and the CI stub could be removed.
+- Cost: a free Cloudflare account, roughly an hour of setup, and a small external service that has to keep running. Handle an unreachable service gracefully (the imprint must stay reachable) and keep the imprint available offline in the PWA if that matters.
+- The address is still visible to any human who opens the imprint, which the legal requirement makes unavoidable; a c/o or imprint-service address is the only way to keep a home address off the web entirely.
+
 ### Animations
 
 - Create the ClimateHelix
