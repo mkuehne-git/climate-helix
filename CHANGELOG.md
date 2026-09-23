@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.8.0
+
+* Add a year range slider to the Diff scene that zooms the x-axis of all charts at once. The y-axis refits to the years in view when Auto-scale is on, and the zoom is kept when the baseline changes. `YearRangeSlider` no longer depends on `Settings` (the Helix passes its own range in), and `ChartControl` gained `setXDomain` and now clips lines to the plot area.
+* The Diff scene's baseline buttons now show only the year, matching the Helix dataset selector (the full date is in the tooltip).
+* Shorten chart titles: "2024-10-22 snapshot" in the Charts scene and "Global - baseline 2024-10-22" in the Diff scene.
+* Decorate the Diff scene icon with a small delta badge on the chart glyph.
+* Move the scene-switcher buttons closer together so they no longer overlap the info button's tap area on phones.
+* Fix the black border around the Imprint and Check for updates buttons in the Settings menu in light mode.
+
 ## v0.7.2
 
 * Vertically center the scene-switcher icons on the info button instead of on the bottom edge, without moving the info button itself.

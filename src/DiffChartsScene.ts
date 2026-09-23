@@ -3,6 +3,7 @@ import { Settings } from "./Settings";
 import { GISSParser } from "./GISSParser";
 import { ChartControl } from "./ChartControl";
 import { SceneSwitcher } from "./SceneSwitcher";
+import { YearRangeSlider } from "./YearRangeSlider";
 
 /** The three validated categorical chart colors, assigned positionally. */
 const CHART_COLOR_VARS = ['var(--chart-color-1)', 'var(--chart-color-2)', 'var(--chart-color-3)'];
@@ -21,7 +22,11 @@ class DiffChartsScene {
     #container: HTMLElement | undefined;
     #diffChartsContainer: HTMLElement | undefined;
     #baselineDate: string | undefined;
-    #xDomain: [number, number] = [0, 1];
+    #charts: ChartControl[] = [];
+    #startYear = 0;
+    #endYear = 0;
+    /** Newest monthly x value across all snapshots (e.g. 2026.58), so the full-range view doesn't end on an empty extra year. */
+    #dataMaxX = 0;
 
     constructor(settings: Settings, sceneSwitcher: SceneSwitcher) {
         this.#settings = settings;
@@ -43,7 +48,12 @@ class DiffChartsScene {
         container.className = 'full-scene';
         parentDiv.appendChild(container);
         this.#container = container;
-        this.#xDomain = [this.#settings.globalFirstYear, this.#settings.globalLastYear];
+        this.#startYear = this.#settings.globalFirstYear;
+        this.#endYear = this.#settings.globalLastYear;
+        this.#dataMaxX = Math.max(...this.#settings.dateOptions.map((date) => {
+            const series = new GISSParser(this.#settings.datasets[date].csv[Showcase.GLOBAL]).monthlySeries;
+            return series[series.length - 1]?.x ?? 0;
+        }));
 
         // The info panel dims this inner wrapper, not `container` itself -
         // `container`'s own background must stay fully opaque so it keeps
@@ -57,9 +67,29 @@ class DiffChartsScene {
         heading.textContent = 'Differences between dataset snapshots';
         content.appendChild(heading);
 
+        const controls = document.createElement('div');
+        controls.className = 'chart-scene-controls';
+        content.appendChild(controls);
+
+        const scene = this;
+        new YearRangeSlider(controls, {
+            min: this.#settings.globalFirstYear,
+            max: this.#settings.globalLastYear,
+            get start() { return scene.#startYear; },
+            get end() { return scene.#endYear; },
+            setStart: (year) => {
+                this.#startYear = Math.max(this.#settings.globalFirstYear, Math.min(year, this.#endYear));
+                this.applyXDomain();
+            },
+            setEnd: (year) => {
+                this.#endYear = Math.min(this.#settings.globalLastYear, Math.max(year, this.#startYear));
+                this.applyXDomain();
+            },
+        });
+
         const picker = document.createElement('div');
         picker.className = 'chart-baseline-picker';
-        content.appendChild(picker);
+        controls.appendChild(picker);
 
         const dates = this.#settings.dateOptions;
         this.#baselineDate = this.#baselineDate ?? dates[dates.length - 1];
@@ -68,7 +98,8 @@ class DiffChartsScene {
             const button = document.createElement('button');
             button.type = 'button';
             button.className = 'dataset-button';
-            button.textContent = date;
+            button.textContent = String(new Date(date).getFullYear());
+            button.title = date;
             button.classList.toggle('active', date === this.#baselineDate);
             button.addEventListener('click', () => {
                 if (this.#baselineDate === date) {
@@ -91,6 +122,8 @@ class DiffChartsScene {
         if (!this.#diffChartsContainer || !this.#baselineDate) {
             return;
         }
+        this.#charts.forEach((chart) => chart.dispose());
+        this.#charts = [];
         this.#diffChartsContainer.innerHTML = '';
         const baseline = this.#baselineDate;
         const dates = this.#settings.dateOptions;
@@ -109,18 +142,28 @@ class DiffChartsScene {
 
             const block = document.createElement('div');
             this.#diffChartsContainer.appendChild(block);
-            new ChartControl(block, {
-                title: `${showcase} - relative to the ${baseline} baseline`,
+            this.#charts.push(new ChartControl(block, {
+                title: `${showcase} - baseline ${baseline}`,
                 series,
-                xDomain: this.#xDomain,
+                xDomain: this.xDomain(),
                 yZeroLine: true,
                 autoScaleVisible: true,
                 autoScaleDefault: true,
                 movingAverageVisible: true,
                 movingAverageDefault: true,
                 xResolution: 'month',
-            });
+            }));
         }
+    }
+
+    /** The selected years are inclusive, so the axis runs to the end of the end year - capped at the newest data. */
+    private xDomain(): [number, number] {
+        return [this.#startYear, Math.min(this.#endYear + 1, this.#dataMaxX)];
+    }
+
+    private applyXDomain(): void {
+        const domain = this.xDomain();
+        this.#charts.forEach((chart) => chart.setXDomain(domain));
     }
 
     /** Monthly resolution (not the annual mean) so per-month revisions aren't averaged away. */

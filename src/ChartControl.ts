@@ -11,6 +11,7 @@ const DEFAULT_WIDTH = 800;
 const HEIGHT = 320;
 const MARGIN = { top: 16, right: 16, bottom: 34, left: 52 };
 const PLOT_HEIGHT = HEIGHT - MARGIN.top - MARGIN.bottom;
+let nextClipId = 0;
 
 type ChartPoint = { x: number, y: number };
 type ChartSeries = { label: string, color: string, points: ChartPoint[] };
@@ -61,6 +62,7 @@ class ChartControl {
     #yDomain: [number, number] = [0, 1];
     #width = DEFAULT_WIDTH;
     #resizeObserver: ResizeObserver;
+    #clipId = `chart-clip-${nextClipId++}`;
     #pointerMoveHandler = (event: PointerEvent) => this.handlePointerMove(event);
     #pointerLeaveHandler = () => this.hideHover();
 
@@ -77,6 +79,12 @@ class ChartControl {
     update(config: ChartConfig): void {
         this.#container.innerHTML = '';
         this.render(config);
+    }
+
+    /** Zooms the x-axis, keeping the legend, toggles and hover wiring as they are. */
+    setXDomain(xDomain: [number, number]): void {
+        this.#config = { ...this.#config, xDomain };
+        this.redrawPlot();
     }
 
     dispose(): void {
@@ -189,6 +197,19 @@ class ChartControl {
         this.computeDomains();
         this.#svg.innerHTML = '';
 
+        // An explicit x-domain can be narrower than the data (zoomed), so
+        // lines must not spill over the axis labels. Padded by 2px so a line
+        // running exactly to the plot edge keeps its full stroke width.
+        const clip = document.createElementNS(SVG_NS, 'clipPath');
+        clip.setAttribute('id', this.#clipId);
+        const clipRect = document.createElementNS(SVG_NS, 'rect');
+        clipRect.setAttribute('x', String(MARGIN.left - 2));
+        clipRect.setAttribute('y', String(MARGIN.top));
+        clipRect.setAttribute('width', String(this.plotWidth + 4));
+        clipRect.setAttribute('height', String(PLOT_HEIGHT));
+        clip.appendChild(clipRect);
+        this.#svg.appendChild(clip);
+
         this.drawGrid(this.#svg);
         if (this.#config.yZeroLine) {
             this.drawZeroLine(this.#svg);
@@ -216,11 +237,15 @@ class ChartControl {
 
     private computeDomains(): void {
         const xValueSet = new Set<number>();
+        const explicitDomain = this.#config.xDomain;
         let yMin = Infinity;
         let yMax = -Infinity;
         this.#config.series.forEach((series, index) => {
             const includeInYRange = !this.#autoScale || this.#visible[index];
             for (const point of series.points) {
+                if (explicitDomain && (point.x < explicitDomain[0] || point.x > explicitDomain[1])) {
+                    continue;
+                }
                 xValueSet.add(point.x);
                 if (includeInYRange) {
                     yMin = Math.min(yMin, point.y);
@@ -289,7 +314,7 @@ class ChartControl {
         // detail (finer year gridlines) instead of just a bigger version of
         // the same handful of labels.
         const xTickCount = Math.max(6, Math.round(this.plotWidth / 150));
-        const xTicks = niceTicks(this.#xDomain[0], this.#xDomain[1], xTickCount);
+        const xTicks = niceTicks(this.#xDomain[0], this.#xDomain[1], xTickCount, 1);
         for (const tick of xTicks) {
             const x = this.scaleX(tick);
             const label = document.createElementNS(SVG_NS, 'text');
@@ -343,6 +368,7 @@ class ChartControl {
         path.setAttribute('d', d);
         path.setAttribute('class', className);
         path.setAttribute('stroke', color);
+        path.setAttribute('clip-path', `url(#${this.#clipId})`);
         svg.appendChild(path);
         return path;
     }
@@ -476,7 +502,7 @@ function decimalsForStep(step: number): number {
 }
 
 /** Generates ~`count` "nice" round tick values covering [min, max]. */
-function niceTicks(min: number, max: number, count: number): number[] {
+function niceTicks(min: number, max: number, count: number, minStep = 0): number[] {
     if (min === max) {
         return [min];
     }
@@ -484,7 +510,7 @@ function niceTicks(min: number, max: number, count: number): number[] {
     const rawStep = span / count;
     const magnitude = Math.pow(10, Math.floor(Math.log10(rawStep)));
     const residual = rawStep / magnitude;
-    const step = (residual > 5 ? 10 : residual > 2 ? 5 : residual > 1 ? 2 : 1) * magnitude;
+    const step = Math.max((residual > 5 ? 10 : residual > 2 ? 5 : residual > 1 ? 2 : 1) * magnitude, minStep);
     const start = Math.ceil(min / step) * step;
     const ticks: number[] = [];
     for (let value = start; value <= max + step * 1e-6; value += step) {

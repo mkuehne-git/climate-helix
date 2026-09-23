@@ -215,7 +215,14 @@ function createHelix(): void {
         if (yearRangeSlider) {
             yearRangeSlider.refresh();
         } else {
-            yearRangeSlider = new YearRangeSlider(controls, settings);
+            yearRangeSlider = new YearRangeSlider(controls, {
+                get min() { return settings.datasetFirstYear; },
+                get max() { return settings.datasetLastYear; },
+                get start() { return settings.firstYear; },
+                get end() { return settings.lastYear; },
+                setStart: (year) => { settings.setStartYear(year); Events.dispatchEvent(Events.CREATE_HELIX); },
+                setEnd: (year) => { settings.setEndYear(year); Events.dispatchEvent(Events.CREATE_HELIX); },
+            });
         }
     }
     updateInfoEndDate();

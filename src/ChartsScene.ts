@@ -67,7 +67,7 @@ class ChartsScene {
                 points: new GISSParser(dataset.csv[showcase]).annualSeries.map((entry) => ({ x: entry.year, y: entry.value })),
             }));
             new ChartControl(block, {
-                title: `${date} snapshot (through ${dataset.endDate})`,
+                title: `${date} snapshot`,
                 series,
                 xDomain,
             });

@@ -21,7 +21,8 @@
 }
 
 .lil-gui {
-    background-color:  #fff;
+    /* lil-gui paints .lil-root with this variable, so override it rather than background-color. */
+    --background-color: #fff;
     --text-color: var(--text-color);
     --title-background-color: #e1e1e1;
     --title-text-color: var(--text-color);
@@ -35,8 +36,7 @@
 }
 
 .dark .lil-gui {
-    /* --background-color: var(--background-color); */
-    background-color: #212121;
+    --background-color: #212121;
     --text-color: var(--text-color);
     --title-background-color: #111111;
     --title-text-color: var(--text-color);
