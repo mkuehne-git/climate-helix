@@ -269,7 +269,8 @@ canvas.transparent {
     pointer-events: none;
 }
 
-#dataset-buttons {
+#dataset-buttons,
+.chart-baseline-picker {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
@@ -436,7 +437,7 @@ canvas.transparent {
 .scene-switcher {
     z-index: 5;
     position: absolute;
-    left: 12px;
+    left: 8px;
     /* Vertically centered on the info button, which must stay put: that
        button's own center sits (--div-size/2 - 16px) above the container's
        bottom edge (--div-size is --settings-size*1.5, see .toggle-div
@@ -444,7 +445,7 @@ canvas.transparent {
        --settings-size-tall buttons on that same point. */
     bottom: calc(var(--settings-size) * 0.25 - 16px);
     display: flex;
-    gap: 4px;
+    gap: 0;
     opacity: 1;
     visibility: visible;
     transition: opacity 2s ease, visibility 2s ease;
@@ -460,7 +461,8 @@ canvas.transparent {
     position: relative;
     display: grid;
     place-items: center;
-    width: var(--settings-size);
+    /* Narrower than tall so the row stays clear of the centered info button on phones. */
+    width: calc(var(--settings-size) * 5 / 6);
     height: var(--settings-size);
     padding: 0;
     border: none;
@@ -549,11 +551,11 @@ canvas.transparent {
     margin-top: 0;
 }
 
-.chart-baseline-picker {
+.chart-scene-controls {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px 16px;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
     margin: 0 0 32px;
 }
 
