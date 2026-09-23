@@ -472,9 +472,20 @@ canvas.transparent {
     opacity: 0.55;
 }
 
-.scene-button:hover,
 .scene-button:focus-visible {
     opacity: 0.85;
+}
+
+/* Touch screens keep :hover on the last tapped element, which would leave the
+   tooltip stuck on screen - only real pointers get the hover styling. */
+@media (hover: hover) {
+    .scene-button:hover {
+        opacity: 0.85;
+    }
+
+    .scene-button:hover .scene-tooltip {
+        opacity: 1;
+    }
 }
 
 .scene-button.active {
@@ -510,7 +521,6 @@ canvas.transparent {
     transition: opacity 0.15s ease;
 }
 
-.scene-button:hover .scene-tooltip,
 .scene-button:focus-visible .scene-tooltip {
     opacity: 1;
 }

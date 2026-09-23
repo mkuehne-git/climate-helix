@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.8.1
+
+* Fix the scene-switcher tooltips staying on screen for a long time on touch devices: hover styling now applies only on devices that can hover, since touch browsers keep `:hover` on the last tapped button.
+* Sync the root version in `package-lock.json` with `package.json` (it had been stale at 0.4.4).
+
 ## v0.8.0
 
 * Add a year range slider to the Diff scene that zooms the x-axis of all charts at once. The y-axis refits to the years in view when Auto-scale is on, and the zoom is kept when the baseline changes. `YearRangeSlider` no longer depends on `Settings` (the Helix passes its own range in), and `ChartControl` gained `setXDomain` and now clips lines to the plot area.
