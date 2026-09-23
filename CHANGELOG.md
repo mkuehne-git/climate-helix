@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.8.3
+
+* Fix the failing "Dependency validation" CI build (and with it every Dependabot PR check): the gitignored, private `src/imprint-gen.js` is bundled through a static import since the v0.5.5 GitHub Pages fix, so CI now writes a stub module before building. The stub only lets the import resolve - the CI build is never deployed, and local/deploy builds still fail loudly when the real imprint file is missing.
+
 ## v0.8.2
 
 * Make the chart lines thinner (raw lines 1.5px, or 1px while a moving average is overlaid; moving-average lines 1.75px) so the dense monthly Diff charts read more clearly.
