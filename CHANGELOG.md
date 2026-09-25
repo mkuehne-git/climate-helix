@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.9.2
+
+* Add unit tests with Vitest (`npm test`), phase 1 of `TESTING.md`: the GISS parser against every bundled snapshot and region, the chart tick and moving-average math, and the shared year range logic, including regression tests for earlier fixes. To make this testable, the chart math moves from `ChartControl.ts` to `chartMath.ts`, and the year range logic from `Settings` to a new `YearRange` class. No functional change.
+* Note in `CLAUDE.md` that Node.js must move to a stable LTS release (locally Node 23, in CI Node 20), which Vitest 5 and the current npm already require.
+
 ## v0.9.1
 
 * Add `TESTING.md`, the plan for automated tests: Vitest unit and component tests (also in CI) and local Playwright end-to-end tests in Chromium and Firefox. No functional change.

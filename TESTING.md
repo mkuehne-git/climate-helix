@@ -11,17 +11,19 @@ This file describes the planned automated tests for Climate Helix. Work through 
 
 Vitest reuses `vite.config.ts`, so `?raw` imports, TypeScript and asset handling work in tests the same way as in the app. Firefox is part of the end-to-end runs because it is the owner's main browser and has shown rendering differences before.
 
-Planned scripts:
+Scripts:
 
 ```sh
 npm test            # Vitest, single run
 npm run test:watch  # Vitest in watch mode
-npm run test:e2e    # Playwright against a production build (vite preview)
+npm run test:e2e    # Playwright against a production build (vite preview) - planned, phase 3
 ```
+
+Vitest runs the files in `test/` (`test.include` in `vite.config.ts`); the end-to-end tests will live in `e2e/`. Vitest 5 needs Node 22.12+, 24 or 26+ (it also runs on Node 23 locally), so the CI workflow in phase 4 must not keep the Node 20 used by the dependency-check workflow.
 
 `src/imprint-gen.js` is private and gitignored. Tests that load `Imprint.ts` mock it; CI keeps writing the same stub as the dependency-check workflow.
 
-## Phase 1: Pure logic
+## Phase 1: Pure logic (done, v0.9.2)
 
 No DOM needed. Two small refactors make the logic testable without changing behavior; the tests in this phase prove that.
 
@@ -36,7 +38,7 @@ No DOM needed. Two small refactors make the logic testable without changing beha
 2. **Chart math.** Refactor: move `niceTicks`, `monthTicks`, `movingAverage`, `decimalsForStep` and `formatMonthYear` from `ChartControl.ts` into an exported `chartMath.ts`.
    - Tick steps and labels for wide and narrow ranges.
    - Month-aligned ticks when zoomed in below about one tick per year (regression for v0.8.4).
-   - Moving average at the series edges and with gaps.
+   - Moving average at the series edges.
 
 3. **Year range.** Refactor: extract the clamp, request and reset logic from the `Settings` singleton (which also builds lil-gui and fetches CSVs) into a small pure `YearRange` class that `Settings` delegates to.
    - Start never exceeds end, and both stay within the dataset's years.
@@ -81,7 +83,7 @@ No screenshot comparisons of the helix: WebGL output varies too much between mac
 
 Add a workflow that runs on every push and pull request:
 
-1. `npm ci`
+1. `npm ci` (Node 22 or 24)
 2. Stub `src/imprint-gen.js`
 3. `npm test`
 4. `npm run build`

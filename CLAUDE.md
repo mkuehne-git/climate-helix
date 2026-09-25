@@ -14,11 +14,21 @@ npm run dev       # start the Vite development server
 npm run dev:http   # start Vite over HTTP when the local HTTPS certificate is rejected
 npm run build     # create a production build in dist/
 npm run serve     # preview the production build
+npm test          # run the unit tests (Vitest)
+npm run test:watch # run the unit tests in watch mode
 ```
 
 The default development server uses HTTPS with a local self-signed certificate. If the browser cannot trust that certificate, use `npm run dev:http` and open `http://127.0.0.1:5173/` instead.
 
-There is currently no automated test or lint script; the planned tests are described in `TESTING.md`. After changes, run `npm run build` and manually verify the app in a browser. Check the helix, region selector, theme switcher, settings controls, info/imprint dialogs, and screen capture behavior when those areas are affected.
+### Node.js version
+
+Node.js needs updating to a stable LTS release; this is easy to forget. The local setup still runs Node 23 (an odd-numbered, short-lived release that is out of support), and the GitHub workflows use Node 20. Vitest 5 and the current npm already require Node 22.12+, 24 or 26+, and npm 11.4.1 on Node 23 crashed while installing Vitest (it was installed via `npx npm@latest` instead).
+
+- Use the current Active LTS (Node 24 as of September 2026) locally, via nvm, and in `node-version` of every workflow in `.github/workflows/`. Keep them the same.
+- When adding or upgrading a dev dependency, check its `engines` field against that version.
+- Revisit this when a newer LTS starts (Node 26 in October 2026) and when the used one reaches end of life.
+
+Unit tests live in `test/` and run with `npm test`; the test plan and its remaining phases are described in `TESTING.md`. There is no lint script. After changes, run `npm test` and `npm run build`, and manually verify the app in a browser. Check the helix, region selector, theme switcher, settings controls, info/imprint dialogs, and screen capture behavior when those areas are affected.
 
 ## Versioning
 
@@ -72,7 +82,7 @@ Dynamic imports of local modules must remain analyzable by Vite. Do not use `@vi
 
 At minimum:
 
-1. Run `npm run build`.
+1. Run `npm test` and `npm run build`.
 2. Run `npm run dev` and open the reported URL.
 3. Exercise the affected interaction in both light and dark themes where relevant.
 4. Check browser console errors and verify that the PWA/service worker still registers for build-related changes.

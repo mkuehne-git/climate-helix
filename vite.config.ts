@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import basicSsl from '@vitejs/plugin-basic-ssl'
 import { VitePWA } from 'vite-plugin-pwa';
 import { defineConfig } from 'vite';
@@ -68,5 +69,9 @@ export default defineConfig({
     },
     define: {
         APP_VERSION: JSON.stringify(process.env.npm_package_version),
+    },
+    test: {
+        // Playwright's end-to-end tests will live in e2e/ and must not be picked up here.
+        include: ['test/**/*.test.ts'],
     },
 });

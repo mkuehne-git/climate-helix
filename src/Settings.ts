@@ -7,6 +7,7 @@ import './css/lil-gui.css';
 import { SettingsButton } from "./SettingsButton";
 import { checkForPwaUpdates, showPwaStatus } from './PwaUpdate';
 import { GISSParser } from './GISSParser';
+import { YearRange } from './YearRange';
 
 export type Dataset = { endDate: string, csv: Record<Showcase, string>, firstYear: number, lastYear: number };
 
@@ -89,17 +90,7 @@ class Settings {
     #showcaseFolder: GUI;
     #hidden: boolean;
     #gui: GUI;
-    #firstYear: number;
-    #lastYear: number;
-    /**
-     * The year range last chosen on any view's year slider, shared by all
-     * views. Each view clamps it to the years it can show (the helix to the
-     * active dataset), so this keeps the unclamped request.
-     */
-    #requestedFirstYear: number;
-    #requestedLastYear: number;
-    #datasetFirstYear: number;
-    #datasetLastYear: number;
+    #yearRange: YearRange;
 
     static async create(): Promise<Settings> {
         return new Settings(await loadDatasets());
@@ -155,12 +146,13 @@ class Settings {
     }
     private constructor(datasets: Record<string, Dataset>) {
         this.#datasets = datasets;
-        this.#datasetFirstYear = datasets[SETTINGS.date].firstYear;
-        this.#datasetLastYear = datasets[SETTINGS.date].lastYear;
-        this.#firstYear = this.#datasetFirstYear;
-        this.#lastYear = this.#datasetLastYear;
-        this.#requestedFirstYear = this.globalFirstYear;
-        this.#requestedLastYear = this.globalLastYear;
+        const all = Object.values(datasets);
+        this.#yearRange = new YearRange(
+            Math.min(...all.map((dataset) => dataset.firstYear)),
+            Math.max(...all.map((dataset) => dataset.lastYear)),
+            datasets[SETTINGS.date].firstYear,
+            datasets[SETTINGS.date].lastYear,
+        );
         this.#gui = new GUI({ container: document.querySelector('.container-div') as HTMLElement | undefined, autoPlace: false });
         this.#gui.domElement.id = "gui";
         this.createDateFolder();
@@ -237,12 +229,7 @@ class Settings {
      */
     clampYearRange(): boolean {
         const dataset = this.#datasets[SETTINGS.date];
-        const previous = [this.#firstYear, this.#lastYear];
-        this.#datasetFirstYear = dataset.firstYear;
-        this.#datasetLastYear = dataset.lastYear;
-        this.#firstYear = Math.max(this.#datasetFirstYear, Math.min(this.#requestedFirstYear, this.#datasetLastYear));
-        this.#lastYear = Math.max(this.#firstYear, Math.min(this.#requestedLastYear, this.#datasetLastYear));
-        return previous[0] !== this.#firstYear || previous[1] !== this.#lastYear;
+        return this.#yearRange.setDataset(dataset.firstYear, dataset.lastYear);
     }
 
     get dateOptions(): string[] {
@@ -282,34 +269,31 @@ class Settings {
     }
 
     get firstYear(): number {
-        return this.#firstYear;
+        return this.#yearRange.firstYear;
     }
 
     get lastYear(): number {
-        return this.#lastYear;
+        return this.#yearRange.lastYear;
     }
 
     get datasetFirstYear(): number {
-        return this.#datasetFirstYear;
+        return this.#yearRange.datasetFirstYear;
     }
 
     get datasetLastYear(): number {
-        return this.#datasetLastYear;
+        return this.#yearRange.datasetLastYear;
     }
 
     /**
      * The earliest/latest year across *all* datasets, not just the active
-     * one. The helix scales its z-axis against this fixed range (rather
-     * than the active dataset's own range) so that a given calendar year
-     * renders at the same z position no matter which dataset is selected -
-     * important for morphing between datasets in future animations.
+     * one: the chart views' year axis and the limits of the shared year range.
      */
     get globalFirstYear(): number {
-        return Math.min(...Object.values(this.#datasets).map((dataset) => dataset.firstYear));
+        return this.#yearRange.globalFirstYear;
     }
 
     get globalLastYear(): number {
-        return Math.max(...Object.values(this.#datasets).map((dataset) => dataset.lastYear));
+        return this.#yearRange.globalLastYear;
     }
 
     get yearRangeVisible(): boolean {
@@ -317,29 +301,26 @@ class Settings {
     }
 
     setStartYear(year: number): void {
-        this.#firstYear = Math.max(this.#datasetFirstYear, Math.min(year, this.#lastYear));
-        this.#requestedFirstYear = this.#firstYear;
+        this.#yearRange.setStart(year);
     }
 
     setEndYear(year: number): void {
-        this.#lastYear = Math.min(this.#datasetLastYear, Math.max(year, this.#firstYear));
-        this.#requestedLastYear = this.#lastYear;
+        this.#yearRange.setEnd(year);
     }
 
-    /** The shared year range, as last chosen on any view's year slider. */
+    /** The shared year range, as last chosen on any view's year slider. See {@link YearRange}. */
     get requestedYearRange(): [number, number] {
-        return [this.#requestedFirstYear, this.#requestedLastYear];
+        return this.#yearRange.requested;
     }
 
     /** Resets the shared year range to all years. The helix picks it up via {@link clampYearRange}. */
     resetYearRange(): void {
-        this.requestYearRange(this.globalFirstYear, this.globalLastYear);
+        this.#yearRange.reset();
     }
 
     /** Records a year range chosen on a chart view's slider, for the other views to pick up when they become active. */
     requestYearRange(firstYear: number, lastYear: number): void {
-        this.#requestedFirstYear = firstYear;
-        this.#requestedLastYear = lastYear;
+        this.#yearRange.request(firstYear, lastYear);
     }
 
     get dataEndDate(): string {
