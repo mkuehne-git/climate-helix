@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.9.3
+
+* Add component tests (phase 2 of `TESTING.md`) with happy-dom: the year range slider and its reset button, chart zoom, y-axis fitting and legend toggles, the imprint's close button, Escape and resize handling, and the helix geometry. Regression tests cover the v0.8.4 month ticks and the v0.8.6 helix height and imprint fixes. No functional change.
+
 ## v0.9.2
 
 * Add unit tests with Vitest (`npm test`), phase 1 of `TESTING.md`: the GISS parser against every bundled snapshot and region, the chart tick and moving-average math, and the shared year range logic, including regression tests for earlier fixes. To make this testable, the chart math moves from `ChartControl.ts` to `chartMath.ts`, and the year range logic from `Settings` to a new `YearRange` class. No functional change.

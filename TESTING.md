@@ -46,9 +46,9 @@ No DOM needed. Two small refactors make the logic testable without changing beha
    - A reset from a chart view resets the shared range, and the helix picks it up when it becomes active (regression for a bug found during v0.9.0).
    - A range chosen in a chart view is clamped for the helix without being lost.
 
-## Phase 2: Components
+## Phase 2: Components (done, v0.9.3)
 
-Vitest with happy-dom.
+Vitest with happy-dom (`// @vitest-environment happy-dom` at the top of a test file).
 
 - **`YearRangeSlider`**
   - Labels show the start and end year at the right position.
@@ -62,7 +62,7 @@ Vitest with happy-dom.
   - The close button exists as soon as the imprint opens, before rendering finishes (regression for v0.8.6).
   - The close button and Escape both close it.
   - A burst of resize events causes a single redraw.
-- **`ClimateHelix`** geometry. Refactor: let tests supply the cold/zero/warm colors instead of reading CSS custom properties.
+- **`ClimateHelix`** geometry. No refactor needed: the helix already takes its colors from the settings object, so the test passes a fake one and mocks the `Settings` module (which reads CSS custom properties on import).
   - The first selected point is at z = 0 and the last at the full configured height, for any selected range (regression for v0.8.6).
   - Tube radius depends on the dataset's year count, not the selected range.
 
