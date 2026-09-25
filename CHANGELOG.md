@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.9.7
+
+* Update the CI workflow's `actions/checkout` and `actions/setup-node` from v4 to v7, which run on Node 24 (v4 ran on the deprecated Node 20 and caused a warning), and let Dependabot keep the workflow's GitHub Actions up to date. No functional change.
+
 ## v0.9.6
 
 * Add a CI workflow (phase 4 of `TESTING.md`) that runs the unit tests and a production build on Node 24 for every push to `main` and every pull request. It replaces the dependency-only validation on Node 20 and does not deploy; deployment stays a manual `deploy.sh` run. Dependabot now groups the test tools. No functional change.
