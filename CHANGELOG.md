@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.9.5
+
+* Add two project skills for Claude Code in `.claude/skills/`: `release` (version, changelog, validation and approval before each commit) and `data-update` (adding a new NASA GISS snapshot). `CLAUDE.md` points to them and now describes how snapshots are registered in `Settings.ts`. No functional change.
+
 ## v0.9.4
 
 * Fix Escape not closing the imprint after opening it from the settings panel: the settings panel (lil-gui) stops key events, and the Imprint button keeps the focus. The imprint now listens for Escape before that.

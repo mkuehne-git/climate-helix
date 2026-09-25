@@ -35,7 +35,7 @@ Unit tests live in `test/` and run with `npm test`; the test plan and its remain
 
 The app follows semantic versioning (`x.y.z`). Fixes and small improvements increase `z`; new features increase `y`. Increases to `x` are decided by the project owner.
 
-Always update the version number before creating a commit. Record the new version in `package.json` and add a corresponding entry to `CHANGELOG.md`.
+Always update the version number before creating a commit. Record the new version in `package.json` and add a corresponding entry to `CHANGELOG.md`. The `release` skill (`.claude/skills/release/`) covers the full routine: version, changelog, validation and the approval before committing.
 
 ## Git Workflow
 
@@ -51,12 +51,12 @@ Always ask the project owner for approval before creating a commit. Do not commi
 - `src/HelixGeometry.js` provides the custom tube geometry used for the helix.
 - `src/ScreenCapture.ts`, `src/Imprint.ts`, `src/InfoButton.ts`, `src/SettingsButton.ts`, and `src/ThemesSwitcher.ts` implement the surrounding UI features.
 - `src/css/style.css` contains theme variables and application styling; color values used by the helix are read from CSS custom properties.
-- `public/assets/csv/` contains versioned NASA GISS data files. `Settings.ts` imports the selected dataset directly from this directory.
+- `public/assets/csv/` contains versioned NASA GISS data files. `Settings.ts` lists them in `datasetPaths` and fetches them at startup.
 - `vite.config.ts` configures the production base path, HTTPS development support, PWA generation, and `APP_VERSION`.
 
 ## Data Updates
 
-Keep each data snapshot in its own dated directory under `public/assets/csv/`, with the three expected files: `GLB.Ts+dSST.csv`, `NH.Ts+dSST.csv`, and `SH.Ts+dSST.csv`. Update the imports in `src/Settings.ts` when changing the active snapshot. Preserve the GISS file structure: title row, header row, monthly columns, and the trailing aggregate columns.
+Keep each data snapshot in its own dated directory under `public/assets/csv/`, with the three expected files: `GLB.Ts+dSST.csv`, `NH.Ts+dSST.csv`, and `SH.Ts+dSST.csv`. Register each snapshot in `datasetPaths` in `src/Settings.ts` and set `SETTINGS.date` to the default one. The `data-update` skill (`.claude/skills/data-update/`) walks through adding a snapshot. Preserve the GISS file structure: title row, header row, monthly columns, and the trailing aggregate columns.
 
 When changing parsing or data handling, check all three regions and confirm that the displayed title and date range match the selected CSV. Treat source-data changes as user-visible changes and mention the snapshot date in the changelog when appropriate.
 
