@@ -16,7 +16,7 @@ Scripts:
 ```sh
 npm test            # Vitest, single run
 npm run test:watch  # Vitest in watch mode
-npm run test:e2e    # Playwright against a production build (vite preview) - planned, phase 3
+npm run test:e2e    # Playwright against a production build (vite preview)
 ```
 
 Vitest runs the files in `test/` (`test.include` in `vite.config.ts`); the end-to-end tests will live in `e2e/`. Vitest 5 needs Node 22.12+, 24 or 26+ (it also runs on Node 23 locally), so the CI workflow in phase 4 must not keep the Node 20 used by the dependency-check workflow.
@@ -66,9 +66,16 @@ Vitest with happy-dom (`// @vitest-environment happy-dom` at the top of a test f
   - The first selected point is at z = 0 and the last at the full configured height, for any selected range (regression for v0.8.6).
   - Tube radius depends on the dataset's year count, not the selected range.
 
-## Phase 3: End-to-end
+## Phase 3: End-to-end (done, v0.9.4)
 
-Playwright, run locally against `npm run build` + `vite preview`. The preview server uses the self-signed certificate, so the tests ignore HTTPS errors.
+Playwright, run locally with `npm run test:e2e`. `playwright.config.ts` builds the app and serves it with `vite preview` on port 4179. Things to know:
+
+- **HTTP, not HTTPS.** The preview runs with `VITE_HTTPS=false`: browsers allow service workers on `http://localhost` but reject them behind the self-signed development certificate.
+- **Lighter helix.** The build runs with `VITE_E2E=true`, which starts the helix with 1 monthly segment and 3 radius segments (see `Settings.ts`). Headless browsers render WebGL in software, and with the full mesh most tests time out. Production builds are unaffected.
+- **4 workers.** More parallel pages mostly cause timeouts; the suite takes about 30 seconds.
+- **Browsers.** Chromium and Firefox, installed once with `npx playwright install chromium firefox`.
+- **Imprint.** The imprint tests need the private `src/imprint-gen.js`; with the CI stub there is no imprint to show.
+- **Helpers.** `e2e/app.ts` opens the app (collecting console errors), switches scenes and moves the year sliders.
 
 - The app loads without console errors, and the helix title matches the selected dataset and region.
 - Dataset buttons and the region selector redraw the helix; the info panel's end date matches.

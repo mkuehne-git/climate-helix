@@ -134,3 +134,7 @@ dev-dist
 
 # Dynamic import, generated
 imprint-gen.js
+
+# Playwright
+test-results/
+playwright-report/

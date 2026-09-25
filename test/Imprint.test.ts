@@ -72,6 +72,18 @@ describe('Imprint', () => {
         expect(overlay()).toBeNull();
     });
 
+    it('closes with Escape even when the focused element stops key events, as lil-gui does', () => {
+        imprint.show();
+        const gui = document.createElement('div');
+        gui.addEventListener('keydown', (event) => event.stopPropagation());
+        const button = document.createElement('button');
+        gui.appendChild(button);
+        document.body.appendChild(gui);
+        button.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+        expect(overlay()).toBeNull();
+        gui.remove();
+    });
+
     it('opens and closes through the application events', () => {
         Events.dispatchEvent(Events.SHOW_IMPRINT);
         expect(overlay()).not.toBeNull();

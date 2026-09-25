@@ -1,6 +1,6 @@
 {
   "name": "climate-helix",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "description": "3D Climate Helix",
   "main": "main.js",
   "scripts": {
@@ -9,7 +9,8 @@
     "build": "vite build",
     "serve": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:e2e": "playwright test"
   },
   "keywords": [
     "Climate Spiral",
@@ -19,6 +20,7 @@
   "devDependencies": {
     "@fontsource/dejavu-sans": "^5.3.0",
     "@fontsource/special-elite": "^5.3.0",
+    "@playwright/test": "^1.63.0",
     "@types/crypto-js": "^4.2.2",
     "@types/node": "^26.6.2",
     "@types/three": "^0.186.0",

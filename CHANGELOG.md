@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.9.4
+
+* Fix Escape not closing the imprint after opening it from the settings panel: the settings panel (lil-gui) stops key events, and the Imprint button keeps the focus. The imprint now listens for Escape before that.
+* Add Playwright end-to-end tests in Chromium and Firefox (`npm run test:e2e`, local only), phase 3 of `TESTING.md`: app start without console errors, dataset and region switching, theme switcher, info panel, service worker, the shared year range and reset across views, and the imprint at desktop and phone size. Test builds (`VITE_E2E=true`) use a lighter helix mesh.
+
 ## v0.9.3
 
 * Add component tests (phase 2 of `TESTING.md`) with happy-dom: the year range slider and its reset button, chart zoom, y-axis fitting and legend toggles, the imprint's close button, Escape and resize handling, and the helix geometry. Regression tests cover the v0.8.4 month ticks and the v0.8.6 helix height and imprint fixes. No functional change.

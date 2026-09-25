@@ -36,6 +36,10 @@ async function loadDatasets(): Promise<Record<string, Dataset>> {
     }));
     return Object.fromEntries(entries);
 }
+// Builds for the end-to-end tests (see playwright.config.ts) use a much
+// lighter helix mesh: headless browsers render WebGL in software.
+const E2E_BUILD = import.meta.env.VITE_E2E === 'true';
+
 const SETTINGS = {
     showcaseCSV: undefined,
     radio: Showcase.GLOBAL,
@@ -53,10 +57,10 @@ const SETTINGS = {
         geometry: {
             meshVisible: false,
             facesVisible: true,
-            radialSegments: 8,
+            radialSegments: E2E_BUILD ? 3 : 8,
             radius: 1,
             radiusFactor: 0.9,
-            tubularSegments: 30,
+            tubularSegments: E2E_BUILD ? 1 : 30,
         },
         colors: {
             cold: colorDescriptor('cold'),
