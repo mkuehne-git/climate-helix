@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.9.9
+
+* Drop the dataset-morph animation from the roadmap: revisions between snapshots are mostly random fluctuations of about ±0.01 °C, which the Diff charts already show precisely. The creation animation stays planned. No functional change.
+
 ## v0.9.8
 
 * Fix a click on the imprint's X button being lost right after resizing the window: the button now closes the imprint on the click itself instead of after its click animation, and closing cancels a pending resize redraw.

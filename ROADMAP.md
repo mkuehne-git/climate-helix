@@ -4,7 +4,7 @@ This file describes the planned improvements to Climate Helix. Work through the 
 
 ## Priorities
 
-1. **Animations.** Add creation and dataset-morph animations only after the redraw lifecycle is stable. Prefer an explicit animation state in the scene controller so animation does not race with settings events or theme changes.
+1. **Creation animation.** Animate building the helix, only after the redraw lifecycle is stable. Prefer an explicit animation state in the scene controller so animation does not race with settings events or theme changes.
 
 ## Completed
 
@@ -34,10 +34,10 @@ Today the imprint text ships as AES-encrypted text inside the gitignored `src/im
 ### Animations
 
 - Create the ClimateHelix
-- Morph between the different datasets
-  - The helix stretches the selected year range to the full configured height (the v0.6.5 global year scaling was reverted in v0.8.6), so a given year lands at a different z position depending on the dataset and selected range. Morphing will need a shared z reference (e.g. a per-year height based on the longest dataset, applied only while animating) and a shared centering reference instead of each mesh's own centroid (`createMesh()`'s `geometry.translate(-cog...)`), so a shared year has no positional jump between datasets.
 
-Add these only after the dataset model and redraw lifecycle are stable. Prefer explicit animation state in the scene controller so animation does not race with settings events or theme changes.
+Add this only after the dataset model and redraw lifecycle are stable.
+
+**Not planned: morphing between datasets** (decided in v0.9.9). Most revisions between snapshots fluctuate more or less randomly by about ±0.01 °C, as the Diff charts show. A morph animation would hardly be visible on the helix and would not add insight; the Diff view already shows these revisions precisely. Prefer explicit animation state in the scene controller so animation does not race with settings events or theme changes.
 
 ## Delivery Notes
 
