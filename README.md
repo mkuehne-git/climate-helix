@@ -6,11 +6,11 @@ Available on [Github Pages](https://mkuehne-git.github.io/climate-helix/). The a
 
 The climate helix uses data from [NASA, Goddard Space Flight Center](https://data.giss.nasa.gov/gistemp/) retrieved in May-2023. You can view data for the
 
-* Northern Hemissphere,
-* Southern Hemissphere,
+* Northern Hemisphere,
+* Southern Hemisphere,
 * Globe
 
-The time ranges from 1880 until March 2023. Each year is visualized as a loop within the helix. Each loop is divided into 12 segments, one for each month of the year. The distance from the center per month is proportional to the difference to the mean temperature of that month. For details regarding the data and the theory behind it, please check out the [GISS](https://data.giss.nasa.gov/gistemp/) documentation.
+The data starts in 1880 and, in the newest bundled snapshot, runs until August 2026. Each year is visualized as a loop within the helix. Each loop is divided into 12 segments, one for each month of the year. The distance from the center per month is proportional to the difference to the mean temperature of that month. For details regarding the data and the theory behind it, please check out the [GISS](https://data.giss.nasa.gov/gistemp/) documentation.
 
 The use of [OrbitControls](https://threejs.org/docs/#examples/en/controls/OrbitControls) makes it possible to easily navigate through the scene, by moving around a virtual camera. That means, you can scale, translate or rotate the image.
 
@@ -18,7 +18,7 @@ The controller UI (Icon in the upper right corner) provides options to configure
 
 # Dataset selector
 
-Climate Helix bundles multiple retrievals of the NASA GISS data (currently March 2023, October 2024 and August 2026). Buttons below the helix let you jump directly between these snapshots, and the same choice is available as a **Date** section in the settings panel. Switching datasets keeps your selected region and year range, clamping it to whatever years are available in the newly selected snapshot.
+Climate Helix bundles multiple retrievals of the NASA GISS data, currently with data up to March 2023, September 2024 and August 2026 (retrieved in September 2023, October 2024 and September 2026). Buttons below the helix, labeled with the snapshot's year, let you jump directly between these snapshots, and the same choice is available as a **Date** section in the settings panel. Switching datasets keeps your selected region and year range, clamping it to whatever years are available in the newly selected snapshot.
 
 # Year range slider
 

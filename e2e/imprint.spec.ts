@@ -46,18 +46,16 @@ test('Escape closes the imprint, even with the focus still on the Imprint button
     await expect(page.locator('.imprint')).toHaveCount(0);
 });
 
-test('the X button survives a burst of window resizes (v0.8.6)', async ({ page }) => {
+test('the X button closes right after a burst of window resizes (v0.8.6, v0.9.8)', async ({ page }) => {
     await openApp(page);
     await openImprint(page);
     for (let width = 1200; width >= 700; width -= 50) {
         await page.setViewportSize({ width, height: 600 });
     }
-    // Let the debounced redraw (250 ms after the last resize) replace the
-    // overlay first; a click during it is lost with the old overlay.
-    await page.waitForTimeout(400);
-    await expect(page.locator('.imprint')).toHaveCount(1);
-    await expect(page.locator('.imprint canvas')).toBeVisible();
-    await expectCloseButtonOnTop(page);
+    // Click while the debounced redraw (250 ms after the last resize) is still pending.
     await closeButton(page).click();
+    await expect(page.locator('.imprint')).toHaveCount(0);
+    // The pending redraw must not bring it back.
+    await page.waitForTimeout(500);
     await expect(page.locator('.imprint')).toHaveCount(0);
 });

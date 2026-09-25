@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.9.8
+
+* Fix a click on the imprint's X button being lost right after resizing the window: the button now closes the imprint on the click itself instead of after its click animation, and closing cancels a pending resize redraw.
+* Move local development to Node 24 LTS: `.nvmrc` selects it for `nvm use`, and `engines` in `package.json` states the minimum (Node 22.12, required by Vitest 5).
+* Correct the README's outdated data range and snapshot dates.
+
 ## v0.9.7
 
 * Update the CI workflow's `actions/checkout` and `actions/setup-node` from v4 to v7, which run on Node 24 (v4 ran on the deprecated Node 20 and caused a warning), and let Dependabot keep the workflow's GitHub Actions up to date. No functional change.

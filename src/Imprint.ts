@@ -108,15 +108,19 @@ class Imprint {
   /**
    * The close button is fixed at the info button's position (see
    * .imprint-close in style.css), so the imprint can be closed without
-   * scrolling to its end.
+   * scrolling to its end. It closes on the click itself rather than after
+   * SVGToggleButton's click animation: the imprint disappears anyway, and a
+   * resize redraw during the animation would otherwise swallow the click.
    */
   private appendCloseButton(div: HTMLDivElement) {
     new SVGToggleButton({
       container: div,
       icons: [closeIcon], classToken: "imprint-close", event: Events.HIDE_IMPRINT.toString()
     }).show(0);
+    div.querySelector(":scope > .toggle-div.imprint-close")?.addEventListener("click", () => this.hide());
   }
   hide() {
+    window.clearTimeout(this.resizeTimer);
     if (this.div !== undefined) {
       document.body.removeChild(this.div);
       this.div = undefined as any;

@@ -1,8 +1,11 @@
 {
   "name": "climate-helix",
-  "version": "0.9.7",
+  "version": "0.9.8",
   "description": "3D Climate Helix",
   "main": "main.js",
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
     "dev": "vite --host",
     "dev:http": "VITE_HTTPS=false vite --host",

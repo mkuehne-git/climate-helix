@@ -35,7 +35,7 @@ Run in this order and report failures with their output - do not commit around t
 
 - `git status --short`: every changed and new file must belong to this change. Watch for leftovers such as `test-results/`, scratch files, or a stray `package-lock.json` change.
 - Never stage `src/imprint-gen.js` (private, gitignored) or `dist/`.
-- If a dependency was added: check its `engines` field against the Node versions in `CLAUDE.md` ("Node.js version"). If `npm install` crashes with `Cannot read properties of null (reading 'edgesOut')`, use `npx -y npm@latest install ...` and check that the lockfile only gained the new packages.
+- If a dependency was added: check its `engines` field against the Node version in `.nvmrc` (see "Node.js version" in `CLAUDE.md`), and check that the lockfile only gained the new packages.
 
 ## 5. Ask, then commit
 

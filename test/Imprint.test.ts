@@ -57,13 +57,20 @@ describe('Imprint', () => {
         expect(closeButton()).not.toBeNull();
     });
 
-    it('closes with the close button', () => {
+    it('closes on the close button click itself, without waiting for its animation', () => {
         imprint.show();
-        const button = closeButton()!;
-        button.click();
-        // SVGToggleButton fires its event once the click animation ends.
-        button.dispatchEvent(new Event('animationend'));
+        closeButton()!.click();
         expect(overlay()).toBeNull();
+    });
+
+    it('stays closed when closed while a resize redraw is pending', () => {
+        vi.useFakeTimers();
+        imprint.show();
+        window.dispatchEvent(new Event('resize'));
+        closeButton()!.click();
+        vi.advanceTimersByTime(250);
+        expect(overlay()).toBeNull();
+        expect(html2canvas).toHaveBeenCalledOnce();
     });
 
     it('closes with Escape', () => {

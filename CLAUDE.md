@@ -23,11 +23,12 @@ The default development server uses HTTPS with a local self-signed certificate. 
 
 ### Node.js version
 
-Node.js needs updating to a stable LTS release; this is easy to forget. The local setup still runs Node 23 (an odd-numbered, short-lived release that is out of support); the CI workflow uses Node 24. Vitest 5 and the current npm already require Node 22.12+, 24 or 26+, and npm 11.4.1 on Node 23 crashed while installing Vitest (it was installed via `npx npm@latest` instead).
+The project uses the current Active LTS release of Node.js: Node 24 (24.21.0 locally as of September 2026). Keeping it current is easy to forget - the project ran on the out-of-support Node 23 until v0.9.8, where npm 11.4.1 crashed while installing Vitest.
 
-- Use the current Active LTS (Node 24 as of September 2026) locally, via nvm, and in `node-version` of every workflow in `.github/workflows/`. Keep them the same.
+- `.nvmrc` selects Node 24 for `nvm use`; `engines` in `package.json` states the minimum (Vitest 5 needs 22.12+).
+- The CI workflow's `node-version` (`.github/workflows/ci.yml`) must match `.nvmrc`.
 - When adding or upgrading a dev dependency, check its `engines` field against that version.
-- Revisit this when a newer LTS starts (Node 26 in October 2026) and when the used one reaches end of life.
+- Revisit this when a newer LTS starts (Node 26 in October 2026) and when the used one reaches end of life: update `.nvmrc`, the workflow and, if needed, `engines` together.
 
 Unit tests live in `test/` and run with `npm test`; the test plan and its remaining phases are described in `TESTING.md`. There is no lint script. End-to-end tests live in `e2e/` and run locally with `npm run test:e2e` (not in CI); run them after UI changes. After changes, run `npm test` and `npm run build`, and manually verify the app in a browser. Check the helix, region selector, theme switcher, settings controls, info/imprint dialogs, and screen capture behavior when those areas are affected.
 
