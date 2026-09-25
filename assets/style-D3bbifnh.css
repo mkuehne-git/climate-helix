@@ -117,9 +117,30 @@ canvas.transparent {
 
     width: 100%;
     display: flex;
+    /* Column: the animation label sits below the title. */
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     z-index: 0;
+}
+
+.animation-label {
+    font-size: 20px;
+    opacity: 0.8;
+    margin-top: 4px;
+}
+
+.animation-label.hidden {
+    display: none;
+}
+
+.toggle-div.animation-button {
+    /* Top-left corner, mirroring the settings button; above .full-scene like the other buttons. */
+    z-index: 5;
+    top: 0;
+    left: 0;
+    right: auto;
+    cursor: pointer;
 }
 
 .year-slider {
@@ -479,6 +500,10 @@ canvas.transparent {
    itself stays available in both scenes: besides the helix-specific View
    folder, it also hosts Screen capture and Imprint, which apply to either
    scene. */
+.container-div.scene-not-helix .toggle-div.animation-button {
+    display: none;
+}
+
 .container-div.scene-not-helix #dataset-controls {
     display: none;
 }
