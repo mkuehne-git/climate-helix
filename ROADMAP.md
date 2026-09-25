@@ -4,9 +4,17 @@ This file describes the planned improvements to Climate Helix. Work through the 
 
 ## Priorities
 
-1. **Creation animation.** Animate building the helix, only after the redraw lifecycle is stable. Prefer an explicit animation state in the scene controller so animation does not race with settings events or theme changes.
+No open priorities.
 
 ## Completed
+
+### Creation animation (v0.10.0)
+
+A Play/Pause button in the top-left corner of the Helix view grows the helix month by month from the first selected year, with the month the tip has reached shown below the title.
+
+- **State** lives in `src/HelixAnimation.ts` (progress 0-1, playing, loop), outside the meshes: many things rebuild them, and a rebuilt mesh picks up the current progress. `main.ts` advances it from the render loop and draws a prefix of the helix with `geometry.setDrawRange` (`HelixGeometry` builds the tube segment by segment along the curve, so no geometry is rebuilt per frame).
+- **Interruptions**: every `CREATE_HELIX` (settings, dataset, region, year range) finishes the animation and shows the complete helix; theme switches rebuild the helix directly and keep it running. Leaving the Helix view pauses it. With reduced motion, Play shows the complete helix.
+- **Settings -> Animation**: Duration (seconds for the dataset's full year span; a shorter selection plays proportionally shorter), Loop (rests 1 s on the complete helix), Play on start (a one-off run that stops at the end even when looping). These three settings are the only ones kept across reloads (`localStorage`).
 
 ### Charts (v0.7.0)
 
@@ -33,11 +41,9 @@ Today the imprint text ships as AES-encrypted text inside the gitignored `src/im
 
 ### Animations
 
-- Create the ClimateHelix
+The creation animation is done (v0.10.0, see Completed).
 
-Add this only after the dataset model and redraw lifecycle are stable.
-
-**Not planned: morphing between datasets** (decided in v0.9.9). Most revisions between snapshots fluctuate more or less randomly by about ±0.01 °C, as the Diff charts show. A morph animation would hardly be visible on the helix and would not add insight; the Diff view already shows these revisions precisely. Prefer explicit animation state in the scene controller so animation does not race with settings events or theme changes.
+**Not planned: morphing between datasets** (decided in v0.9.9). Most revisions between snapshots fluctuate more or less randomly by about ±0.01 °C, as the Diff charts show. A morph animation would hardly be visible on the helix and would not add insight; the Diff view already shows these revisions precisely.
 
 ## Delivery Notes
 

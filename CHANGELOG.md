@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.10.0
+
+* Add a creation animation to the Helix view: a Play/Pause button in the top-left corner grows the helix month by month from the first selected year, with the month it has reached shown below the title. Changing the year range, dataset, region or another setting shows the complete helix again; switching the theme does not interrupt it, and leaving the Helix view pauses it. With the system's reduced-motion preference, Play shows the complete helix at once.
+* Add an ***Animation*** section to the settings: Duration (seconds for the dataset's full year span, default 10), Loop, and Play on start (plays once when the app opens, even with Loop on). The app remembers these three settings across reloads.
+
 ## v0.9.9
 
 * Drop the dataset-morph animation from the roadmap: revisions between snapshots are mostly random fluctuations of about ±0.01 °C, which the Diff charts already show precisely. The creation animation stays planned. No functional change.

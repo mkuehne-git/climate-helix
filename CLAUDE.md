@@ -50,6 +50,7 @@ Always ask the project owner for approval before creating a commit. Do not commi
 - `src/Settings.ts` owns the lil-gui controls and dispatches application events when settings change.
 - `src/Enums.ts` contains shared event and showcase identifiers.
 - `src/HelixGeometry.js` provides the custom tube geometry used for the helix.
+- `src/HelixAnimation.ts` holds the creation animation's state (progress, playing, loop); `main.ts` advances it from the render loop and applies it to the helix meshes with `setDrawRange`.
 - `src/ScreenCapture.ts`, `src/Imprint.ts`, `src/InfoButton.ts`, `src/SettingsButton.ts`, and `src/ThemesSwitcher.ts` implement the surrounding UI features.
 - `src/css/style.css` contains theme variables and application styling; color values used by the helix are read from CSS custom properties.
 - `public/assets/csv/` contains versioned NASA GISS data files. `Settings.ts` lists them in `datasetPaths` and fetches them at startup.

@@ -25,6 +25,11 @@ import { YearRangeSlider } from './YearRangeSlider';
 import { SceneSwitcher } from './SceneSwitcher';
 import { ChartsScene } from './ChartsScene';
 import { DiffChartsScene } from './DiffChartsScene';
+import { HelixAnimation, drawCount, playSeconds, tipIndex } from './HelixAnimation';
+import { SVGToggleButton } from './SVGToggleButton';
+import { formatMonthYear } from './chartMath';
+import { icon as playIcon } from './icons/animation/playIcon';
+import { icon as pauseIcon } from './icons/animation/pauseIcon';
 
 // The info div. A static import (not a public/ asset fetched at runtime) so
 // it's bundled into the hashed JS chunk and cache-busts the same way the
@@ -54,6 +59,13 @@ let yearRangeSlider: YearRangeSlider;
 let sceneSwitcher: SceneSwitcher;
 let chartsScene: ChartsScene;
 let diffChartsScene: DiffChartsScene;
+let currentHelix: ClimateHelix;
+let playButton: SVGToggleButton;
+
+const animation = new HelixAnimation(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+// Below the title while the helix is incomplete: the month the growing tip has reached.
+const animationLabel = document.createElement('DIV');
+animationLabel.className = 'animation-label hidden';
 
 let infoIcon;
 
@@ -127,7 +139,17 @@ function init() {
     orbitControls.update();
 
     window.addEventListener('resize', onWindowResize);
-    window.addEventListener(Events.CREATE_HELIX, createHelix);
+    // Every CREATE_HELIX comes from the user changing what is shown (settings,
+    // dataset, region, year range), which ends a running animation. Theme
+    // switches rebuild the helix directly (onThemeChanged) and keep it running.
+    window.addEventListener(Events.CREATE_HELIX, () => {
+        animation.finish();
+        createHelix();
+    });
+    document.body.addEventListener(Events.ANIMATION_CHANGED.toString(), () => {
+        animation.loop = settings.animationLoop;
+        updateAnimationTiming();
+    });
     document.body.addEventListener(Events.THEME_CHANGED.toString(), onThemeChanged);
     const captureControls: CaptureControls = {
         All: document.body,
@@ -135,6 +157,7 @@ function init() {
     }
     capture = new ScreenCapture(settings.captureSettings(), captureControls);
     createSceneSwitcher();
+    createPlayButton();
     infoIcon = createInfoIcon();
     createInfoDiv();
     document.body.addEventListener(Events.SCENE_CHANGED.toString(), onSceneChanged);
@@ -152,6 +175,10 @@ function createSceneSwitcher(): void {
 function onSceneChanged(): void {
     const helixActive = sceneSwitcher.scene === Scene.HELIX;
     document.querySelector(CONTAINER_DIV)?.classList.toggle('scene-not-helix', !helixActive);
+    if (!helixActive) {
+        animation.pause();
+        applyAnimation();
+    }
     // Pick up a year range chosen on a chart view's slider.
     if (helixActive && settings.clampYearRange()) {
         Events.dispatchEvent(Events.CREATE_HELIX);
@@ -211,7 +238,10 @@ function createHelix(): void {
         group.add(climateAxes);
     }
     const container = document.querySelector(CONTAINER_DIV);
-    helix.createTitleDiv(container);
+    helix.createTitleDiv(container).appendChild(animationLabel);
+    currentHelix = helix;
+    updateAnimationTiming();
+    applyAnimation();
     createDateButtons();
     const controls = document.querySelector('#dataset-controls');
     controls?.classList.toggle('hidden', !settings.yearRangeVisible);
@@ -262,7 +292,46 @@ function updateInfoEndDate() {
 
 function animate() {
     requestAnimationFrame(animate);
+    if (animation.update(performance.now())) {
+        applyAnimation();
+    }
     renderer.render(scene, camera);
+}
+
+function createPlayButton(): void {
+    const container = document.querySelector(CONTAINER_DIV) || document.body;
+    playButton = new SVGToggleButton({ container, icons: [playIcon, pauseIcon], classToken: 'animation-button', event: 'animation-clicked' });
+    playButton.show(0);
+    playButton.addOnClickListener(() => {
+        animation.toggle();
+        applyAnimation();
+    });
+    animation.loop = settings.animationLoop;
+}
+
+/** The selected years play in their share of the configured duration, see {@link playSeconds}. */
+function updateAnimationTiming(): void {
+    animation.playSeconds = playSeconds(
+        settings.animationDuration,
+        settings.lastYear - settings.firstYear + 1,
+        settings.datasetLastYear - settings.datasetFirstYear + 1,
+    );
+}
+
+/** Draws the helix up to the animation's progress and updates the label and the Play/Pause button. */
+function applyAnimation(): void {
+    for (const mesh of [helixMesh, wireframeMesh]) {
+        if (mesh?.parent) {
+            const { tubularSegments, radialSegments } = (mesh.geometry as any).parameters;
+            mesh.geometry.setDrawRange(0, drawCount(animation.progress, tubularSegments, radialSegments));
+        }
+    }
+    const points = currentHelix?.curve.length ?? 0;
+    animationLabel.classList.toggle('hidden', animation.complete || points === 0);
+    if (!animation.complete && points > 0) {
+        animationLabel.textContent = formatMonthYear(settings.firstYear + tipIndex(animation.progress, points) / 12);
+    }
+    playButton?.select(animation.playing ? 1 : 0);
 }
 
 function onThemeChanged() {
@@ -287,6 +356,11 @@ async function start() {
     await document.fonts.load("32px 'Special Elite'").catch(() => undefined);
     init();
     switcher.initTheme();
+    if (settings.playOnStart) {
+        // A one-off run: it stops at the end even when Loop is on.
+        animation.play({ once: true });
+        applyAnimation();
+    }
 }
 
 start();

@@ -24,6 +24,10 @@ Climate Helix bundles multiple retrievals of the NASA GISS data, currently with 
 
 A dual-handle slider below the helix lets you narrow the displayed years to any range within the selected dataset. Dragging either handle updates the start or end year and redraws the helix immediately. The slider itself can be shown or hidden with the **Year range** toggle under the ***View*** menu. The Charts and Diff views have the same slider, and all three share the chosen range: switching views keeps it, limited to the years the view can show. The small X button to the right of a slider resets it to all years.
 
+# Animation
+
+The Play/Pause button in the top-left corner of the Helix view grows the helix month by month from the first selected year, while the year and month it has reached are shown below the title. Pause holds it; Play continues. Changing the year range, dataset, region or another setting stops the animation and shows the complete helix. The ***Animation*** section of the settings panel sets the **Duration** (in seconds for all years of the dataset; a shorter year range plays proportionally shorter), **Loop**, and **Play on start**, which plays it once when the app opens. The app remembers these three settings.
+
 # Legend
 
 ![Climate-helix with legend](./src/images/climate-helix-legend.png)

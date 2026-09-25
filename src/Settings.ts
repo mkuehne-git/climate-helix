@@ -40,6 +40,37 @@ async function loadDatasets(): Promise<Record<string, Dataset>> {
 // lighter helix mesh: headless browsers render WebGL in software.
 const E2E_BUILD = import.meta.env.VITE_E2E === 'true';
 
+type AnimationSettings = { duration: number, loop: boolean, playOnStart: boolean };
+
+const ANIMATION_DEFAULTS: AnimationSettings = { duration: 10, loop: false, playOnStart: false };
+const ANIMATION_STORAGE_KEY = 'climate-helix.animation';
+
+/**
+ * The Animation settings are the only ones kept across reloads - "Play on
+ * start" would be pointless otherwise. Storage can be unavailable (private
+ * mode, blocked site data); the defaults apply then.
+ */
+function loadAnimationSettings(): AnimationSettings {
+    const settings = { ...ANIMATION_DEFAULTS };
+    try {
+        const stored = JSON.parse(localStorage.getItem(ANIMATION_STORAGE_KEY) ?? '{}');
+        if (typeof stored.duration === 'number' && stored.duration > 0) settings.duration = stored.duration;
+        if (typeof stored.loop === 'boolean') settings.loop = stored.loop;
+        if (typeof stored.playOnStart === 'boolean') settings.playOnStart = stored.playOnStart;
+    } catch {
+        // Keep the defaults.
+    }
+    return settings;
+}
+
+function saveAnimationSettings(settings: AnimationSettings): void {
+    try {
+        localStorage.setItem(ANIMATION_STORAGE_KEY, JSON.stringify(settings));
+    } catch {
+        // Not remembered, but still in effect for this visit.
+    }
+}
+
 const SETTINGS = {
     showcaseCSV: undefined,
     radio: Showcase.GLOBAL,
@@ -68,6 +99,7 @@ const SETTINGS = {
             warm: colorDescriptor('warm'),
         }
     },
+    animation: loadAnimationSettings(),
     capture: {},
     imprint: () => Events.dispatchEvent(Events.SHOW_IMPRINT)
 }
@@ -162,6 +194,7 @@ class Settings {
         this.createDateFolder();
         this.createShowcaseFolder();
         this.createViewFolder();
+        this.createAnimationFolder();
         this.createCaptureFolder();
         this.createImprint();
         this.createShowHideListener();
@@ -329,6 +362,43 @@ class Settings {
 
     get dataEndDate(): string {
         return this.#datasets[SETTINGS.date].endDate;
+    }
+
+    createAnimationFolder() {
+        const folder = this.#gui.addFolder("Animation");
+        const changed = () => {
+            saveAnimationSettings(SETTINGS.animation);
+            Events.dispatchEvent(Events.ANIMATION_CHANGED);
+        };
+        folder
+            .add(SETTINGS.animation, 'duration')
+            .min(2)
+            .max(60)
+            .step(1)
+            .name('Duration (s)')
+            .onChange(changed);
+        folder
+            .add(SETTINGS.animation, 'loop')
+            .name('Loop')
+            .onChange(changed);
+        folder
+            .add(SETTINGS.animation, 'playOnStart')
+            .name('Play on start')
+            .onChange(changed);
+        folder.close();
+    }
+
+    /** Seconds to grow the helix over the active dataset's full year span. */
+    get animationDuration(): number {
+        return SETTINGS.animation.duration;
+    }
+
+    get animationLoop(): boolean {
+        return SETTINGS.animation.loop;
+    }
+
+    get playOnStart(): boolean {
+        return SETTINGS.animation.playOnStart;
     }
 
     createViewFolder() {

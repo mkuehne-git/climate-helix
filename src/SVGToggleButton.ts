@@ -58,6 +58,13 @@ class SVGToggleButton {
         this.icon(index)?.classList.add(SHOW);
     }
 
+    /** Shows only the icon at `index`, e.g. to follow a state that changed on its own. */
+    select(index: number): void {
+        for (let i = 0; i < this.#icons.length; i++) {
+            this.icon(i)?.classList.toggle(SHOW, i === index);
+        }
+    }
+
     toggle(): void {
         for (let index = 0; index < this.#icons.length; index++) {
             this.icon(index)?.classList.toggle(SHOW)

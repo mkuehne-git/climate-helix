@@ -21,6 +21,8 @@ export enum Events {
     CREATE_HELIX = "create-helix",
 
     SCENE_CHANGED = "scene-changed",
+
+    ANIMATION_CHANGED = "animation-changed",
 }
 export namespace Events {
     export function dispatchEvent(event: Events): void {
