@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.8.6
+
+* Restore the earlier helix behavior for the year range slider: the selected years stretch to the full helix height again instead of shrinking the helix along the z-axis. This reverts the v0.6.5 z-scaling against the longest dataset's span, so shorter datasets also fill the full height again.
+* Fix the imprint being impossible to close: the info button (and the scene switcher, settings and version label) were drawn on top of it, covering its Close button. The imprint now covers them all, and its Close button at the end of the page is replaced by an X button fixed at the info button's position, so it can be closed without scrolling down. Escape still closes it too.
+
 ## v0.8.5
 
 * Document a possible future hardening of the imprint's text source in the roadmap (serving it on demand from a Turnstile-gated Cloudflare Worker instead of bundling it encrypted). No functional change.

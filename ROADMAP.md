@@ -37,7 +37,7 @@ Today the imprint text ships as AES-encrypted text inside the gitignored `src/im
 
 - Create the ClimateHelix
 - Morph between the different datasets
-  - The z-axis (years) already scales against the longest available dataset's span rather than the active dataset's own span (`Settings.globalFirstYear`/`globalLastYear`, `ClimateHelix.yearHeight`, since v0.6.5), so a given year lands at the same z position no matter which dataset is active. What morphing still needs: each dataset's mesh is centered on its own centroid (`createMesh()`'s `geometry.translate(-cog...)`), so two datasets' meshes are each shifted by a different constant offset even though their per-year spacing now matches. Morphing needs a shared centering reference instead, so a shared year has zero positional jump between datasets.
+  - The helix stretches the selected year range to the full configured height (the v0.6.5 global year scaling was reverted in v0.8.6), so a given year lands at a different z position depending on the dataset and selected range. Morphing will need a shared z reference (e.g. a per-year height based on the longest dataset, applied only while animating) and a shared centering reference instead of each mesh's own centroid (`createMesh()`'s `geometry.translate(-cog...)`), so a shared year has no positional jump between datasets.
 
 Add these only after the dataset model and redraw lifecycle are stable. Prefer explicit animation state in the scene controller so animation does not race with settings events or theme changes.
 

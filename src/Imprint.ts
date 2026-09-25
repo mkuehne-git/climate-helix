@@ -2,14 +2,14 @@ import html2canvas from "html2canvas";
 
 import { Events } from "./Enums";
 import { ClassMutationObserver } from "./ClassMutationObserver";
+import { SVGToggleButton } from "./SVGToggleButton";
+import { icon as closeIcon } from "./icons/info/closeIcon";
 
 const loadModule = async () => {
   return await import("./imprint-gen");
 };
 
 const trailer = `<hr><p style="opacity: 1.0;">Dieses Impressum wurde erstellt durch <a href="https://www.impressum-generator.de" rel="nofollow">impressum-generator.de</a>.</p>`;
-const closeBtn = `<hr><div class="center" width=100%>
-<button id="hide-imprint" onclick="document.body.dispatchEvent(new Event('${Events.HIDE_IMPRINT.toString()}', { bubbles: true }))">Close</button></div>`;
 
 /**
  * This class generates an imprint, if the file './imprint-gen.js' can be imported. The imprint will
@@ -20,8 +20,14 @@ class Imprint {
   private decryptedAES: () => string;
   private div: HTMLDivElement;
   private loading: Promise<boolean> | undefined;
+  private resizeTimer: number | undefined;
   constructor() {
-    window.addEventListener("resize", () => this.redraw());
+    // Debounced: dragging a window edge fires a burst of resize events, and
+    // each redraw starts a full html2canvas render.
+    window.addEventListener("resize", () => {
+      window.clearTimeout(this.resizeTimer);
+      this.resizeTimer = window.setTimeout(() => this.redraw(), 250);
+    });
     new ClassMutationObserver(document.body, () => this.redraw());
     document.body.addEventListener(Events.SHOW_IMPRINT.toString(), (e) => this.show());
     document.body.addEventListener(Events.HIDE_IMPRINT.toString(), (e) => this.hide());
@@ -64,33 +70,49 @@ class Imprint {
       this.div = document.createElement("div");
       const div = this.div;
       div.classList.add("imprint");
+      // The close button is added right away, next to the content, so it is
+      // available while html2canvas is still rendering (or if it fails).
+      const content = document.createElement("div");
+      div.appendChild(content);
+      this.appendCloseButton(div);
       const imprintHTML = this.decryptedAES();
-      div.innerHTML = imprintHTML;
+      content.innerHTML = imprintHTML;
       document.body.appendChild(div);
       const style = window.getComputedStyle(document.body);
-      const width = div.scrollWidth;
-      const height = div.scrollHeight;
+      const width = content.scrollWidth;
+      const height = content.scrollHeight;
       const backgroundColor = style.getPropertyValue("background-color");
-      html2canvas(div, {
+      html2canvas(content, {
         backgroundColor,
         windowWidth: width,
         windowHeight: height,
       }).then((canvas) => {
         canvas.classList.add("padding");
-        div.innerHTML = "";
-        div.appendChild(canvas);
-        const p = document.createElement("p");
-        p.classList.add("padding");
-        p.innerHTML = trailer + closeBtn;
-        div.appendChild(p);
+        content.innerHTML = "";
+        content.appendChild(canvas);
+        this.appendTrailer(content);
       }).catch(() => {
-        div.innerHTML = imprintHTML;
-        const p = document.createElement("p");
-        p.classList.add("padding");
-        p.innerHTML = trailer + closeBtn;
-        div.appendChild(p);
+        content.innerHTML = imprintHTML;
+        this.appendTrailer(content);
       });
     }
+  }
+  private appendTrailer(div: HTMLDivElement) {
+    const p = document.createElement("p");
+    p.classList.add("padding");
+    p.innerHTML = trailer;
+    div.appendChild(p);
+  }
+  /**
+   * The close button is fixed at the info button's position (see
+   * .imprint-close in style.css), so the imprint can be closed without
+   * scrolling to its end.
+   */
+  private appendCloseButton(div: HTMLDivElement) {
+    new SVGToggleButton({
+      container: div,
+      icons: [closeIcon], classToken: "imprint-close", event: Events.HIDE_IMPRINT.toString()
+    }).show(0);
   }
   hide() {
     if (this.div !== undefined) {
