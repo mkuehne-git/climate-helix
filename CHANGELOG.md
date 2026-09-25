@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.9.1
+
+* Add `TESTING.md`, the plan for automated tests: Vitest unit and component tests (also in CI) and local Playwright end-to-end tests in Chromium and Firefox. No functional change.
+
 ## v0.9.0
 
 * Add the year range slider to the Charts scene: it zooms the x-axis of all snapshot charts at once, and each chart's y-axis fits the years in view.

@@ -18,7 +18,7 @@ npm run serve     # preview the production build
 
 The default development server uses HTTPS with a local self-signed certificate. If the browser cannot trust that certificate, use `npm run dev:http` and open `http://127.0.0.1:5173/` instead.
 
-There is currently no automated test or lint script. After changes, run `npm run build` and manually verify the app in a browser. Check the helix, region selector, theme switcher, settings controls, info/imprint dialogs, and screen capture behavior when those areas are affected.
+There is currently no automated test or lint script; the planned tests are described in `TESTING.md`. After changes, run `npm run build` and manually verify the app in a browser. Check the helix, region selector, theme switcher, settings controls, info/imprint dialogs, and screen capture behavior when those areas are affected.
 
 ## Versioning
 
