@@ -5,7 +5,6 @@ This file describes the planned improvements to Climate Helix. Work through the 
 ## Priorities
 
 1. **Animations.** Add creation and dataset-morph animations only after the redraw lifecycle is stable. Prefer an explicit animation state in the scene controller so animation does not race with settings events or theme changes.
-2. **Automated deployment.** Move the commands in `deploy.sh` into a GitHub Actions workflow that installs dependencies, builds with the production base path, and publishes `dist/` to GitHub Pages. Keep deployment credentials and repository settings in GitHub configuration rather than source files. Retain `deploy.sh` until the workflow is proven.
 
 ## Completed
 
@@ -19,10 +18,9 @@ Helix, Charts, and Diff are equal peer scenes, reachable via icon-buttons at the
 
 ## Infrastructure
 
-- I am using a simple `deploy.sh` to deploy the app to Github pages. Perhaps there is a better way to do this
-  with Github actions.
+Deployment stays a manual `deploy.sh` run (decided in v0.9.6). The CI workflow (`.github/workflows/ci.yml`) only tests and builds.
 
-Deployment should move the commands in `deploy.sh` into GitHub Actions after the workflow can install dependencies, build with the production base path, and publish `dist/` to GitHub Pages. Keep `deploy.sh` until the replacement is proven, and keep credentials and repository settings in GitHub configuration.
+Automating it later would need the imprint in CI first: the CI build has no `src/imprint-gen.js` and uses a stub, so a site deployed from CI would have no imprint. Either store the file's content as a repository secret that the workflow writes before building, or move the imprint to the external text source described below. Deploy on a manual trigger or a version tag, not on every push to `main` (every commit here is a version), with GitHub's Pages actions instead of force-pushing `gh-pages`.
 
 ### Imprint text source (eventually)
 

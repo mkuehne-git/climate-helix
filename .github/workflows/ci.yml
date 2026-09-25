@@ -1,16 +1,18 @@
-name: Dependency validation
+name: CI
+
+# Unit tests and a production build for every push to main and every pull
+# request (including Dependabot's). It does not deploy: deployment stays a
+# manual `deploy.sh` run. The Playwright end-to-end tests run locally only
+# (see TESTING.md).
 
 on:
+  push:
+    branches: [main]
   pull_request:
-    paths:
-      - "package.json"
-      - "package-lock.json"
-      - ".github/workflows/dependency-check.yml"
-      - ".github/dependabot.yml"
   workflow_dispatch:
 
 jobs:
-  build:
+  test-and-build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -18,10 +20,11 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      # Keep in line with the local Node version, see "Node.js version" in CLAUDE.md.
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: "npm"
 
       - name: Install dependencies
@@ -32,6 +35,9 @@ jobs:
       # lets the import resolve; this build is never deployed.
       - name: Stub the private imprint module
         run: echo 'export const decryptedAES = () => undefined;' > src/imprint-gen.js
+
+      - name: Run unit tests
+        run: npm test
 
       - name: Run production build
         run: npm run build

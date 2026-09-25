@@ -86,13 +86,15 @@ Playwright, run locally with `npm run test:e2e`. `playwright.config.ts` builds t
 
 No screenshot comparisons of the helix: WebGL output varies too much between machines. Screenshot checks for the SVG charts can be added later if needed.
 
-## Phase 4: CI
+## Phase 4: CI (done, v0.9.6)
 
-Add a workflow that runs on every push and pull request:
+`.github/workflows/ci.yml` runs on every push to `main`, every pull request (including Dependabot's) and on demand:
 
-1. `npm ci` (Node 22 or 24)
+1. `npm ci` on Node 24
 2. Stub `src/imprint-gen.js`
 3. `npm test`
 4. `npm run build`
+
+It replaces the former `dependency-check.yml`, which only ran for dependency changes, on Node 20. It does not deploy: deployment stays a manual `deploy.sh` run (see `ROADMAP.md`). Dependabot groups the test tools (`vitest`, `happy-dom`, `@playwright/test`) in a `test-tooling` group; after a Playwright update, run `npx playwright install chromium firefox` locally.
 
 Playwright stays local for now. Adding it to CI later means installing only Chromium and Firefox (`npx playwright install --with-deps chromium firefox`), at roughly 1 to 2 extra minutes per run.

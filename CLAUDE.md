@@ -23,7 +23,7 @@ The default development server uses HTTPS with a local self-signed certificate. 
 
 ### Node.js version
 
-Node.js needs updating to a stable LTS release; this is easy to forget. The local setup still runs Node 23 (an odd-numbered, short-lived release that is out of support), and the GitHub workflows use Node 20. Vitest 5 and the current npm already require Node 22.12+, 24 or 26+, and npm 11.4.1 on Node 23 crashed while installing Vitest (it was installed via `npx npm@latest` instead).
+Node.js needs updating to a stable LTS release; this is easy to forget. The local setup still runs Node 23 (an odd-numbered, short-lived release that is out of support); the CI workflow uses Node 24. Vitest 5 and the current npm already require Node 22.12+, 24 or 26+, and npm 11.4.1 on Node 23 crashed while installing Vitest (it was installed via `npx npm@latest` instead).
 
 - Use the current Active LTS (Node 24 as of September 2026) locally, via nvm, and in `node-version` of every workflow in `.github/workflows/`. Keep them the same.
 - When adding or upgrading a dev dependency, check its `engines` field against that version.

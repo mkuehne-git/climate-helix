@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.9.6
+
+* Add a CI workflow (phase 4 of `TESTING.md`) that runs the unit tests and a production build on Node 24 for every push to `main` and every pull request. It replaces the dependency-only validation on Node 20 and does not deploy; deployment stays a manual `deploy.sh` run. Dependabot now groups the test tools. No functional change.
+
 ## v0.9.5
 
 * Add two project skills for Claude Code in `.claude/skills/`: `release` (version, changelog, validation and approval before each commit) and `data-update` (adding a new NASA GISS snapshot). `CLAUDE.md` points to them and now describes how snapshots are registered in `Settings.ts`. No functional change.
