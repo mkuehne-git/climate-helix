@@ -25,6 +25,7 @@ class DiffChartsScene {
     #charts: ChartControl[] = [];
     #startYear = 0;
     #endYear = 0;
+    #yearRangeSlider: YearRangeSlider | undefined;
     /** Newest monthly x value across all snapshots (e.g. 2026.58), so the full-range view doesn't end on an empty extra year. */
     #dataMaxX = 0;
 
@@ -38,6 +39,8 @@ class DiffChartsScene {
         const active = this.#sceneSwitcher.scene === Scene.DIFF;
         if (active && !this.#container) {
             this.build();
+        } else if (active) {
+            this.adoptYearRange();
         }
         this.#container?.classList.toggle('show', active);
     }
@@ -48,8 +51,7 @@ class DiffChartsScene {
         container.className = 'full-scene';
         parentDiv.appendChild(container);
         this.#container = container;
-        this.#startYear = this.#settings.globalFirstYear;
-        this.#endYear = this.#settings.globalLastYear;
+        [this.#startYear, this.#endYear] = this.#settings.requestedYearRange;
         this.#dataMaxX = Math.max(...this.#settings.dateOptions.map((date) => {
             const series = new GISSParser(this.#settings.datasets[date].csv[Showcase.GLOBAL]).monthlySeries;
             return series[series.length - 1]?.x ?? 0;
@@ -72,17 +74,24 @@ class DiffChartsScene {
         content.appendChild(controls);
 
         const scene = this;
-        new YearRangeSlider(controls, {
+        this.#yearRangeSlider = new YearRangeSlider(controls, {
             min: this.#settings.globalFirstYear,
             max: this.#settings.globalLastYear,
             get start() { return scene.#startYear; },
             get end() { return scene.#endYear; },
             setStart: (year) => {
                 this.#startYear = Math.max(this.#settings.globalFirstYear, Math.min(year, this.#endYear));
+                this.#settings.requestYearRange(this.#startYear, this.#endYear);
                 this.applyXDomain();
             },
             setEnd: (year) => {
                 this.#endYear = Math.min(this.#settings.globalLastYear, Math.max(year, this.#startYear));
+                this.#settings.requestYearRange(this.#startYear, this.#endYear);
+                this.applyXDomain();
+            },
+            reset: () => {
+                this.#settings.resetYearRange();
+                [this.#startYear, this.#endYear] = this.#settings.requestedYearRange;
                 this.applyXDomain();
             },
         });
@@ -160,7 +169,19 @@ class DiffChartsScene {
         return [this.#startYear, Math.min(this.#endYear + 1, this.#dataMaxX)];
     }
 
-    private applyXDomain(): void {
+    /** Picks up the year range last chosen on another view's slider. */
+    private adoptYearRange(): void {
+        const [start, end] = this.#settings.requestedYearRange;
+        if (start === this.#startYear && end === this.#endYear) {
+            return;
+        }
+        this.#startYear = start;
+        this.#endYear = end;
+        this.#yearRangeSlider?.refresh();
+        this.applyXDomain();
+    }
+
+        private applyXDomain(): void {
         const domain = this.xDomain();
         this.#charts.forEach((chart) => chart.setXDomain(domain));
     }

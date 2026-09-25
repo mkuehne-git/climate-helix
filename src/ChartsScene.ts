@@ -3,6 +3,7 @@ import { Settings } from "./Settings";
 import { GISSParser } from "./GISSParser";
 import { ChartControl } from "./ChartControl";
 import { SceneSwitcher } from "./SceneSwitcher";
+import { YearRangeSlider } from "./YearRangeSlider";
 
 const REGION_COLOR_VARS: Record<Showcase, string> = {
     [Showcase.GLOBAL]: 'var(--chart-color-1)',
@@ -21,6 +22,10 @@ class ChartsScene {
     #settings: Settings;
     #sceneSwitcher: SceneSwitcher;
     #container: HTMLElement | undefined;
+    #charts: ChartControl[] = [];
+    #startYear = 0;
+    #endYear = 0;
+    #yearRangeSlider: YearRangeSlider | undefined;
 
     constructor(settings: Settings, sceneSwitcher: SceneSwitcher) {
         this.#settings = settings;
@@ -32,6 +37,8 @@ class ChartsScene {
         const active = this.#sceneSwitcher.scene === Scene.CHARTS;
         if (active && !this.#container) {
             this.build();
+        } else if (active) {
+            this.adoptYearRange();
         }
         this.#container?.classList.toggle('show', active);
     }
@@ -55,7 +62,34 @@ class ChartsScene {
         heading.textContent = 'Temperature anomaly per dataset snapshot';
         content.appendChild(heading);
 
-        const xDomain: [number, number] = [this.#settings.globalFirstYear, this.#settings.globalLastYear];
+        const controls = document.createElement('div');
+        controls.className = 'chart-scene-controls';
+        content.appendChild(controls);
+
+        [this.#startYear, this.#endYear] = this.#settings.requestedYearRange;
+        const scene = this;
+        this.#yearRangeSlider = new YearRangeSlider(controls, {
+            min: this.#settings.globalFirstYear,
+            max: this.#settings.globalLastYear,
+            get start() { return scene.#startYear; },
+            get end() { return scene.#endYear; },
+            setStart: (year) => {
+                this.#startYear = Math.max(this.#settings.globalFirstYear, Math.min(year, this.#endYear));
+                this.#settings.requestYearRange(this.#startYear, this.#endYear);
+                this.applyXDomain();
+            },
+            setEnd: (year) => {
+                this.#endYear = Math.min(this.#settings.globalLastYear, Math.max(year, this.#startYear));
+                this.#settings.requestYearRange(this.#startYear, this.#endYear);
+                this.applyXDomain();
+            },
+            reset: () => {
+                this.#settings.resetYearRange();
+                [this.#startYear, this.#endYear] = this.#settings.requestedYearRange;
+                this.applyXDomain();
+            },
+        });
+
         const datesNewestFirst = [...this.#settings.dateOptions].reverse();
         for (const date of datesNewestFirst) {
             const dataset = this.#settings.datasets[date];
@@ -66,12 +100,34 @@ class ChartsScene {
                 color: REGION_COLOR_VARS[showcase],
                 points: new GISSParser(dataset.csv[showcase]).annualSeries.map((entry) => ({ x: entry.year, y: entry.value })),
             }));
-            new ChartControl(block, {
+            this.#charts.push(new ChartControl(block, {
                 title: `${date} snapshot`,
                 series,
-                xDomain,
-            });
+                xDomain: this.xDomain(),
+            }));
         }
+    }
+
+    /** Annual points sit on whole years, so the selected (inclusive) years map directly onto the axis. */
+    private xDomain(): [number, number] {
+        return [this.#startYear, this.#endYear];
+    }
+
+    /** Picks up the year range last chosen on another view's slider. */
+    private adoptYearRange(): void {
+        const [start, end] = this.#settings.requestedYearRange;
+        if (start === this.#startYear && end === this.#endYear) {
+            return;
+        }
+        this.#startYear = start;
+        this.#endYear = end;
+        this.#yearRangeSlider?.refresh();
+        this.applyXDomain();
+    }
+
+        private applyXDomain(): void {
+        const domain = this.xDomain();
+        this.#charts.forEach((chart) => chart.setXDomain(domain));
     }
 }
 

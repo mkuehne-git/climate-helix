@@ -91,6 +91,13 @@ class Settings {
     #gui: GUI;
     #firstYear: number;
     #lastYear: number;
+    /**
+     * The year range last chosen on any view's year slider, shared by all
+     * views. Each view clamps it to the years it can show (the helix to the
+     * active dataset), so this keeps the unclamped request.
+     */
+    #requestedFirstYear: number;
+    #requestedLastYear: number;
     #datasetFirstYear: number;
     #datasetLastYear: number;
 
@@ -152,6 +159,8 @@ class Settings {
         this.#datasetLastYear = datasets[SETTINGS.date].lastYear;
         this.#firstYear = this.#datasetFirstYear;
         this.#lastYear = this.#datasetLastYear;
+        this.#requestedFirstYear = this.globalFirstYear;
+        this.#requestedLastYear = this.globalLastYear;
         this.#gui = new GUI({ container: document.querySelector('.container-div') as HTMLElement | undefined, autoPlace: false });
         this.#gui.domElement.id = "gui";
         this.createDateFolder();
@@ -185,7 +194,7 @@ class Settings {
             (object, property, key) => {
                 SETTINGS.radio = key;
                 SETTINGS.showcaseCSV = this.#csv[key];
-                this.resetYearRange();
+                this.clampYearRange();
                 Events.dispatchEvent(Events.CREATE_HELIX);
                 this.#showcaseFolder.title(`Region: ${key}`);
                 this.#showcaseFolder.close();
@@ -219,17 +228,21 @@ class Settings {
     selectDate(date: string): void {
         Object.assign(this.#csv, this.#datasets[date].csv);
         SETTINGS.showcaseCSV = this.#csv[SETTINGS.radio];
-        this.resetYearRange();
+        this.clampYearRange();
     }
 
-    private resetYearRange(): void {
+    /**
+     * Clamps the requested (shared) year range to the active dataset.
+     * @returns whether the helix's year range changed
+     */
+    clampYearRange(): boolean {
         const dataset = this.#datasets[SETTINGS.date];
-        const selectedFirstYear = this.#firstYear;
-        const selectedLastYear = this.#lastYear;
+        const previous = [this.#firstYear, this.#lastYear];
         this.#datasetFirstYear = dataset.firstYear;
         this.#datasetLastYear = dataset.lastYear;
-        this.#firstYear = Math.max(this.#datasetFirstYear, Math.min(selectedFirstYear, this.#datasetLastYear));
-        this.#lastYear = Math.max(this.#firstYear, Math.min(selectedLastYear, this.#datasetLastYear));
+        this.#firstYear = Math.max(this.#datasetFirstYear, Math.min(this.#requestedFirstYear, this.#datasetLastYear));
+        this.#lastYear = Math.max(this.#firstYear, Math.min(this.#requestedLastYear, this.#datasetLastYear));
+        return previous[0] !== this.#firstYear || previous[1] !== this.#lastYear;
     }
 
     get dateOptions(): string[] {
@@ -305,10 +318,28 @@ class Settings {
 
     setStartYear(year: number): void {
         this.#firstYear = Math.max(this.#datasetFirstYear, Math.min(year, this.#lastYear));
+        this.#requestedFirstYear = this.#firstYear;
     }
 
     setEndYear(year: number): void {
         this.#lastYear = Math.min(this.#datasetLastYear, Math.max(year, this.#firstYear));
+        this.#requestedLastYear = this.#lastYear;
+    }
+
+    /** The shared year range, as last chosen on any view's year slider. */
+    get requestedYearRange(): [number, number] {
+        return [this.#requestedFirstYear, this.#requestedLastYear];
+    }
+
+    /** Resets the shared year range to all years. The helix picks it up via {@link clampYearRange}. */
+    resetYearRange(): void {
+        this.requestYearRange(this.globalFirstYear, this.globalLastYear);
+    }
+
+    /** Records a year range chosen on a chart view's slider, for the other views to pick up when they become active. */
+    requestYearRange(firstYear: number, lastYear: number): void {
+        this.#requestedFirstYear = firstYear;
+        this.#requestedLastYear = lastYear;
     }
 
     get dataEndDate(): string {

@@ -152,6 +152,10 @@ function createSceneSwitcher(): void {
 function onSceneChanged(): void {
     const helixActive = sceneSwitcher.scene === Scene.HELIX;
     document.querySelector(CONTAINER_DIV)?.classList.toggle('scene-not-helix', !helixActive);
+    // Pick up a year range chosen on a chart view's slider.
+    if (helixActive && settings.clampYearRange()) {
+        Events.dispatchEvent(Events.CREATE_HELIX);
+    }
     updateInfoContent();
 }
 
@@ -222,6 +226,7 @@ function createHelix(): void {
                 get end() { return settings.lastYear; },
                 setStart: (year) => { settings.setStartYear(year); Events.dispatchEvent(Events.CREATE_HELIX); },
                 setEnd: (year) => { settings.setEndYear(year); Events.dispatchEvent(Events.CREATE_HELIX); },
+                reset: () => { settings.resetYearRange(); settings.clampYearRange(); Events.dispatchEvent(Events.CREATE_HELIX); },
             });
         }
     }

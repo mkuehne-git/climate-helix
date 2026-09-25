@@ -1,3 +1,5 @@
+import closeIcon from './icons/info/close.svg?raw';
+
 /** The value source and sink a {@link YearRangeSlider} drives. */
 interface YearRange {
     readonly min: number;
@@ -6,6 +8,8 @@ interface YearRange {
     readonly end: number;
     setStart(year: number): void;
     setEnd(year: number): void;
+    /** Back to the full range, from the slider's reset button. */
+    reset(): void;
 }
 
 class YearRangeSlider {
@@ -14,6 +18,7 @@ class YearRangeSlider {
     private readonly endInput: HTMLInputElement;
     private readonly startLabel: HTMLElement;
     private readonly endLabel: HTMLElement;
+    private readonly resetButton: HTMLButtonElement;
 
     constructor(container: Element, private readonly range: YearRange) {
         container.querySelector('.year-slider')?.remove();
@@ -37,6 +42,18 @@ class YearRangeSlider {
         this.endLabel.className = 'year-slider-label end';
         labels.append(this.startLabel, this.endLabel);
         this.element.appendChild(labels);
+
+        this.resetButton = document.createElement('button');
+        this.resetButton.type = 'button';
+        this.resetButton.className = 'year-slider-reset';
+        this.resetButton.title = 'Show all years';
+        this.resetButton.setAttribute('aria-label', 'Show all years');
+        this.resetButton.innerHTML = closeIcon;
+        this.resetButton.addEventListener('click', () => {
+            this.range.reset();
+            this.refresh();
+        });
+        this.element.appendChild(this.resetButton);
 
         container.insertBefore(this.element, container.firstChild);
         this.refresh();
@@ -74,6 +91,7 @@ class YearRangeSlider {
         const yearSpan = Math.max(max - min, 1);
         this.startLabel.style.left = `${((this.range.start - min) / yearSpan) * 100}%`;
         this.endLabel.style.left = `${((this.range.end - min) / yearSpan) * 100}%`;
+        this.resetButton.disabled = this.range.start === min && this.range.end === max;
     }
 
     dispose(): void {

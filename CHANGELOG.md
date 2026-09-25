@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.9.0
+
+* Add the year range slider to the Charts scene: it zooms the x-axis of all snapshot charts at once, and each chart's y-axis fits the years in view.
+* Share the year range between the Helix, Charts and Diff views: a view you switch to picks up the range last chosen on any view's slider. The helix clamps it to the selected dataset's years but keeps the original range, so switching to a shorter dataset and back (or to a chart view and back) restores it.
+* Add a small reset (X) button to the right of every year range slider. It shows all years again, for the shared range too, and is dimmed while all years are already shown.
+
 ## v0.8.6
 
 * Restore the earlier helix behavior for the year range slider: the selected years stretch to the full helix height again instead of shrinking the helix along the z-axis. This reverts the v0.6.5 z-scaling against the longest dataset's span, so shorter datasets also fill the full height again.
