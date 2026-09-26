@@ -14,7 +14,7 @@ import { Settings } from './Settings';
 import { ThemesSwitcher } from './ThemesSwitcher';
 import { InfoButton } from './InfoButton';
 
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { TrackballControls } from "three/examples/jsm/controls/TrackballControls.js";
 import { ClimateHelix } from './ClimateHelix';
 import { ClimateAxes } from './ClimateAxes';
 import { Events, Scene } from './Enums';
@@ -51,6 +51,7 @@ let group: THREE.Group;
 let camera: THREE.PerspectiveCamera;
 let scene: THREE.Scene;
 let renderer: THREE.WebGLRenderer;
+let controls: TrackballControls;
 let helixMesh: THREE.Mesh;
 let wireframeMesh: THREE.Mesh;
 let climateAxes: ClimateAxes;
@@ -133,20 +134,32 @@ function init() {
     group.rotation.x = -Math.PI / 2;
     scene.add(group);
 
-    const orbitControls = new OrbitControls(
-        camera,
-        renderer.domElement
-    );
+    // Trackball, not orbit controls: they rotate the helix freely in every
+    // direction, including end over end. Orbit controls keep the world's
+    // vertical axis - since v0.6.2 the helix's own axis - fixed on screen.
+    // Created before the stored camera is applied, so reset() returns to the
+    // initial view.
+    controls = new TrackballControls(camera, renderer.domElement);
+    applyNavigationSettings();
+    document.body.addEventListener(Events.CONTROLS_CHANGED.toString(), applyNavigationSettings);
     const storedCamera = persistentState.state.camera;
     if (storedCamera) {
         camera.position.fromArray(storedCamera.position);
-        orbitControls.target.fromArray(storedCamera.target);
+        controls.target.fromArray(storedCamera.target);
+        if (storedCamera.up) {
+            camera.up.fromArray(storedCamera.up);
+        }
+        camera.lookAt(controls.target);
     }
-    orbitControls.update();
-    // 'end' follows every drag, pinch and wheel step.
-    orbitControls.addEventListener('end', () => persistentState.update({
-        camera: { position: camera.position.toArray() as Vector3, target: orbitControls.target.toArray() as Vector3 },
+    // 'change', not 'end': the camera keeps moving for a moment after a drag.
+    controls.addEventListener('change', () => persistentState.update({
+        camera: {
+            position: camera.position.toArray() as Vector3,
+            target: controls.target.toArray() as Vector3,
+            up: camera.up.toArray() as Vector3,
+        },
     }));
+    renderer.domElement.addEventListener('dblclick', () => controls.reset());
 
     window.addEventListener('resize', onWindowResize);
     // Every CREATE_HELIX comes from the user changing what is shown (settings,
@@ -309,6 +322,7 @@ function animate() {
     if (animation.update(performance.now())) {
         applyAnimation();
     }
+    controls.update();
     renderer.render(scene, camera);
 }
 
@@ -353,11 +367,17 @@ function onThemeChanged() {
     createHelix();
 }
 
+function applyNavigationSettings(): void {
+    controls.staticMoving = !settings.inertia;
+    controls.rotateSpeed = settings.rotateSpeed;
+}
+
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
 
     renderer.setSize(window.innerWidth, window.innerHeight);
+    controls.handleResize();
 }
 async function start() {
     settings = await Settings.create();

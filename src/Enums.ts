@@ -23,6 +23,8 @@ export enum Events {
     SCENE_CHANGED = "scene-changed",
 
     ANIMATION_CHANGED = "animation-changed",
+
+    CONTROLS_CHANGED = "controls-changed",
 }
 export namespace Events {
     export function dispatchEvent(event: Events): void {

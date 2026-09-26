@@ -25,6 +25,7 @@ type StoredState = {
     yearRange?: { first?: number, last?: number },
     view?: {
         yearRangeVisible?: boolean,
+        navigation?: { inertia?: boolean, rotateSpeed?: number },
         axes?: {
             yearVisible?: boolean,
             temperatureVisible?: boolean,
@@ -47,7 +48,8 @@ type StoredState = {
     /** Only set once the user switched the theme; until then it follows the system. */
     theme?: 'light' | 'dark',
     scene?: Scene,
-    camera?: { position: Vector3, target: Vector3 },
+    /** `up` is missing in states stored before v0.11.1, with orbit controls; the default (0, 1, 0) applies then. */
+    camera?: { position: Vector3, target: Vector3, up?: Vector3 },
     diffBaseline?: string,
     /** Keyed by chart, e.g. `charts:2026-09-16` or `diff:Global`. */
     charts?: Record<string, ChartState>,
@@ -97,11 +99,12 @@ function record<T>(validator: Validator<T>): Validator<Record<string, T>> {
 const validateAnimation = object<NonNullable<StoredState['animation']>>({ duration: finite, loop: bool, playOnStart: bool });
 
 const validateCamera: Validator<NonNullable<StoredState['camera']>> = (value) => {
-    const camera = object<{ position?: Vector3, target?: Vector3 }>({ position: vector3, target: vector3 })(value);
+    const camera = object<{ position?: Vector3, target?: Vector3, up?: Vector3 }>({ position: vector3, target: vector3, up: vector3 })(value);
     if (!camera?.position || !camera.target || camera.position.every((item, index) => item === camera.target![index])) {
         return undefined;
     }
-    return { position: camera.position, target: camera.target };
+    const up = camera.up?.some((item) => item !== 0) ? camera.up : undefined;
+    return up ? { position: camera.position, target: camera.target, up } : { position: camera.position, target: camera.target };
 };
 
 const validateState = object<StoredState>({
@@ -111,6 +114,7 @@ const validateState = object<StoredState>({
     yearRange: object({ first: finite, last: finite }),
     view: object<NonNullable<StoredState['view']>>({
         yearRangeVisible: bool,
+        navigation: object({ inertia: bool, rotateSpeed: finite }),
         axes: object({
             yearVisible: bool,
             temperatureVisible: bool,

@@ -32,7 +32,7 @@ describe('parseState', () => {
             scene: Scene.DIFF,
             theme: 'dark',
             yearRange: { first: 1950, last: '2000' },
-            view: { axes: { yearVisible: false, yearTickCount: 'many' }, geometry: { radiusFactor: 1.5, radius: 3 } },
+            view: { navigation: { inertia: false, rotateSpeed: 'fast' }, axes: { yearVisible: false, yearTickCount: 'many' }, geometry: { radiusFactor: 1.5, radius: 3 } },
             colors: { cold: '#0000ff', warm: 'red' },
             animation: { duration: 20, loop: 'yes' },
             camera: { position: [1, 2, 3], target: [0, 0] },
@@ -43,7 +43,7 @@ describe('parseState', () => {
             scene: Scene.DIFF,
             theme: 'dark',
             yearRange: { first: 1950 },
-            view: { axes: { yearVisible: false }, geometry: { radiusFactor: 1.5 } },
+            view: { navigation: { inertia: false }, axes: { yearVisible: false }, geometry: { radiusFactor: 1.5 } },
             colors: { cold: '#0000ff' },
             animation: { duration: 20 },
             charts: { 'diff:Global': { hidden: ['2023-09-03'], movingAverage: false } },
@@ -55,6 +55,13 @@ describe('parseState', () => {
         expect(parseState(JSON.stringify({ version: 1, camera }))).toEqual({});
         camera.target = [0, 0, 0];
         expect(parseState(JSON.stringify({ version: 1, camera }))).toEqual({ camera });
+    });
+
+    it('keeps the camera\'s up direction, unless it has no direction', () => {
+        const camera = { position: [1, 2, 3], target: [0, 0, 0], up: [0, 0, 1] };
+        expect(parseState(JSON.stringify({ version: 1, camera })).camera).toEqual(camera);
+        camera.up = [0, 0, 0];
+        expect(parseState(JSON.stringify({ version: 1, camera })).camera).toEqual({ position: [1, 2, 3], target: [0, 0, 0] });
     });
 });
 

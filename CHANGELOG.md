@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.11.1
+
+* Fix the helix rotating in only two directions: since v0.6.2 stood it upright, it could spin around its own axis and tilt, but not turn end over end or upside down. The camera now uses trackball controls, which rotate the helix freely in every direction. A double-click on the helix returns to the initial view.
+* Add a ***View > Navigation*** section to the settings: **Rotation speed** (default 3, close to the speed before; the trackball's own speed felt about five times slower) and **Inertia** (on by default; with it off, the helix stops turning as soon as the pointer stops, instead of coasting for a moment).
+* Correct the README's Keyboard section: screen capture is Alt+S, not Ctrl+#, and the table now lists the A/S/D drag modifiers and the double-click.
+
 ## v0.11.0
 
 * Remember the settings and application state across reloads: dataset, region, year range, the View and Animation settings, changed helix colors, the theme once switched (until then it follows the system), the active view, the camera angle and zoom, the Diff view's baseline, and the chart checkboxes. When a newer data snapshot ships, the app opens on it instead of the snapshot chosen before. The Animation settings remembered by v0.10.0 are carried over.

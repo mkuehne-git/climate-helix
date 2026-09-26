@@ -12,7 +12,7 @@ The climate helix uses data from [NASA, Goddard Space Flight Center](https://dat
 
 The data starts in 1880 and, in the newest bundled snapshot, runs until August 2026. Each year is visualized as a loop within the helix. Each loop is divided into 12 segments, one for each month of the year. The distance from the center per month is proportional to the difference to the mean temperature of that month. For details regarding the data and the theory behind it, please check out the [GISS](https://data.giss.nasa.gov/gistemp/) documentation.
 
-The use of [OrbitControls](https://threejs.org/docs/#examples/en/controls/OrbitControls) makes it possible to easily navigate through the scene, by moving around a virtual camera. That means, you can scale, translate or rotate the image.
+The use of [TrackballControls](https://threejs.org/docs/#examples/en/controls/TrackballControls) makes it possible to easily navigate through the scene, by moving around a virtual camera: drag with the left mouse button (or one finger) to rotate the helix freely in any direction, including end over end, zoom with the mouse wheel (or a pinch), and pan with the right mouse button (or two fingers). A double-click returns to the initial view. The ***View > Navigation*** section of the settings panel sets the **Rotation speed** and **Inertia**: with inertia, the helix keeps turning for a moment after a drag; without it, it stops with the pointer.
 
 The controller UI (Icon in the upper right corner) provides options to configure the image. Not only can you choose, which region of the world you want to be visualized. With the ***View*** menu item you can toggle the x/y/z axes, change the coloring, and adjust some parameters controlling the geometry. With the ***Capture*** menu you can create images and download them to your computer.
 
@@ -57,8 +57,12 @@ Three icon-buttons at the lower-left switch between equal peer scenes: **Helix**
 |Key|Description|
 |---|---|
 |```h```, ```H```|Toggle visibility of control panel|
-|```CTRL + #```|Take screen capture|
+|```Alt + s```|Take screen capture|
 |```Esc```|Close imprint dialog|
+|```a``` + drag|Rotate the helix (like the left mouse button)|
+|```s``` + drag|Zoom (like the mouse wheel)|
+|```d``` + drag|Pan (like the right mouse button)|
+|Double-click|Return to the initial view|
 
 # PWA version updates
 
@@ -80,7 +84,7 @@ Major framework upgrades are still reviewed manually, especially for Vite, Three
 
 * [Coding Train, How to Code a Climate Spiral](https://youtu.be/rVBTxnRyOuE)
 * [NASA, Goddard Space Flight Center](https://data.giss.nasa.gov/gistemp/)
-* [OrbitControls - three.js docs](https://threejs.org/docs/#examples/en/controls/OrbitControls)
+* [TrackballControls - three.js docs](https://threejs.org/docs/#examples/en/controls/TrackballControls)
 
 # Acknowledgments
 

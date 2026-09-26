@@ -53,6 +53,7 @@ const LIMITS: Record<string, Limit> = {
     radialSegments: { min: 3, max: 32, step: 1 },
     radiusFactor: { min: 0.1, max: 2 },
     duration: { min: 2, max: 60, step: 1 },
+    rotateSpeed: { min: 0.5, max: 10, step: 0.5 },
 };
 
 function limited(controller: Controller, property: string): Controller {
@@ -75,6 +76,12 @@ const SETTINGS = {
             temperatureRingsColored: true,
         },
         yearRangeVisible: true,
+        navigation: {
+            /** The helix keeps turning for a moment after a drag. */
+            inertia: true,
+            /** 1 is the trackball controls' own speed, about a fifth of the orbit controls used before v0.11.1. */
+            rotateSpeed: 3,
+        },
         geometry: {
             meshVisible: false,
             facesVisible: true,
@@ -101,6 +108,7 @@ const COLOR_NAMES: ColorName[] = ['cold', 'zero', 'warm'];
 const DEFAULTS = {
     radio: SETTINGS.radio,
     yearRangeVisible: SETTINGS.view.yearRangeVisible,
+    navigation: { ...SETTINGS.view.navigation },
     axes: { ...SETTINGS.view.axes },
     geometry: { ...SETTINGS.view.geometry },
     animation: { ...SETTINGS.animation },
@@ -230,6 +238,7 @@ class Settings {
         // Every settings, dataset, region and year range change of the helix ends in one of these.
         document.body.addEventListener(Events.CREATE_HELIX.toString(), () => this.save());
         document.body.addEventListener(Events.ANIMATION_CHANGED.toString(), () => this.save());
+        document.body.addEventListener(Events.CONTROLS_CHANGED.toString(), () => this.save());
     }
 
     /** Applies the stored settings before the controls are built, so they show the restored values. */
@@ -237,6 +246,7 @@ class Settings {
         SETTINGS.date = storedDate(stored, DEFAULT_DATE, Object.keys(this.#datasets));
         SETTINGS.radio = stored.region ?? SETTINGS.radio;
         restoreFields(SETTINGS.view, { yearRangeVisible: stored.view?.yearRangeVisible });
+        restoreFields(SETTINGS.view.navigation, stored.view?.navigation);
         restoreFields(SETTINGS.view.axes, stored.view?.axes);
         restoreFields(SETTINGS.view.geometry, stored.view?.geometry);
         restoreFields(SETTINGS.animation, stored.animation);
@@ -262,6 +272,7 @@ class Settings {
             yearRange: this.#yearRange.stored,
             view: {
                 yearRangeVisible: SETTINGS.view.yearRangeVisible !== DEFAULTS.yearRangeVisible ? SETTINGS.view.yearRangeVisible : undefined,
+                navigation: changedFields(SETTINGS.view.navigation, DEFAULTS.navigation),
                 axes: changedFields(SETTINGS.view.axes, DEFAULTS.axes),
                 geometry: changedFields(geometry, defaultGeometry),
             },
@@ -406,6 +417,14 @@ class Settings {
         return SETTINGS.view.yearRangeVisible;
     }
 
+    get inertia(): boolean {
+        return SETTINGS.view.navigation.inertia;
+    }
+
+    get rotateSpeed(): number {
+        return SETTINGS.view.navigation.rotateSpeed;
+    }
+
     setStartYear(year: number): void {
         this.#yearRange.setStart(year);
     }
@@ -474,6 +493,21 @@ class Settings {
         this.createViewLegendFolder(folder);
         this.createViewGeometryFolder(folder);
         this.createViewColorsFolder(folder);
+        this.createViewNavigationFolder(folder);
+        folder.close();
+    }
+
+    createViewNavigationFolder(parent) {
+        const folder = parent.addFolder('Navigation');
+        // Not CREATE_HELIX: these only change how the camera moves, and must not end a running animation.
+        const changed = () => Events.dispatchEvent(Events.CONTROLS_CHANGED);
+        folder
+            .add(SETTINGS.view.navigation, 'inertia')
+            .name('Inertia')
+            .onChange(changed);
+        limited(folder.add(SETTINGS.view.navigation, 'rotateSpeed'), 'rotateSpeed')
+            .name('Rotation speed')
+            .onChange(changed);
         folder.close();
     }
 
