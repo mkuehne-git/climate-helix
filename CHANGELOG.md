@@ -1,6 +1,10 @@
 # Changelog
 
-## v0.12.0 · 2026-09-26
+## v0.13.0 · 2026-09-26
+
+* Show what's new after an update: the first time the app opens in a new version, it lists the changes since the version used last (without test- and docs-only versions), with a button to show the full changelog. It closes like the changelog, and Play on start waits until it is closed. New visitors don't see it, and ***Restore defaults*** does not bring it back.
+
+## v0.12.0 · 2026-09-26 · [b2b0f2b](https://github.com/mkuehne-git/climate-helix/commit/b2b0f2b)
 
 * Click the version label in the lower right corner to see the changelog. It closes like the imprint: with the X button or Escape.
 * Every changelog entry now shows its commit date and links to its commit on GitHub. The newest entry gets its commit with the next version; until then, the app's build adds it.

@@ -147,3 +147,10 @@ export function renderInline(text: string): string {
         .replace(/\*(.+?)\*/g, '<em>$1</em>');
     return html.replace(/\u0000(\d+)\u0000/g, (_, index: string) => codeSpans[Number(index)]);
 }
+
+/** The entries newer than `since`, up to `current`, without those marked "No functional change." */
+export function whatsNewEntries(entries: ChangelogEntry[], since: string, current: string): ChangelogEntry[] {
+    return entries.filter((entry) => compareVersions(entry.version, since) > 0
+        && compareVersions(entry.version, current) <= 0
+        && isFunctionalChange(entry));
+}

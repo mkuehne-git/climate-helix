@@ -14,6 +14,7 @@ import { Settings } from './Settings';
 import { ThemesSwitcher } from './ThemesSwitcher';
 import { InfoButton } from './InfoButton';
 import { Changelog } from './Changelog';
+import { showWhatsNewOnce } from './WhatsNew';
 
 import { TrackballControls } from "three/examples/jsm/controls/TrackballControls.js";
 import { ClimateHelix } from './ClimateHelix';
@@ -47,6 +48,7 @@ document.body.appendChild(containerDiv);
 
 let settings: Settings;
 const switcher = new ThemesSwitcher({ container: containerDiv });
+const changelog = new Changelog();
 
 let group: THREE.Group;
 let camera: THREE.PerspectiveCamera;
@@ -305,7 +307,6 @@ function createInfoDiv() {
     updateInfoEndDate();
 
     // Version info before infoIcon; a click shows the changelog.
-    new Changelog();
     const button = document.createElement('button');
     button.type = 'button';
     button.id = 'version-info';
@@ -395,6 +396,8 @@ async function start() {
     await document.fonts.load("32px 'Special Elite'").catch(() => undefined);
     init();
     switcher.initTheme();
+    // Play on start waits until the news are closed.
+    await showWhatsNewOnce(changelog, persistentState, APP_VERSION);
     if (settings.playOnStart && sceneSwitcher.scene === Scene.HELIX) {
         // A one-off run: it stops at the end even when Loop is on.
         animation.play({ once: true });

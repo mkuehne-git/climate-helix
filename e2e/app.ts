@@ -1,4 +1,17 @@
+import { readFileSync } from 'node:fs';
 import { expect, type Page } from '@playwright/test';
+
+/** The app version under test. */
+export const APP_VERSION: string = JSON.parse(readFileSync('package.json', 'utf8')).version;
+
+/**
+ * Stores a state before the app starts, as a returning user would have it. It
+ * includes the current version as seen, so What's new stays closed.
+ */
+export async function withStoredState(page: Page, state: object): Promise<void> {
+    await page.addInitScript((value) => localStorage.setItem('climate-helix.state', value),
+        JSON.stringify({ version: 1, lastSeenVersion: APP_VERSION, ...state }));
+}
 
 /**
  * Opens the app and collects page errors and console errors. WebGL driver

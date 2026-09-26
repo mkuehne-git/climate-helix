@@ -53,6 +53,8 @@ type StoredState = {
     diffBaseline?: string,
     /** Keyed by chart, e.g. `charts:2026-09-16` or `diff:Global`. */
     charts?: Record<string, ChartState>,
+    /** The app version whose news were shown last (What's new); kept by Restore defaults. */
+    lastSeenVersion?: string,
 };
 
 type Validator<T> = (value: unknown) => T | undefined;
@@ -138,6 +140,7 @@ const validateState = object<StoredState>({
     camera: validateCamera,
     diffBaseline: string,
     charts: record(object<ChartState>({ hidden: stringArray, autoScale: bool, movingAverage: bool })),
+    lastSeenVersion: string,
 });
 
 function parseJson(text: string | null): unknown {
@@ -189,6 +192,7 @@ class PersistentState {
     #state: StoredState;
     #timer: ReturnType<typeof setTimeout> | undefined;
     #enabled = true;
+    #hadStoredState = false;
 
     constructor(storage: Storage | undefined = localStorageOrUndefined()) {
         this.#storage = storage;
@@ -205,6 +209,11 @@ class PersistentState {
 
     get state(): Readonly<StoredState> {
         return this.#state;
+    }
+
+    /** Whether anything was stored before this visit, even if none of it was readable: the app was used before. */
+    get hadStoredState(): boolean {
+        return this.#hadStoredState;
     }
 
     update(changes: Partial<StoredState>): void {
@@ -226,15 +235,22 @@ class PersistentState {
         this.save();
     }
 
-    /** Forgets the stored state and stops saving, so a reload starts with the defaults. */
+    /**
+     * Forgets the stored state and stops saving, so a reload starts with the
+     * defaults. Only the last seen version stays, so What's new is not shown again.
+     */
     clear(): void {
         this.#enabled = false;
         clearTimeout(this.#timer);
         this.#timer = undefined;
+        const { lastSeenVersion } = this.#state;
         this.#state = {};
         this.withStorage((storage) => {
             storage.removeItem(STORAGE_KEY);
             storage.removeItem(LEGACY_ANIMATION_KEY);
+            if (lastSeenVersion !== undefined) {
+                storage.setItem(STORAGE_KEY, JSON.stringify({ version: STATE_VERSION, lastSeenVersion }));
+            }
         });
     }
 
@@ -243,10 +259,13 @@ class PersistentState {
         this.withStorage((storage) => {
             const text = storage.getItem(STORAGE_KEY);
             if (text !== null) {
+                this.#hadStoredState = true;
                 state = parseState(text);
                 return;
             }
-            const animation = validateAnimation(parseJson(storage.getItem(LEGACY_ANIMATION_KEY)));
+            const legacy = storage.getItem(LEGACY_ANIMATION_KEY);
+            this.#hadStoredState = legacy !== null;
+            const animation = validateAnimation(parseJson(legacy));
             if (animation) {
                 state = { animation };
             }

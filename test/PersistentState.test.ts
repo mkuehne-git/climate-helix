@@ -153,6 +153,19 @@ describe('PersistentState', () => {
         expect(storage.length).toBe(0);
     });
 
+    it('keeps only the last seen version on clear, so What\'s new is not shown again', () => {
+        const storage = memoryStorage({ [STORAGE_KEY]: JSON.stringify({ version: 1, theme: 'dark', lastSeenVersion: '0.13.0' }) });
+        const state = new PersistentState(storage);
+        state.clear();
+        expect(stored(storage)).toEqual({ version: 1, lastSeenVersion: '0.13.0' });
+    });
+
+    it('tells whether anything was stored before, even if unreadable', () => {
+        expect(new PersistentState(memoryStorage()).hadStoredState).toBe(false);
+        expect(new PersistentState(memoryStorage({ [STORAGE_KEY]: '{broken' })).hadStoredState).toBe(true);
+        expect(new PersistentState(memoryStorage({ [LEGACY_ANIMATION_KEY]: '{}' })).hadStoredState).toBe(true);
+    });
+
     it('works without storage, or with storage that throws', () => {
         const throwing = memoryStorage();
         throwing.getItem = () => { throw new Error('blocked'); };

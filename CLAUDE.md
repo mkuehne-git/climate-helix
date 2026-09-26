@@ -54,6 +54,7 @@ Always ask the project owner for approval before creating a commit. Do not commi
 - `src/HelixAnimation.ts` holds the creation animation's state (progress, playing, loop); `main.ts` advances it from the render loop and applies it to the helix meshes with `setDrawRange`.
 - `src/OverlayPage.ts` is the full-page overlay used by the imprint and the changelog: it closes with the X button at the info button's position or with Escape.
 - `src/Changelog.ts` shows `CHANGELOG.md` when the version label is clicked; `src/changelogFormat.ts` parses and renders it. The file is loaded on demand (`CHANGELOG.md?raw`), and the build adds the newest entry's commit hash (`changelogCommit` in `vite.config.ts`).
+- `src/WhatsNew.ts` shows the changelog entries since the version used last, once per version (`lastSeenVersion` in the persistent state, kept by Restore defaults). Entries marked "No functional change." are left out.
 - `src/ScreenCapture.ts`, `src/Imprint.ts`, `src/InfoButton.ts`, `src/SettingsButton.ts`, and `src/ThemesSwitcher.ts` implement the surrounding UI features.
 - `src/css/style.css` contains theme variables and application styling; color values used by the helix are read from CSS custom properties.
 - `public/assets/csv/` contains versioned NASA GISS data files. `Settings.ts` lists them in `datasetPaths` and fetches them at startup.

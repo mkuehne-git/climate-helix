@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { openApp, openSettings, setSliderYears, sliderYears, switchScene } from './app';
+import { APP_VERSION, openApp, openSettings, setSliderYears, sliderYears, switchScene } from './app';
 
 const heading = (page) => page.locator('.heading-div');
 
@@ -61,7 +61,8 @@ test('Restore defaults forgets everything', async ({ page }) => {
     await expect(page.locator('.full-scene.show')).toHaveCount(0);
     expect(await sliderYears(page)).toEqual(['1880', '2026']);
     await expect(page.locator('body')).toHaveClass(/\blight\b/);
-    expect(await page.evaluate(() => localStorage.getItem('climate-helix.state'))).toBeNull();
+    // Only the version seen stays, so What's new does not come back.
+    expect(JSON.parse((await page.evaluate(() => localStorage.getItem('climate-helix.state')))!)).toEqual({ version: 1, lastSeenVersion: APP_VERSION });
 });
 
 test('a cancelled Restore defaults keeps the settings', async ({ page }) => {

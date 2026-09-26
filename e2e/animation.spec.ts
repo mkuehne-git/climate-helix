@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { openApp, openSettings, setSliderYears, switchScene } from './app';
+import { openApp, openSettings, setSliderYears, switchScene, withStoredState } from './app';
 
 const playButton = (page: Page) => page.locator('.toggle-div.animation-button');
 const label = (page: Page) => page.locator('.animation-label');
@@ -7,7 +7,7 @@ const shownIcon = (page: Page) => playButton(page).locator('.show');
 
 /** Remembered Animation settings, as the settings panel would store them. */
 async function withAnimationSettings(page: Page, animation: { duration?: number, loop?: boolean, playOnStart?: boolean }): Promise<void> {
-    await page.addInitScript((value) => localStorage.setItem('climate-helix.state', value), JSON.stringify({ version: 1, animation }));
+    await withStoredState(page, { animation });
 }
 
 async function labelYear(page: Page): Promise<number> {

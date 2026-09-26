@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
-    HEADING, compareVersions, isFunctionalChange, parseChangelog, renderEntry, renderInline, renderMarkdown,
+    HEADING, compareVersions, isFunctionalChange, parseChangelog, renderEntry, renderInline, renderMarkdown, whatsNewEntries,
 } from '../src/changelogFormat';
 
 const changelogFile = readFileSync(new URL('../CHANGELOG.md', import.meta.url), 'utf8');
@@ -115,5 +115,18 @@ describe('renderInline', () => {
 
     it('does not link other URL schemes', () => {
         expect(renderInline('[x](javascript:alert(1))')).not.toContain('<a');
+    });
+});
+
+describe('whatsNewEntries', () => {
+    const entry = (version: string, text = 'Change.') => ({ version, lines: [`* ${text}`] });
+    const entries = [entry('1.0.1'), entry('1.0.0'), entry('0.13.0', 'Tests. No functional change.'), entry('0.12.0'), entry('0.11.1')];
+
+    it('returns the versions after the one seen, up to the current one, without non-functional ones', () => {
+        expect(whatsNewEntries(entries, '0.11.1', '1.0.0').map((e) => e.version)).toEqual(['1.0.0', '0.12.0']);
+    });
+
+    it('returns nothing when the current version was seen', () => {
+        expect(whatsNewEntries(entries, '1.0.0', '1.0.0')).toEqual([]);
     });
 });
