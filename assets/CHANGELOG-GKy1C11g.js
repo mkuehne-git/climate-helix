@@ -1,6 +1,17 @@
 var e=`# Changelog
 
-## v0.12.0 · 2026-09-26
+## v1.0.0 · 2026-09-26 · [cf66225](https://github.com/mkuehne-git/climate-helix/commit/cf66225)
+
+Climate Helix 1.0. The app shows NASA GISS temperature anomalies from 1880 to August 2026 as a 3D helix for the globe and both hemispheres, from three data snapshots. You can narrow the years, add a legend, let the helix grow month by month, and compare the snapshots in the Charts and Diff views. It remembers your settings, can be installed and works offline. After an update, it shows what's new, and the version number in the lower right corner opens the full changelog.
+
+* Revise the README: new screenshots in the light theme (one of What's new), a section on What's new and the changelog, a Development section with the npm scripts, and corrected outdated statements about the data retrieval, the settings menus and the CI workflow.
+* Retake the README screenshots with a script, \`npm run screenshots\`, instead of by hand.
+
+## v0.13.0 · 2026-09-26 · [326a0c7](https://github.com/mkuehne-git/climate-helix/commit/326a0c7)
+
+* Show what's new after an update: the first time the app opens in a new version, it lists the changes since the version used last (without test- and docs-only versions), with a button to show the full changelog. It closes like the changelog, and Play on start waits until it is closed. New visitors don't see it, and ***Restore defaults*** does not bring it back.
+
+## v0.12.0 · 2026-09-26 · [b2b0f2b](https://github.com/mkuehne-git/climate-helix/commit/b2b0f2b)
 
 * Click the version label in the lower right corner to see the changelog. It closes like the imprint: with the X button or Escape.
 * Every changelog entry now shows its commit date and links to its commit on GitHub. The newest entry gets its commit with the next version; until then, the app's build adds it.
