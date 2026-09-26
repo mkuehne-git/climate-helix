@@ -1,5 +1,13 @@
 var e=`# Changelog
 
+## v1.0.2 · 2026-09-26 · [3223cb5](https://github.com/mkuehne-git/climate-helix/commit/3223cb5)
+
+* Add a plan for localizing the app in English and German to the roadmap: what has to be translated, how the language is chosen, and the steps. No functional change.
+
+## v1.0.1 · 2026-09-26 · [1bfb76a](https://github.com/mkuehne-git/climate-helix/commit/1bfb76a)
+
+* Note in the roadmap that the lil-gui settings panel stays for now, and how a native settings panel could replace it for the app's users in a later major version. No functional change.
+
 ## v1.0.0 · 2026-09-26 · [cf66225](https://github.com/mkuehne-git/climate-helix/commit/cf66225)
 
 Climate Helix 1.0. The app shows NASA GISS temperature anomalies from 1880 to August 2026 as a 3D helix for the globe and both hemispheres, from three data snapshots. You can narrow the years, add a legend, let the helix grow month by month, and compare the snapshots in the Charts and Diff views. It remembers your settings, can be installed and works offline. After an update, it shows what's new, and the version number in the lower right corner opens the full changelog.
