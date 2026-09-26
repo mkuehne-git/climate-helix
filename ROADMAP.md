@@ -83,6 +83,44 @@ If accessibility, a phone-friendly layout, localization or a consistent look bec
 - **Unchanged**: the `Events` mechanism, `PersistentState` and the `SETTINGS` object; the native controls read and write the same fields.
 - **A first step that is useful on its own**: move the app functions out of lil-gui into the native UI, for example into the info panel or a small menu.
 
+### Localization: English and German
+
+The app would be available in English and German, and ready for more languages. It does not depend on the native settings panel: lil-gui labels can be translated with `.name(t(...))`.
+
+#### What has to be translated or formatted
+
+- **Settings** (`Settings.ts`): about 24 control labels and the folder titles.
+- **Other UI strings** (about 40, spread over the modules): button titles and aria-labels (scene switcher, Play/Pause, version label, slider reset), the PWA update dialog and status messages (`PwaUpdate.ts`), the Restore defaults `confirm()`, chart titles and legends.
+- **Info panels** (`info.html`, `chart-info.html`, `diff-info.html`, about 360 words): one HTML file per language rather than single strings.
+- **Titles from the data**: the GISS CSV titles ("Land-Ocean: Global Means") are English source text; map them by region to translated titles.
+- **Region names**: the `Showcase` values ('Global', 'Northern HS') serve as labels and as keys, and are stored in `PersistentState`. Keep them as keys and translate only for display.
+- **Month abbreviations** in `chartMath.ts` and `ClimateAxes.ts` (canvas labels in the 3D scene), numbers (`+1,5 °C` in German) and dates ("August 2026"): take them from `Intl.DateTimeFormat` and `Intl.NumberFormat`.
+- **Manifest and `<html lang>`**: the manifest name and description are fixed at build time; `<html lang>` follows the language.
+- **Unchanged**: the imprint (German already), the README and the screenshots (English).
+- **Open: the changelog and What's new.** German users would see English news. Start with English only; a German summary per version could follow, at the cost of extra work with every release.
+
+#### Design
+
+- **Catalogs**: `src/i18n/en.ts` and `de.ts`, plain TypeScript objects. `de` is typed like `en`, so a missing or misspelled key fails the build; a unit test checks completeness too. A small `t(key, params)` looks strings up, with English as the fallback. No i18n library: `Intl` covers numbers, dates, month names and plurals (`Intl.PluralRules`). Reconsider i18next or FormatJS only for a language with complex plural rules.
+- **Choosing the language**: by default German if `navigator.languages` starts with `de`, otherwise English. A **Language** setting (Auto / English / Deutsch) in `PersistentState`. Changing it reloads the app, because many labels are fixed when things are built (lil-gui names, canvas text in the 3D scene, charts).
+- **More languages later**: one catalog file and translated info panels, no code changes.
+
+#### To check
+
+- **Text length**: German is often about 30% longer. Check the wrapping title, buttons, the lil-gui label column and the chart legends at phone width.
+- **Fonts**: Special Elite (canvas axis labels) and DejaVu Sans must show ä ö ü ß.
+- **Tests**: e2e selectors that match English text (`getByRole(..., { name: 'Imprint' })`) need a fixed test language or stable IDs. Add an e2e smoke test with Playwright's `locale: 'de-DE'`.
+- **Upkeep**: every later UI change needs both languages. Add that rule to `CLAUDE.md` and the `release` skill.
+- **Translation**: drafts can be generated; the project owner reviews the German wording, especially the settings labels and the info panels.
+
+#### Steps
+
+Each step is its own version:
+
+1. **Move the strings out, no visible change** (patch): catalogs, `t()`, `Intl` formatting, region keys separated from their labels. The largest step.
+2. **German and the Language setting** (minor): the `de` catalog, language detection, the setting, German info panels, the German e2e smoke test.
+3. **Polish** (patch): layout at phone width, fonts, the manifest, possibly German What's new.
+
 ## Delivery Notes
 
 For each roadmap item, add or update the relevant manual checks and update this file when its status or design changes. At minimum, run `npm run build`, exercise affected interactions in both light and dark themes where relevant, check browser console errors, and verify PWA registration for build-related changes.

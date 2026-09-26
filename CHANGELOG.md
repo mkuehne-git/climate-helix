@@ -1,6 +1,10 @@
 # Changelog
 
-## v1.0.1 · 2026-09-26
+## v1.0.2 · 2026-09-26
+
+* Add a plan for localizing the app in English and German to the roadmap: what has to be translated, how the language is chosen, and the steps. No functional change.
+
+## v1.0.1 · 2026-09-26 · [1bfb76a](https://github.com/mkuehne-git/climate-helix/commit/1bfb76a)
 
 * Note in the roadmap that the lil-gui settings panel stays for now, and how a native settings panel could replace it for the app's users in a later major version. No functional change.
 
