@@ -63,6 +63,26 @@ The creation animation is done (v0.10.0, see Completed).
 
 **Not planned: morphing between datasets** (decided in v0.9.9). Most revisions between snapshots fluctuate more or less randomly by about ±0.01 °C, as the Diff charts show. A morph animation would hardly be visible on the helix and would not add insight; the Diff view already shows these revisions precisely.
 
+## Maybe later
+
+### Native settings panel (a 2.x candidate)
+
+The settings panel is built with lil-gui (earlier dat.gui). That is still a sound choice (decided in v1.0.1): lil-gui is maintained, small, dependency-free, used by the three.js examples and binds directly to the `SETTINGS` object. Tweakpane would be the newer tweak panel with more polished controls, but switching would only exchange one developer panel for another at the cost of rewriting `Settings.ts` and the e2e selectors. Leva needs React; Theatre.js is for keyframed animation.
+
+The panel has grown beyond tweaking parameters, though: it holds app functions for users (Restore defaults, Imprint, Check for updates) and remembered settings. That is where a developer panel starts to rub:
+
+- lil-gui stops key events from propagating, so Escape needed a capture-phase listener (v0.9.4).
+- Its look is its own and follows the theme only loosely.
+- Accessibility and the phone layout are acceptable, not polished.
+- The app already builds its own controls where they matter: the year range slider, the dataset buttons, the scene switcher.
+
+If accessibility, a phone-friendly layout, localization or a consistent look become goals, replace the panel with native HTML settings (`<dialog>`, `<details>`, form controls, the theme's CSS variables):
+
+- **User settings, native**: region and dataset, year range slider, legend, colors, theme, animation, navigation, screen capture, and the app functions Restore defaults, Imprint and Check for updates.
+- **Developer settings, lil-gui**: the geometry parameters (radial and tubular segments, radius factor, mesh and faces) and possibly the tick and ring counts. Either embedded as a collapsed "Advanced" section of the native dialog (lil-gui accepts a `container`), or as a separate hidden panel opened by a key or a URL parameter. Decide by whether users should see these settings at all.
+- **Unchanged**: the `Events` mechanism, `PersistentState` and the `SETTINGS` object; the native controls read and write the same fields.
+- **A first step that is useful on its own**: move the app functions out of lil-gui into the native UI, for example into the info panel or a small menu.
+
 ## Delivery Notes
 
 For each roadmap item, add or update the relevant manual checks and update this file when its status or design changes. At minimum, run `npm run build`, exercise affected interactions in both light and dark themes where relevant, check browser console errors, and verify PWA registration for build-related changes.
