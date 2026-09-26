@@ -18,6 +18,9 @@ export enum Events {
     SHOW_IMPRINT = "show-imprint",
     HIDE_IMPRINT = "hide-imprint",
 
+    SHOW_CHANGELOG = "show-changelog",
+    HIDE_CHANGELOG = "hide-changelog",
+
     CREATE_HELIX = "create-helix",
 
     SCENE_CHANGED = "scene-changed",

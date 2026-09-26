@@ -13,6 +13,7 @@ import * as THREE from 'three';
 import { Settings } from './Settings';
 import { ThemesSwitcher } from './ThemesSwitcher';
 import { InfoButton } from './InfoButton';
+import { Changelog } from './Changelog';
 
 import { TrackballControls } from "three/examples/jsm/controls/TrackballControls.js";
 import { ClimateHelix } from './ClimateHelix';
@@ -303,11 +304,15 @@ function createInfoDiv() {
     infoIcon?.insertAdjacentElement('beforebegin', div);
     updateInfoEndDate();
 
-    // Version info before infoIcon
-    const span = document.createElement('SPAN');
-    span.setAttribute('id', 'version-info');
-    span.innerHTML = `v${APP_VERSION}`;
-    infoIcon?.insertAdjacentElement('beforebegin', span);
+    // Version info before infoIcon; a click shows the changelog.
+    new Changelog();
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.id = 'version-info';
+    button.textContent = `v${APP_VERSION}`;
+    button.title = 'Show the changelog';
+    button.addEventListener('click', () => Events.dispatchEvent(Events.SHOW_CHANGELOG));
+    infoIcon?.insertAdjacentElement('beforebegin', button);
 }
 
 function updateInfoEndDate() {

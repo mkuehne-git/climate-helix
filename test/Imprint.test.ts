@@ -31,7 +31,7 @@ afterEach(() => {
 });
 
 const overlay = () => document.querySelector('.imprint');
-const closeButton = () => document.querySelector<HTMLElement>('.imprint div.imprint-close');
+const closeButton = () => document.querySelector<HTMLElement>('.imprint div.overlay-close');
 
 describe('Imprint', () => {
     it('shows the close button right away, before rendering finishes (v0.8.6)', () => {

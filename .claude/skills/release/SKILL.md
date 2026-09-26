@@ -15,12 +15,13 @@ Read the current version from `package.json` and the top entry of `CHANGELOG.md`
 - **Minor (`y`)**: new user-visible features (a new control, view or option).
 - **Major (`x`)**: never on your own - only the project owner decides.
 
-If the previous version was never committed (it is still in the working tree), extend its changelog entry instead of adding a new version.
+If the previous version was never committed (it is still in the working tree), extend its changelog entry instead of adding a new version, and do not add a commit to it.
 
 ## 2. Update version and changelog
 
 - `package.json`: the `"version"` field only. Do not reformat the file.
-- `CHANGELOG.md`: a new `## vX.Y.Z` section at the top, one bullet per change. Write for users of the app: what changed and why it matters, not which functions moved. Name fixed bugs by their symptom. Mention a new data snapshot by its date. Say "No functional change." for test, docs and refactor-only versions.
+- `CHANGELOG.md`: a new `## vX.Y.Z · YYYY-MM-DD` section at the top (today's date), one bullet per change. The app shows this file in its changelog view, so keep it user-facing.
+- Add the commit to the previous entry, which is the version committed at `HEAD`: `## vA.B.C · YYYY-MM-DD · [abc1234](https://github.com/mkuehne-git/climate-helix/commit/abc1234)`, with `git rev-parse --short=7 HEAD`. A commit cannot contain its own hash, so the new entry stays without one; the build adds it to the deployed app's copy (`changelogCommit` in `vite.config.ts`). `test/changelogFormat.test.ts` checks the format. Write for users of the app: what changed and why it matters, not which functions moved. Name fixed bugs by their symptom. Mention a new data snapshot by its date. Say "No functional change." for test, docs and refactor-only versions.
 
 ## 3. Validate
 

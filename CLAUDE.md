@@ -36,7 +36,7 @@ Unit tests live in `test/` and run with `npm test`; the test plan and its remain
 
 The app follows semantic versioning (`x.y.z`). Fixes and small improvements increase `z`; new features increase `y`. Increases to `x` are decided by the project owner.
 
-Always update the version number before creating a commit. Record the new version in `package.json` and add a corresponding entry to `CHANGELOG.md`. The `release` skill (`.claude/skills/release/`) covers the full routine: version, changelog, validation and the approval before committing.
+Always update the version number before creating a commit. Record the new version in `package.json` and add a corresponding entry to `CHANGELOG.md`, headed `## vX.Y.Z · YYYY-MM-DD`; the previous entry gets its commit's short hash as a link. The app shows the changelog to users, so write it for them. The `release` skill (`.claude/skills/release/`) covers the full routine: version, changelog, validation and the approval before committing.
 
 ## Git Workflow
 
@@ -52,6 +52,8 @@ Always ask the project owner for approval before creating a commit. Do not commi
 - `src/HelixGeometry.js` provides the custom tube geometry used for the helix.
 - `src/PersistentState.ts` keeps the settings and application state across reloads in one Local Storage entry (`climate-helix.state`). Modules read their part on startup and report changes with `persistentState.update()`; "Restore defaults" in the settings clears it and reloads.
 - `src/HelixAnimation.ts` holds the creation animation's state (progress, playing, loop); `main.ts` advances it from the render loop and applies it to the helix meshes with `setDrawRange`.
+- `src/OverlayPage.ts` is the full-page overlay used by the imprint and the changelog: it closes with the X button at the info button's position or with Escape.
+- `src/Changelog.ts` shows `CHANGELOG.md` when the version label is clicked; `src/changelogFormat.ts` parses and renders it. The file is loaded on demand (`CHANGELOG.md?raw`), and the build adds the newest entry's commit hash (`changelogCommit` in `vite.config.ts`).
 - `src/ScreenCapture.ts`, `src/Imprint.ts`, `src/InfoButton.ts`, `src/SettingsButton.ts`, and `src/ThemesSwitcher.ts` implement the surrounding UI features.
 - `src/css/style.css` contains theme variables and application styling; color values used by the helix are read from CSS custom properties.
 - `public/assets/csv/` contains versioned NASA GISS data files. `Settings.ts` lists them in `datasetPaths` and fetches them at startup.

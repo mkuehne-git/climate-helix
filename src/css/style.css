@@ -256,7 +256,8 @@ canvas.transparent {
     }
 }
 
-.imprint {
+/* Full-page overlays: the imprint and the changelog (OverlayPage.ts). */
+.overlay-page {
     display: block;
     background-color: var(--background-color);
     margin: 0;
@@ -267,28 +268,28 @@ canvas.transparent {
     height: 100%;
     overflow-y: scroll;
     /* Above everything with z-index 5 (info button, scene switcher, settings,
-       version info), which would otherwise cover the imprint - but below the
+       version info), which would otherwise cover the overlay - but below the
        PWA dialogs. */
     z-index: 8;
     /* Keeps the trailer clear of the fixed close button. */
     padding-bottom: calc(var(--settings-size) * 1.5);
 }
 
-.toggle-div.imprint-close {
+.toggle-div.overlay-close {
     /* Same spot as .toggle-div.info-button, but fixed so it stays in view
-       while the imprint scrolls. */
+       while the overlay scrolls. */
     position: fixed;
     --div-size: calc(var(--settings-size)*1.5);
     bottom: -16px;
     left: calc(50% - calc(var(--div-size)/2));
     width: var(--div-size);
     height: var(--div-size);
-    /* Keeps the icon legible over the scrolling imprint text. */
+    /* Keeps the icon legible over the scrolling overlay text. */
     background-color: var(--background-color);
     cursor: pointer;
 }
 
-.toggle-icon.imprint-close.show {
+.toggle-icon.overlay-close.show {
     width: calc(var(--settings-size));
     height: calc(var(--settings-size));
 }
@@ -312,10 +313,63 @@ canvas.transparent {
 #version-info {
     z-index: 5;
     position: absolute;
-    right: 8px;
-    bottom: 8px;
+    right: 0;
+    bottom: 0;
+    /* A larger hit area than the small label, for fingers. */
+    padding: 8px;
+    border: none;
+    background: none;
+    color: inherit;
+    font: inherit;
     font-size: x-small;
     opacity: 0.5;
+    cursor: pointer;
+}
+
+#version-info:hover,
+#version-info:focus-visible {
+    opacity: 1;
+    text-decoration: underline;
+}
+
+.changelog > div {
+    max-width: 44em;
+    margin: 0 auto;
+    padding: 0 16px;
+    line-height: 1.5;
+    overflow-wrap: break-word;
+}
+
+.changelog h1 {
+    font-size: 1.5rem;
+}
+
+.changelog h2 {
+    font-size: 1.15rem;
+    margin: 1.6em 0 0.4em;
+}
+
+.changelog h2 .changelog-meta {
+    font-size: 0.8rem;
+    font-weight: normal;
+    opacity: 0.7;
+    margin-left: 0.5em;
+}
+
+.changelog h3 {
+    font-size: 1rem;
+}
+
+.changelog a {
+    color: inherit;
+}
+
+.changelog code {
+    font-size: 0.9em;
+}
+
+.changelog .changelog-full {
+    margin-top: 1.6em;
 }
 
 #dataset-controls {
@@ -814,4 +868,8 @@ canvas.transparent {
 
 .chart-legend-item:has(.chart-legend-checkbox:not(:checked)) {
     opacity: 0.5;
+}
+/* Focused on opening, for keyboard scrolling; no ring around the whole page. */
+.overlay-page:focus {
+    outline: none;
 }

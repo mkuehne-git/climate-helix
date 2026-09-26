@@ -9,13 +9,13 @@ async function openImprint(page: Page): Promise<void> {
     await expect(page.locator('.imprint')).toBeVisible();
 }
 
-const closeButton = (page: Page) => page.locator('.imprint div.imprint-close');
+const closeButton = (page: Page) => page.locator('.imprint div.overlay-close');
 
 /** The close button is on top: a click at its center reaches it rather than a button underneath (v0.8.6). */
 async function expectCloseButtonOnTop(page: Page): Promise<void> {
     await expect(closeButton(page)).toBeVisible();
     const box = (await closeButton(page).boundingBox())!;
-    const onTop = await page.evaluate(({ x, y }) => !!document.elementFromPoint(x, y)?.closest('.imprint-close'), { x: box.x + box.width / 2, y: box.y + box.height / 3 });
+    const onTop = await page.evaluate(({ x, y }) => !!document.elementFromPoint(x, y)?.closest('.overlay-close'), { x: box.x + box.width / 2, y: box.y + box.height / 3 });
     expect(onTop).toBe(true);
 }
 
