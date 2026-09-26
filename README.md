@@ -26,7 +26,11 @@ A dual-handle slider below the helix lets you narrow the displayed years to any 
 
 # Animation
 
-The Play/Pause button in the top-left corner of the Helix view grows the helix month by month from the first selected year, while the year and month it has reached are shown below the title. Pause holds it; Play continues. Changing the year range, dataset, region or another setting stops the animation and shows the complete helix. The ***Animation*** section of the settings panel sets the **Duration** (in seconds for all years of the dataset; a shorter year range plays proportionally shorter), **Loop**, and **Play on start**, which plays it once when the app opens. The app remembers these three settings.
+The Play/Pause button in the top-left corner of the Helix view grows the helix month by month from the first selected year, while the year and month it has reached are shown below the title. Pause holds it; Play continues. Changing the year range, dataset, region or another setting stops the animation and shows the complete helix. The ***Animation*** section of the settings panel sets the **Duration** (in seconds for all years of the dataset; a shorter year range plays proportionally shorter), **Loop**, and **Play on start**, which plays it once when the app opens.
+
+# Remembered settings
+
+The app remembers your settings and where you left off: the dataset, region and year range, the ***View*** and ***Animation*** settings, changed helix colors, the theme (once you switch it; until then it follows your system), the active view, the camera angle and zoom, the Diff view's baseline, and the chart checkboxes. They are kept in your browser's Local Storage and never leave your device. When a newer data snapshot ships, the app opens on it instead of the snapshot you last chose. **Restore defaults** in the settings panel forgets all of this and reloads the app.
 
 # Legend
 

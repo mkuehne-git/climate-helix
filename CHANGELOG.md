@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.11.0
+
+* Remember the settings and application state across reloads: dataset, region, year range, the View and Animation settings, changed helix colors, the theme once switched (until then it follows the system), the active view, the camera angle and zoom, the Diff view's baseline, and the chart checkboxes. When a newer data snapshot ships, the app opens on it instead of the snapshot chosen before. The Animation settings remembered by v0.10.0 are carried over.
+* Add ***Restore defaults*** to the settings panel: after a confirmation, it forgets all remembered settings and reloads the app.
+
 ## v0.10.0
 
 * Add a creation animation to the Helix view: a Play/Pause button in the top-left corner grows the helix month by month from the first selected year, with the month it has reached shown below the title. Changing the year range, dataset, region or another setting shows the complete helix again; switching the theme does not interrupt it, and leaving the Helix view pauses it. With the system's reduced-motion preference, Play shows the complete helix at once.

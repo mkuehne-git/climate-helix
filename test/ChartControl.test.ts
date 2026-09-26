@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ChartControl, type ChartConfig } from '../src/ChartControl';
 
 let container: HTMLElement;
@@ -99,5 +99,47 @@ describe('ChartControl', () => {
     it('draws a zero line when asked to', () => {
         annualChart({ yZeroLine: true });
         expect(container.querySelector('.chart-zero-line')).not.toBeNull();
+    });
+
+    describe('state', () => {
+        const twoSeries = [{ label: 'A', color: 'red', points: annual() }, { label: 'B', color: 'blue', points: annual(0.1) }];
+        const legendChecked = () => [...container.querySelectorAll<HTMLInputElement>('.chart-legend-checkbox')].map((checkbox) => checkbox.checked);
+        const optionChecked = () => [...container.querySelectorAll<HTMLInputElement>('.chart-option-toggle input')].map((checkbox) => checkbox.checked);
+
+        it('starts with the given hidden series and options', () => {
+            annualChart({
+                series: twoSeries,
+                movingAverageVisible: true,
+                movingAverageDefault: true,
+                state: { hidden: ['B'], movingAverage: false },
+            });
+            expect(legendChecked()).toEqual([true, false]);
+            expect(seriesPaths()[1].style.display).toBe('none');
+            expect(optionChecked()).toEqual([false]);
+        });
+
+        it('ignores a stored option whose checkbox is not shown', () => {
+            // The Diff charts always auto-scale; a stored "off" must not turn that off.
+            annualChart({
+                autoScaleDefault: true,
+                series: [{ label: 'Small', color: 'red', points: annual() }, { label: 'Large', color: 'blue', points: annual(10) }],
+                state: { hidden: ['Large'], autoScale: false },
+            });
+            expect(Math.max(...yValues())).toBeLessThan(2);
+        });
+
+        it('reports legend and option changes, keeping hidden labels of series it lacks', () => {
+            const onStateChange = vi.fn();
+            annualChart({ series: twoSeries, movingAverageVisible: true, state: { hidden: ['C'] }, onStateChange });
+            const checkbox = container.querySelectorAll<HTMLInputElement>('.chart-legend-checkbox')[0];
+            checkbox.checked = false;
+            checkbox.dispatchEvent(new Event('change'));
+            expect(onStateChange).toHaveBeenLastCalledWith({ hidden: ['C', 'A'], autoScale: undefined, movingAverage: false });
+
+            const option = container.querySelector<HTMLInputElement>('.chart-option-toggle input')!;
+            option.checked = true;
+            option.dispatchEvent(new Event('change'));
+            expect(onStateChange).toHaveBeenLastCalledWith({ hidden: ['C', 'A'], autoScale: undefined, movingAverage: true });
+        });
     });
 });

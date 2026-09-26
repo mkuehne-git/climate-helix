@@ -28,7 +28,7 @@ If the newest existing snapshot is from the same year, ask the project owner whe
 In `src/Settings.ts`:
 
 - Add an entry to `datasetPaths` (newest first), with the same three file names as the other entries.
-- Set `SETTINGS.date` to the new folder name, so the app opens on the newest snapshot.
+- Set `DEFAULT_DATE` to the new folder name, so the app opens on the newest snapshot. Changing it also resets the snapshot that returning users had stored (see `storedDate` in `src/PersistentState.ts`), so everyone sees the new data.
 
 Nothing else in the app lists snapshots: the dataset buttons, the settings panel's Date folder, the Charts and Diff views and the year ranges all derive from `datasetPaths`.
 

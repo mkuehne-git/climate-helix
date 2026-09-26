@@ -1,4 +1,5 @@
 import { Events, Scene } from "./Enums";
+import { persistentState } from "./PersistentState";
 import { icon as helixIcon } from "./icons/helix/helixIcon";
 import { icon as chartIcon } from "./icons/charts/chartIcon";
 import { icon as diffIcon } from "./icons/diff/diffIcon";
@@ -18,7 +19,8 @@ const SCENES: SceneDescriptor[] = [
  * directly rather than reusing that toggle mechanism.
  */
 class SceneSwitcher {
-    #scene: Scene = Scene.HELIX;
+    /** The view last shown; `main.ts` announces it with {@link Events.SCENE_CHANGED} once the app is set up. */
+    #scene: Scene = persistentState.state.scene ?? Scene.HELIX;
     #buttons: Map<Scene, HTMLButtonElement> = new Map();
 
     constructor(container: Element) {
@@ -79,6 +81,7 @@ class SceneSwitcher {
         }
         this.#scene = scene;
         this.updateActive();
+        persistentState.update({ scene });
         Events.dispatchEvent(Events.SCENE_CHANGED);
     }
 

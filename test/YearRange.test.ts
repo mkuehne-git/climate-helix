@@ -108,4 +108,34 @@ describe('YearRange', () => {
             expect(range.requested).toEqual([1880, 2026]);
         });
     });
+
+    describe('storage', () => {
+        it('leaves out ends at the limit of all datasets', () => {
+            expect(range.stored).toEqual({ first: undefined, last: undefined });
+            range.request(1950, 2026);
+            expect(range.stored).toEqual({ first: 1950, last: undefined });
+            range.request(1880, 2000);
+            expect(range.stored).toEqual({ first: undefined, last: 2000 });
+        });
+
+        it('restores a stored range, which the helix picks up', () => {
+            range.restore({ first: 1950, last: 2000 });
+            expect(range.requested).toEqual([1950, 2000]);
+            range.clamp();
+            expect(helix()).toEqual([1950, 2000]);
+        });
+
+        it('runs an open end to the newest year of a newer snapshot', () => {
+            const newer = new YearRange(1880, 2027, 1880, 2027);
+            newer.restore({ first: 1950 });
+            expect(newer.requested).toEqual([1950, 2027]);
+        });
+
+        it('keeps a restored range within all years, with the start at or before the end', () => {
+            range.restore({ first: 1700, last: 3000 });
+            expect(range.requested).toEqual([1880, 2026]);
+            range.restore({ first: 2010, last: 1990 });
+            expect(range.requested).toEqual([2010, 2010]);
+        });
+    });
 });

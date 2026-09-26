@@ -1,4 +1,5 @@
 import { Events } from "./Enums";
+import { persistentState } from "./PersistentState";
 import { SVGToggleButton } from "./SVGToggleButton";
 import { icon as lightIcon } from "./icons/themes/lightIcon";
 import { icon as darkIcon } from "./icons/themes/darkIcon";
@@ -21,12 +22,15 @@ class ThemesSwitcher {
     }
 
     /**
-     * Used to initialize theme with system preferred theme.
+     * Used to initialize theme with the theme the user last switched to, or
+     * else the system preferred theme.
      */
     initTheme() {
-        this.#theme = this.preferredTheme();
+        const stored = persistentState.state.theme;
+        this.#theme = stored ? stored === DARK_THEME : this.preferredTheme();
+        document.body.classList.remove(DARK_THEME, LIGHT_THEME);
         document.body.classList.add(this.#theme ? DARK_THEME : LIGHT_THEME);
-        this.#button.show(this.#theme ? 0 : 1);
+        this.#button.select(this.#theme ? 0 : 1);
 
         Events.dispatchEvent(Events.THEME_CHANGED);
     }
@@ -55,6 +59,7 @@ class ThemesSwitcher {
         }
         this.#theme = !this.#theme;
         this.#button.toggle();
+        persistentState.update({ theme: newThemeStyle });
 
         Events.dispatchEvent(Events.THEME_CHANGED);
     }

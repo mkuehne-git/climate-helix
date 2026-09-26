@@ -1,4 +1,4 @@
-import { GUI } from 'lil-gui';
+import { GUI, type Controller } from 'lil-gui';
 import { Imprint } from './Imprint';
 import { Events, Showcase } from './Enums';
 import * as THREE from "three";
@@ -8,6 +8,7 @@ import { SettingsButton } from "./SettingsButton";
 import { checkForPwaUpdates, showPwaStatus } from './PwaUpdate';
 import { GISSParser } from './GISSParser';
 import { YearRange } from './YearRange';
+import { persistentState, storedDate, type StoredState } from './PersistentState';
 
 export type Dataset = { endDate: string, csv: Record<Showcase, string>, firstYear: number, lastYear: number };
 
@@ -40,41 +41,30 @@ async function loadDatasets(): Promise<Record<string, Dataset>> {
 // lighter helix mesh: headless browsers render WebGL in software.
 const E2E_BUILD = import.meta.env.VITE_E2E === 'true';
 
-type AnimationSettings = { duration: number, loop: boolean, playOnStart: boolean };
+const DEFAULT_DATE = '2026-09-16';
 
-const ANIMATION_DEFAULTS: AnimationSettings = { duration: 10, loop: false, playOnStart: false };
-const ANIMATION_STORAGE_KEY = 'climate-helix.animation';
+type Limit = { min: number, max: number, step?: number };
 
-/**
- * The Animation settings are the only ones kept across reloads - "Play on
- * start" would be pointless otherwise. Storage can be unavailable (private
- * mode, blocked site data); the defaults apply then.
- */
-function loadAnimationSettings(): AnimationSettings {
-    const settings = { ...ANIMATION_DEFAULTS };
-    try {
-        const stored = JSON.parse(localStorage.getItem(ANIMATION_STORAGE_KEY) ?? '{}');
-        if (typeof stored.duration === 'number' && stored.duration > 0) settings.duration = stored.duration;
-        if (typeof stored.loop === 'boolean') settings.loop = stored.loop;
-        if (typeof stored.playOnStart === 'boolean') settings.playOnStart = stored.playOnStart;
-    } catch {
-        // Keep the defaults.
-    }
-    return settings;
-}
+/** The ranges of the numeric settings, for their sliders and for restoring stored values. */
+const LIMITS: Record<string, Limit> = {
+    yearTickCount: { min: 2, max: 10, step: 1 },
+    temperatureRingCount: { min: 2, max: 10, step: 1 },
+    tubularSegments: { min: 1, max: 31, step: 1 },
+    radialSegments: { min: 3, max: 32, step: 1 },
+    radiusFactor: { min: 0.1, max: 2 },
+    duration: { min: 2, max: 60, step: 1 },
+};
 
-function saveAnimationSettings(settings: AnimationSettings): void {
-    try {
-        localStorage.setItem(ANIMATION_STORAGE_KEY, JSON.stringify(settings));
-    } catch {
-        // Not remembered, but still in effect for this visit.
-    }
+function limited(controller: Controller, property: string): Controller {
+    const limit = LIMITS[property];
+    controller.min(limit.min).max(limit.max);
+    return limit.step === undefined ? controller : controller.step(limit.step);
 }
 
 const SETTINGS = {
     showcaseCSV: undefined,
     radio: Showcase.GLOBAL,
-    date: '2026-09-16',
+    date: DEFAULT_DATE,
     view: {
         axes: {
             yearVisible: true,
@@ -99,9 +89,43 @@ const SETTINGS = {
             warm: colorDescriptor('warm'),
         }
     },
-    animation: loadAnimationSettings(),
+    animation: { duration: 10, loop: false, playOnStart: false },
     capture: {},
     imprint: () => Events.dispatchEvent(Events.SHOW_IMPRINT)
+}
+
+type ColorName = 'cold' | 'zero' | 'warm';
+const COLOR_NAMES: ColorName[] = ['cold', 'zero', 'warm'];
+
+/** The settings as shipped, to store only what the user changed - a changed default then still reaches everyone else. */
+const DEFAULTS = {
+    radio: SETTINGS.radio,
+    yearRangeVisible: SETTINGS.view.yearRangeVisible,
+    axes: { ...SETTINGS.view.axes },
+    geometry: { ...SETTINGS.view.geometry },
+    animation: { ...SETTINGS.animation },
+};
+
+/** The fields of `current` that differ from `defaults`; undefined when none do. */
+function changedFields<T extends object>(current: T, defaults: T): Partial<T> | undefined {
+    const changed = Object.entries(current).filter(([key, value]) => value !== defaults[key]);
+    return changed.length > 0 ? Object.fromEntries(changed) as Partial<T> : undefined;
+}
+
+/** Copies stored values onto the settings, keeping numbers within their slider's range. */
+function restoreFields<T extends object>(target: T, stored: Partial<T> | undefined): void {
+    for (const [key, value] of Object.entries(stored ?? {})) {
+        if (value === undefined || !(key in target)) {
+            continue;
+        }
+        const limit = LIMITS[key];
+        if (limit && typeof value === 'number') {
+            const stepped = limit.step === undefined ? value : Math.round(value / limit.step) * limit.step;
+            target[key] = Math.max(limit.min, Math.min(stepped, limit.max));
+        } else {
+            target[key] = value;
+        }
+    }
 }
 
 function colorDescriptor(temp: string) {
@@ -182,6 +206,8 @@ class Settings {
     }
     private constructor(datasets: Record<string, Dataset>) {
         this.#datasets = datasets;
+        const stored = persistentState.state;
+        this.restore(stored);
         const all = Object.values(datasets);
         this.#yearRange = new YearRange(
             Math.min(...all.map((dataset) => dataset.firstYear)),
@@ -189,6 +215,7 @@ class Settings {
             datasets[SETTINGS.date].firstYear,
             datasets[SETTINGS.date].lastYear,
         );
+        this.#yearRange.restore(stored.yearRange ?? {});
         this.#gui = new GUI({ container: document.querySelector('.container-div') as HTMLElement | undefined, autoPlace: false });
         this.#gui.domElement.id = "gui";
         this.createDateFolder();
@@ -196,9 +223,51 @@ class Settings {
         this.createViewFolder();
         this.createAnimationFolder();
         this.createCaptureFolder();
+        this.createRestoreDefaults();
         this.createImprint();
         this.createShowHideListener();
         this.createSettingsIcon();
+        // Every settings, dataset, region and year range change of the helix ends in one of these.
+        document.body.addEventListener(Events.CREATE_HELIX.toString(), () => this.save());
+        document.body.addEventListener(Events.ANIMATION_CHANGED.toString(), () => this.save());
+    }
+
+    /** Applies the stored settings before the controls are built, so they show the restored values. */
+    private restore(stored: Readonly<StoredState>): void {
+        SETTINGS.date = storedDate(stored, DEFAULT_DATE, Object.keys(this.#datasets));
+        SETTINGS.radio = stored.region ?? SETTINGS.radio;
+        restoreFields(SETTINGS.view, { yearRangeVisible: stored.view?.yearRangeVisible });
+        restoreFields(SETTINGS.view.axes, stored.view?.axes);
+        restoreFields(SETTINGS.view.geometry, stored.view?.geometry);
+        restoreFields(SETTINGS.animation, stored.animation);
+        for (const name of COLOR_NAMES) {
+            const color = stored.colors?.[name];
+            if (color) {
+                SETTINGS.view.colors[name].color.set(color);
+                SETTINGS.view.colors[name].modified = true;
+            }
+        }
+    }
+
+    private save(): void {
+        const { radius, ...geometry } = SETTINGS.view.geometry;
+        const { radius: defaultRadius, ...defaultGeometry } = DEFAULTS.geometry;
+        const colors = Object.fromEntries(COLOR_NAMES
+            .filter((name) => SETTINGS.view.colors[name].modified)
+            .map((name) => [name, `#${SETTINGS.view.colors[name].color.getHexString()}`]));
+        persistentState.update({
+            defaultDate: DEFAULT_DATE,
+            date: SETTINGS.date !== DEFAULT_DATE ? SETTINGS.date : undefined,
+            region: SETTINGS.radio !== DEFAULTS.radio ? SETTINGS.radio : undefined,
+            yearRange: this.#yearRange.stored,
+            view: {
+                yearRangeVisible: SETTINGS.view.yearRangeVisible !== DEFAULTS.yearRangeVisible ? SETTINGS.view.yearRangeVisible : undefined,
+                axes: changedFields(SETTINGS.view.axes, DEFAULTS.axes),
+                geometry: changedFields(geometry, defaultGeometry),
+            },
+            colors,
+            animation: changedFields(SETTINGS.animation, DEFAULTS.animation),
+        });
     }
 
     createSettingsIcon() {
@@ -353,11 +422,13 @@ class Settings {
     /** Resets the shared year range to all years. The helix picks it up via {@link clampYearRange}. */
     resetYearRange(): void {
         this.#yearRange.reset();
+        this.save();
     }
 
     /** Records a year range chosen on a chart view's slider, for the other views to pick up when they become active. */
     requestYearRange(firstYear: number, lastYear: number): void {
         this.#yearRange.request(firstYear, lastYear);
+        this.save();
     }
 
     get dataEndDate(): string {
@@ -366,15 +437,8 @@ class Settings {
 
     createAnimationFolder() {
         const folder = this.#gui.addFolder("Animation");
-        const changed = () => {
-            saveAnimationSettings(SETTINGS.animation);
-            Events.dispatchEvent(Events.ANIMATION_CHANGED);
-        };
-        folder
-            .add(SETTINGS.animation, 'duration')
-            .min(2)
-            .max(60)
-            .step(1)
+        const changed = () => Events.dispatchEvent(Events.ANIMATION_CHANGED);
+        limited(folder.add(SETTINGS.animation, 'duration'), 'duration')
             .name('Duration (s)')
             .onChange(changed);
         folder
@@ -427,18 +491,10 @@ class Settings {
             .add(SETTINGS.view.axes, 'monthVisible')
             .name('Month axis')
             .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
-        folder
-            .add(SETTINGS.view.axes, 'yearTickCount')
-            .min(2)
-            .max(10)
-            .step(1)
+        limited(folder.add(SETTINGS.view.axes, 'yearTickCount'), 'yearTickCount')
             .name('Year ticks')
             .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
-        folder
-            .add(SETTINGS.view.axes, 'temperatureRingCount')
-            .min(2)
-            .max(10)
-            .step(1)
+        limited(folder.add(SETTINGS.view.axes, 'temperatureRingCount'), 'temperatureRingCount')
             .name('Temperature rings')
             .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
         folder
@@ -462,24 +518,13 @@ class Settings {
             .name("Faces")
             // .onChange(() => Settings.dispatchEvent(Events.UPDATE_VISIBLE));
             .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
-        folder
-            .add(geometry, "tubularSegments")
-            .min(1)
-            .max(31)
-            .step(1)
+        limited(folder.add(geometry, "tubularSegments"), 'tubularSegments')
             .name(`Monthly Segments`)
             .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
-        folder
-            .add(geometry, "radialSegments")
-            .min(3)
-            .max(32)
-            .step(1)
+        limited(folder.add(geometry, "radialSegments"), 'radialSegments')
             .name(`Radius Segments`)
             .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
-        folder
-            .add(geometry, "radiusFactor")
-            .min(0.1)
-            .max(2)
+        limited(folder.add(geometry, "radiusFactor"), 'radiusFactor')
             .name(`Radius Factor`)
             .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
         folder.close();
@@ -525,6 +570,18 @@ class Settings {
         const folder = this.#gui.addFolder("Screen capture");
         folder.close();
         this.#captureFolder = folder;
+    }
+
+    /** Forgets the stored settings and state and reloads: the simplest way to reset everything, including the camera and the views. */
+    createRestoreDefaults(): void {
+        this.#gui.add({
+            restoreDefaults: () => {
+                if (window.confirm('Restore all settings to their defaults? The app reloads.')) {
+                    persistentState.clear();
+                    window.location.reload();
+                }
+            }
+        }, 'restoreDefaults').name('Restore defaults');
     }
 
     createImprint(): void {

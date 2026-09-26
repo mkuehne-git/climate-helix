@@ -50,6 +50,7 @@ Always ask the project owner for approval before creating a commit. Do not commi
 - `src/Settings.ts` owns the lil-gui controls and dispatches application events when settings change.
 - `src/Enums.ts` contains shared event and showcase identifiers.
 - `src/HelixGeometry.js` provides the custom tube geometry used for the helix.
+- `src/PersistentState.ts` keeps the settings and application state across reloads in one Local Storage entry (`climate-helix.state`). Modules read their part on startup and report changes with `persistentState.update()`; "Restore defaults" in the settings clears it and reloads.
 - `src/HelixAnimation.ts` holds the creation animation's state (progress, playing, loop); `main.ts` advances it from the render loop and applies it to the helix meshes with `setDrawRange`.
 - `src/ScreenCapture.ts`, `src/Imprint.ts`, `src/InfoButton.ts`, `src/SettingsButton.ts`, and `src/ThemesSwitcher.ts` implement the surrounding UI features.
 - `src/css/style.css` contains theme variables and application styling; color values used by the helix are read from CSS custom properties.
@@ -58,7 +59,7 @@ Always ask the project owner for approval before creating a commit. Do not commi
 
 ## Data Updates
 
-Keep each data snapshot in its own dated directory under `public/assets/csv/`, with the three expected files: `GLB.Ts+dSST.csv`, `NH.Ts+dSST.csv`, and `SH.Ts+dSST.csv`. Register each snapshot in `datasetPaths` in `src/Settings.ts` and set `SETTINGS.date` to the default one. The `data-update` skill (`.claude/skills/data-update/`) walks through adding a snapshot. Preserve the GISS file structure: title row, header row, monthly columns, and the trailing aggregate columns.
+Keep each data snapshot in its own dated directory under `public/assets/csv/`, with the three expected files: `GLB.Ts+dSST.csv`, `NH.Ts+dSST.csv`, and `SH.Ts+dSST.csv`. Register each snapshot in `datasetPaths` in `src/Settings.ts` and set `DEFAULT_DATE` to the default one. The `data-update` skill (`.claude/skills/data-update/`) walks through adding a snapshot. Preserve the GISS file structure: title row, header row, monthly columns, and the trailing aggregate columns.
 
 When changing parsing or data handling, check all three regions and confirm that the displayed title and date range match the selected CSV. Treat source-data changes as user-visible changes and mention the snapshot date in the changelog when appropriate.
 

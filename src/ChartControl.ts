@@ -1,4 +1,5 @@
 import { decimalsForStep, formatMonthYear, monthTicks, movingAverage, niceTicks } from './chartMath';
+import type { ChartState } from './PersistentState';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -36,6 +37,10 @@ type ChartConfig = {
     movingAverageWindow?: number,
     /** Whether each series point's `x` is a whole year or a year+month fraction (Jan = .0 .. Dec = 11/12) - only affects the hover tooltip's title. Defaults to 'year'. */
     xResolution?: 'year' | 'month',
+    /** The legend and option checkboxes as the viewer left them; overrides the defaults above. */
+    state?: ChartState,
+    /** Called whenever the viewer changes a legend or option checkbox. */
+    onStateChange?: (state: ChartState) => void,
 };
 
 /**
@@ -56,6 +61,8 @@ class ChartControl {
     #visible: boolean[] = [];
     #autoScale = false;
     #movingAverage = false;
+    /** Hidden labels of series this chart doesn't have (a Diff chart lacks its baseline), kept for when it has them again. */
+    #otherHidden: string[] = [];
     #config: ChartConfig;
     #xValues: number[] = [];
     #xDomain: [number, number] = [0, 1];
@@ -96,9 +103,12 @@ class ChartControl {
 
     private render(config: ChartConfig): void {
         this.#config = config;
-        this.#visible = config.series.map(() => true);
-        this.#autoScale = config.autoScaleDefault ?? false;
-        this.#movingAverage = config.movingAverageVisible ? (config.movingAverageDefault ?? false) : false;
+        const hidden = config.state?.hidden ?? [];
+        const labels = config.series.map((series) => series.label);
+        this.#visible = labels.map((label) => !hidden.includes(label));
+        this.#otherHidden = hidden.filter((label) => !labels.includes(label));
+        this.#autoScale = (config.autoScaleVisible ? config.state?.autoScale : undefined) ?? config.autoScaleDefault ?? false;
+        this.#movingAverage = config.movingAverageVisible ? (config.state?.movingAverage ?? config.movingAverageDefault ?? false) : false;
 
         const title = document.createElement('div');
         title.className = 'chart-title';
@@ -133,12 +143,14 @@ class ChartControl {
                 options.appendChild(this.createOptionToggle('Auto-scale', this.#autoScale, (checked) => {
                     this.#autoScale = checked;
                     this.redrawPlot();
+                    this.notifyStateChange();
                 }));
             }
             if (config.movingAverageVisible) {
                 options.appendChild(this.createOptionToggle('Moving average', this.#movingAverage, (checked) => {
                     this.#movingAverage = checked;
                     this.redrawPlot();
+                    this.notifyStateChange();
                 }));
             }
         }
@@ -164,7 +176,7 @@ class ChartControl {
             item.className = 'chart-legend-item';
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
-            checkbox.checked = true;
+            checkbox.checked = this.#visible[index];
             checkbox.className = 'chart-legend-checkbox';
             checkbox.style.accentColor = series.color;
             checkbox.setAttribute('aria-label', `Show ${series.label}`);
@@ -457,8 +469,18 @@ class ChartControl {
         this.#tooltip.style.left = `${x}px`;
     }
 
+    private notifyStateChange(): void {
+        const hidden = this.#config.series.filter((_, index) => !this.#visible[index]).map((series) => series.label);
+        this.#config.onStateChange?.({
+            hidden: [...this.#otherHidden, ...hidden],
+            autoScale: this.#config.autoScaleVisible ? this.#autoScale : undefined,
+            movingAverage: this.#config.movingAverageVisible ? this.#movingAverage : undefined,
+        });
+    }
+
     private setSeriesVisible(index: number, visible: boolean): void {
         this.#visible[index] = visible;
+        this.notifyStateChange();
         if (this.#autoScale) {
             this.redrawPlot();
             return;

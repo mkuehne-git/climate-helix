@@ -8,13 +8,22 @@ No open priorities.
 
 ## Completed
 
+### Remembered settings (v0.11.0)
+
+The settings and application state are kept across reloads, and **Restore defaults** in the settings panel resets them.
+
+- **Storage** (`src/PersistentState.ts`): one versioned Local Storage entry, `climate-helix.state`. Each field is validated on load; anything unreadable falls back to its default, and unavailable storage only means nothing is remembered. Writes are grouped (300 ms) and flushed when the page is hidden. The Animation settings of v0.10.0 (`climate-helix.animation`) are carried over once.
+- **What is kept**: dataset, region, the shared year range (an end at the limit of all datasets is stored as open, so it grows with new data), View and Animation settings (only those changed from the defaults), changed colors, the theme once switched, the active view, the camera, the Diff baseline and the chart legend and option checkboxes.
+- **New snapshots win**: the stored dataset is dropped when `DEFAULT_DATE` changed since it was stored.
+- **Restore defaults** clears the entry and reloads, which resets everything, including the camera and the views.
+
 ### Creation animation (v0.10.0)
 
 A Play/Pause button in the top-left corner of the Helix view grows the helix month by month from the first selected year, with the month the tip has reached shown below the title.
 
 - **State** lives in `src/HelixAnimation.ts` (progress 0-1, playing, loop), outside the meshes: many things rebuild them, and a rebuilt mesh picks up the current progress. `main.ts` advances it from the render loop and draws a prefix of the helix with `geometry.setDrawRange` (`HelixGeometry` builds the tube segment by segment along the curve, so no geometry is rebuilt per frame).
 - **Interruptions**: every `CREATE_HELIX` (settings, dataset, region, year range) finishes the animation and shows the complete helix; theme switches rebuild the helix directly and keep it running. Leaving the Helix view pauses it. With reduced motion, Play shows the complete helix.
-- **Settings -> Animation**: Duration (seconds for the dataset's full year span; a shorter selection plays proportionally shorter), Loop (rests 1 s on the complete helix), Play on start (a one-off run that stops at the end even when looping). These three settings are the only ones kept across reloads (`localStorage`).
+- **Settings -> Animation**: Duration (seconds for the dataset's full year span; a shorter selection plays proportionally shorter), Loop (rests 1 s on the complete helix), Play on start (a one-off run that stops at the end even when looping).
 
 ### Charts (v0.7.0)
 

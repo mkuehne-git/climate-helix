@@ -27,6 +27,7 @@ import { ChartsScene } from './ChartsScene';
 import { DiffChartsScene } from './DiffChartsScene';
 import { HelixAnimation, drawCount, playSeconds, tipIndex } from './HelixAnimation';
 import { SVGToggleButton } from './SVGToggleButton';
+import { persistentState, type Vector3 } from './PersistentState';
 import { formatMonthYear } from './chartMath';
 import { icon as playIcon } from './icons/animation/playIcon';
 import { icon as pauseIcon } from './icons/animation/pauseIcon';
@@ -136,7 +137,16 @@ function init() {
         camera,
         renderer.domElement
     );
+    const storedCamera = persistentState.state.camera;
+    if (storedCamera) {
+        camera.position.fromArray(storedCamera.position);
+        orbitControls.target.fromArray(storedCamera.target);
+    }
     orbitControls.update();
+    // 'end' follows every drag, pinch and wheel step.
+    orbitControls.addEventListener('end', () => persistentState.update({
+        camera: { position: camera.position.toArray() as Vector3, target: orbitControls.target.toArray() as Vector3 },
+    }));
 
     window.addEventListener('resize', onWindowResize);
     // Every CREATE_HELIX comes from the user changing what is shown (settings,
@@ -162,6 +172,10 @@ function init() {
     createInfoDiv();
     document.body.addEventListener(Events.SCENE_CHANGED.toString(), onSceneChanged);
     Events.dispatchEvent(Events.THEME_CHANGED);
+    if (sceneSwitcher.scene !== Scene.HELIX) {
+        // Reopen the view last shown.
+        Events.dispatchEvent(Events.SCENE_CHANGED);
+    }
     animate();
 }
 
@@ -356,7 +370,7 @@ async function start() {
     await document.fonts.load("32px 'Special Elite'").catch(() => undefined);
     init();
     switcher.initTheme();
-    if (settings.playOnStart) {
+    if (settings.playOnStart && sceneSwitcher.scene === Scene.HELIX) {
         // A one-off run: it stops at the end even when Loop is on.
         animation.play({ once: true });
         applyAnimation();

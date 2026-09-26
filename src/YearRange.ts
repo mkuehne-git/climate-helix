@@ -94,6 +94,26 @@ class YearRange {
     reset(): void {
         this.request(this.globalFirstYear, this.globalLastYear);
     }
+
+    /**
+     * The requested range for storage. An end at the limit of all datasets is
+     * left out, so a range running to the newest year still does once a newer
+     * snapshot adds years.
+     */
+    get stored(): { first?: number, last?: number } {
+        return {
+            first: this.#requestedFirstYear > this.globalFirstYear ? this.#requestedFirstYear : undefined,
+            last: this.#requestedLastYear < this.globalLastYear ? this.#requestedLastYear : undefined,
+        };
+    }
+
+    /** Requests a stored range, see {@link stored}, within the years of all datasets. The helix picks it up via {@link clamp}. */
+    restore(stored: { first?: number, last?: number }): void {
+        const limit = (year: number | undefined, fallback: number) =>
+            Math.max(this.globalFirstYear, Math.min(Math.round(year ?? fallback), this.globalLastYear));
+        const first = limit(stored.first, this.globalFirstYear);
+        this.request(first, Math.max(first, limit(stored.last, this.globalLastYear)));
+    }
 }
 
 export { YearRange };

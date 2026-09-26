@@ -4,6 +4,7 @@ import { GISSParser } from "./GISSParser";
 import { ChartControl } from "./ChartControl";
 import { SceneSwitcher } from "./SceneSwitcher";
 import { YearRangeSlider } from "./YearRangeSlider";
+import { persistentState } from "./PersistentState";
 
 const REGION_COLOR_VARS: Record<Showcase, string> = {
     [Showcase.GLOBAL]: 'var(--chart-color-1)',
@@ -100,10 +101,13 @@ class ChartsScene {
                 color: REGION_COLOR_VARS[showcase],
                 points: new GISSParser(dataset.csv[showcase]).annualSeries.map((entry) => ({ x: entry.year, y: entry.value })),
             }));
+            const id = `charts:${date}`;
             this.#charts.push(new ChartControl(block, {
                 title: `${date} snapshot`,
                 series,
                 xDomain: this.xDomain(),
+                state: persistentState.state.charts?.[id],
+                onStateChange: (state) => persistentState.updateChart(id, state),
             }));
         }
     }

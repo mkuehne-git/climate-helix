@@ -4,6 +4,7 @@ import { GISSParser } from "./GISSParser";
 import { ChartControl } from "./ChartControl";
 import { SceneSwitcher } from "./SceneSwitcher";
 import { YearRangeSlider } from "./YearRangeSlider";
+import { persistentState } from "./PersistentState";
 
 /** The three validated categorical chart colors, assigned positionally. */
 const CHART_COLOR_VARS = ['var(--chart-color-1)', 'var(--chart-color-2)', 'var(--chart-color-3)'];
@@ -101,7 +102,9 @@ class DiffChartsScene {
         controls.appendChild(picker);
 
         const dates = this.#settings.dateOptions;
-        this.#baselineDate = this.#baselineDate ?? dates[dates.length - 1];
+        const storedBaseline = persistentState.state.diffBaseline;
+        this.#baselineDate = this.#baselineDate
+            ?? (storedBaseline !== undefined && dates.includes(storedBaseline) ? storedBaseline : dates[dates.length - 1]);
         const buttons = new Map<string, HTMLButtonElement>();
         dates.forEach((date) => {
             const button = document.createElement('button');
@@ -115,6 +118,7 @@ class DiffChartsScene {
                     return;
                 }
                 this.#baselineDate = date;
+                persistentState.update({ diffBaseline: date });
                 buttons.forEach((otherButton, otherDate) => otherButton.classList.toggle('active', otherDate === date));
                 this.renderDiffCharts();
             });
@@ -151,6 +155,8 @@ class DiffChartsScene {
 
             const block = document.createElement('div');
             this.#diffChartsContainer.appendChild(block);
+            // Per region, not per baseline: the options apply to whichever baseline is picked.
+            const id = `diff:${showcase}`;
             this.#charts.push(new ChartControl(block, {
                 title: `${showcase} - baseline ${baseline}`,
                 series,
@@ -160,6 +166,8 @@ class DiffChartsScene {
                 movingAverageVisible: true,
                 movingAverageDefault: true,
                 xResolution: 'month',
+                state: persistentState.state.charts?.[id],
+                onStateChange: (state) => persistentState.updateChart(id, state),
             }));
         }
     }

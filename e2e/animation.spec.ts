@@ -6,8 +6,8 @@ const label = (page: Page) => page.locator('.animation-label');
 const shownIcon = (page: Page) => playButton(page).locator('.show');
 
 /** Remembered Animation settings, as the settings panel would store them. */
-async function withAnimationSettings(page: Page, settings: { duration?: number, loop?: boolean, playOnStart?: boolean }): Promise<void> {
-    await page.addInitScript((value) => localStorage.setItem('climate-helix.animation', value), JSON.stringify(settings));
+async function withAnimationSettings(page: Page, animation: { duration?: number, loop?: boolean, playOnStart?: boolean }): Promise<void> {
+    await page.addInitScript((value) => localStorage.setItem('climate-helix.state', value), JSON.stringify({ version: 1, animation }));
 }
 
 async function labelYear(page: Page): Promise<number> {
