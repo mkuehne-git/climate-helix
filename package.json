@@ -1,6 +1,6 @@
 {
   "name": "climate-helix",
-  "version": "0.13.0",
+  "version": "1.0.0",
   "description": "3D Climate Helix",
   "main": "main.js",
   "engines": {
@@ -13,7 +13,8 @@
     "serve": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "screenshots": "playwright test -c playwright.screenshots.config.ts"
   },
   "keywords": [
     "Climate Spiral",

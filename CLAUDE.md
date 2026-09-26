@@ -17,6 +17,7 @@ npm run serve     # preview the production build
 npm test          # run the unit tests (Vitest)
 npm run test:watch # run the unit tests in watch mode
 npm run test:e2e  # build and run the Playwright end-to-end tests (Chromium, Firefox)
+npm run screenshots # retake the README screenshots in src/images/ (light theme)
 ```
 
 The default development server uses HTTPS with a local self-signed certificate. If the browser cannot trust that certificate, use `npm run dev:http` and open `http://127.0.0.1:5173/` instead.
@@ -30,7 +31,7 @@ The project uses the current Active LTS release of Node.js: Node 24 (24.21.0 loc
 - When adding or upgrading a dev dependency, check its `engines` field against that version.
 - Revisit this when a newer LTS starts (Node 26 in October 2026) and when the used one reaches end of life: update `.nvmrc`, the workflow and, if needed, `engines` together.
 
-Unit tests live in `test/` and run with `npm test`; the test plan and its remaining phases are described in `TESTING.md`. There is no lint script. End-to-end tests live in `e2e/` and run locally with `npm run test:e2e` (not in CI); run them after UI changes. After changes, run `npm test` and `npm run build`, and manually verify the app in a browser. Check the helix, region selector, theme switcher, settings controls, info/imprint dialogs, and screen capture behavior when those areas are affected.
+Unit tests live in `test/` and run with `npm test`; the test plan and its remaining phases are described in `TESTING.md`. There is no lint script. End-to-end tests live in `e2e/` and run locally with `npm run test:e2e` (not in CI); run them after UI changes. After visible UI changes, retake the README screenshots with the `screenshots` skill (`.claude/skills/screenshots/`). After changes, run `npm test` and `npm run build`, and manually verify the app in a browser. Check the helix, region selector, theme switcher, settings controls, info/imprint dialogs, and screen capture behavior when those areas are affected.
 
 ## Versioning
 

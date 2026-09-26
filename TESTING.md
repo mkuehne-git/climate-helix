@@ -75,7 +75,7 @@ Playwright, run locally with `npm run test:e2e`. `playwright.config.ts` builds t
 - **4 workers.** More parallel pages mostly cause timeouts; the suite takes about 30 seconds.
 - **Browsers.** Chromium and Firefox, installed once with `npx playwright install chromium firefox`.
 - **Imprint.** The imprint tests need the private `src/imprint-gen.js`; with the CI stub there is no imprint to show.
-- **Helpers.** `e2e/app.ts` opens the app (collecting console errors), switches scenes and moves the year sliders.
+- **Helpers.** `e2e/app.ts` opens the app (collecting console errors), switches scenes and moves the year sliders. `withStoredState()` starts the app with a remembered state that has seen the current version, so What's new stays closed; use it rather than writing `climate-helix.state` directly.
 
 - The app loads without console errors, and the helix title matches the selected dataset and region.
 - Dataset buttons and the region selector redraw the helix; the info panel's end date matches.
@@ -83,6 +83,7 @@ Playwright, run locally with `npm run test:e2e`. `playwright.config.ts` builds t
 - The imprint opens from the settings panel; the fixed X closes it at desktop and phone size, and after a burst of window resizes.
 - The theme switcher changes the theme, and the info panel opens and closes.
 - The service worker registers in the production build.
+- The version label opens the changelog, which closes with the X button and Escape (v0.12.0); What's new appears once after an update, not for new visitors, and leads to the full changelog (v0.13.0).
 
 No screenshot comparisons of the helix: WebGL output varies too much between machines. Screenshot checks for the SVG charts can be added later if needed.
 
@@ -96,5 +97,11 @@ No screenshot comparisons of the helix: WebGL output varies too much between mac
 4. `npm run build`
 
 It replaces the former `dependency-check.yml`, which only ran for dependency changes, on Node 20. It does not deploy: deployment stays a manual `deploy.sh` run (see `ROADMAP.md`). Dependabot groups the test tools (`vitest`, `happy-dom`, `@playwright/test`) in a `test-tooling` group; after a Playwright update, run `npx playwright install chromium firefox` locally.
+
+## README screenshots (v1.0.0)
+
+`npm run screenshots` retakes the images in `src/images/` with Playwright (`playwright.screenshots.config.ts`, specs in `screenshots/`): a production build with the full helix mesh on port 4181, Chromium, light theme, mostly at phone size (390 x 844). They are documentation, not tests, and are not compared with earlier images; review them before committing. The `screenshots` skill (`.claude/skills/screenshots/`) says when to retake them.
+
+## CI and Playwright
 
 Playwright stays local for now. Adding it to CI later means installing only Chromium and Firefox (`npx playwright install --with-deps chromium firefox`), at roughly 1 to 2 extra minutes per run.

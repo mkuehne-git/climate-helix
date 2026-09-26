@@ -8,6 +8,15 @@ No open priorities.
 
 ## Completed
 
+### Changelog and What's new (v0.12.0, v0.13.0)
+
+The version label opens `CHANGELOG.md` as a full page, and after an update the app shows the news since the version used last, once.
+
+- **Changelog format**: each heading reads `## vX.Y.Z · YYYY-MM-DD · [hash](commit URL)`. A commit cannot contain its own hash, so the newest entry gets it with the next release; until then the build adds `HEAD`'s hash to the app's copy (`changelogCommit` in `vite.config.ts`). The headings before v0.12.0 were filled in from the commits that set each version in `package.json`; v0.5.7 and v0.7.0 had no commit of their own and name the commit they were shipped in.
+- **Rendering** (`src/changelogFormat.ts`): a small parser for the Markdown the changelog uses, no dependency. The file is loaded on demand in its own chunk and precached for offline use.
+- **Overlay** (`src/OverlayPage.ts`): shared with the imprint - X button at the info button's position, Escape in the capture phase.
+- **What's new** (`src/WhatsNew.ts`): `lastSeenVersion` in the persistent state, set as soon as the news are shown. New visitors see nothing; users from before v0.13.0 without a stored version count as coming from v0.11.1. Entries marked "No functional change." are left out. Restore defaults keeps the version. Play on start waits until it is closed.
+
 ### Remembered settings (v0.11.0)
 
 The settings and application state are kept across reloads, and **Restore defaults** in the settings panel resets them.
