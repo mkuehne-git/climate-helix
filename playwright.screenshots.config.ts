@@ -16,6 +16,8 @@ export default defineConfig({
     use: {
         ...devices['Desktop Chrome'],
         baseURL: `http://localhost:${PORT}/climate-helix/`,
+        // English, whatever the machine's language; e2e/german.spec.ts switches to German.
+        locale: 'en-US',
         colorScheme: 'light',
         deviceScaleFactor: 1,
     },

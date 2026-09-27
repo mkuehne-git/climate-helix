@@ -74,11 +74,16 @@ export const en = {
         'settings.captureButton': "Click or press 'alt s'",
         'settings.restoreDefaults': 'Restore defaults',
         'settings.restoreDefaultsConfirm': 'Restore all settings to their defaults? The app reloads.',
+        'settings.language': 'Language',
+        /** The Language setting's choice to follow the browser's language. */
+        'settings.languageAuto': 'Automatic',
         'settings.imprint': 'Imprint',
         'settings.checkForUpdates': 'Check for updates',
 
         'version.title': 'Show the changelog',
         'changelog.heading': 'Changelog',
+        /** Shown below the changelog and What's new headings when the entries are not in this language; empty in English. */
+        'changelog.note': '',
         'whatsNew.heading': "What's new",
         'whatsNew.fullChangelog': 'Full changelog',
 

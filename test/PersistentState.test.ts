@@ -160,6 +160,11 @@ describe('PersistentState', () => {
         expect(stored(storage)).toEqual({ version: 1, lastSeenVersion: '0.13.0' });
     });
 
+    it('keeps a chosen language and drops an unknown one', () => {
+        expect(parseState(JSON.stringify({ version: 1, language: 'de' })).language).toBe('de');
+        expect(parseState(JSON.stringify({ version: 1, language: 'fr' })).language).toBeUndefined();
+    });
+
     it('tells whether anything was stored before, even if unreadable', () => {
         expect(new PersistentState(memoryStorage()).hadStoredState).toBe(false);
         expect(new PersistentState(memoryStorage({ [STORAGE_KEY]: '{broken' })).hadStoredState).toBe(true);

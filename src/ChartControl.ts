@@ -13,7 +13,8 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 // fallback for the very first paint.
 const DEFAULT_WIDTH = 800;
 const HEIGHT = 320;
-const MARGIN = { top: 16, right: 16, bottom: 34, left: 52 };
+// `left` fits the widest y-axis label, e.g. "+0,05 °C" in German, with its sign.
+const MARGIN = { top: 16, right: 16, bottom: 34, left: 64 };
 const PLOT_HEIGHT = HEIGHT - MARGIN.top - MARGIN.bottom;
 let nextClipId = 0;
 

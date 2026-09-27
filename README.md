@@ -32,6 +32,10 @@ The Play/Pause button in the top-left corner of the Helix view grows the helix m
 
 The app remembers your settings and where you left off: the dataset, region and year range, the ***View*** and ***Animation*** settings, changed helix colors, the theme (once you switch it; until then it follows your system), the active view, the camera angle and zoom, the Diff view's baseline, and the chart checkboxes. They are kept in your browser's Local Storage and never leave your device. When a newer data snapshot ships, the app opens on it instead of the snapshot you last chose. **Restore defaults** in the settings panel forgets all of this and reloads the app.
 
+# Language
+
+The app is available in English and German. It follows your browser's language: German if German is your preferred language, otherwise English. The **Language** setting near the bottom of the settings panel chooses one explicitly (English, Deutsch) or returns to **Automatic**; changing it reloads the app. Numbers and months follow the language, for example "+1,50 °C" and "März" in German. The changelog and What's new are English only.
+
 # What's new and changelog
 
 ![Climate-helix What's new](./src/images/climate-helix-whats-new.png)

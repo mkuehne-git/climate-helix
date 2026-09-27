@@ -9,7 +9,7 @@ import { checkForPwaUpdates, showPwaStatus } from './PwaUpdate';
 import { GISSParser } from './GISSParser';
 import { YearRange } from './YearRange';
 import { persistentState, storedDate, type StoredState } from './PersistentState';
-import { formatMonthYear, formatTemperature, regionName, t } from './i18n';
+import { LANGUAGE_NAMES, LANGUAGES, formatMonthYear, formatTemperature, regionName, t, type Language } from './i18n';
 
 /** `endMonth`: the last month with data, 0 (January) to 11. */
 export type Dataset = { endMonth?: { year: number, month: number }, csv: Record<Showcase, string>, firstYear: number, lastYear: number };
@@ -235,6 +235,7 @@ class Settings {
         this.createViewFolder();
         this.createAnimationFolder();
         this.createCaptureFolder();
+        this.createLanguage();
         this.createRestoreDefaults();
         this.createImprint();
         this.createShowHideListener();
@@ -616,6 +617,24 @@ class Settings {
         const folder = this.#gui.addFolder(t('settings.capture'));
         folder.close();
         this.#captureFolder = folder;
+    }
+
+    /**
+     * Automatic follows the browser's language. A change is stored at once and
+     * reloads the app: many labels are fixed when things are built (lil-gui,
+     * the text drawn into the 3D scene, the charts).
+     */
+    createLanguage(): void {
+        const options: Record<string, Language | 'auto'> = { [t('settings.languageAuto')]: 'auto' };
+        for (const language of LANGUAGES) {
+            options[LANGUAGE_NAMES[language]] = language;
+        }
+        const object = { language: persistentState.state.language ?? 'auto' };
+        this.#gui.add(object, 'language', options).name(t('settings.language')).onChange((value: Language | 'auto') => {
+            persistentState.update({ language: value === 'auto' ? undefined : value });
+            persistentState.flush();
+            window.location.reload();
+        });
     }
 
     /** Forgets the stored settings and state and reloads: the simplest way to reset everything, including the camera and the views. */

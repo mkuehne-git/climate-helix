@@ -31,7 +31,7 @@ import { HelixAnimation, drawCount, playSeconds, tipIndex } from './HelixAnimati
 import { SVGToggleButton } from './SVGToggleButton';
 import { persistentState, type Vector3 } from './PersistentState';
 import { formatMonthYear } from './chartMath';
-import { t } from './i18n';
+import { language, t, type Language } from './i18n';
 import { icon as playIcon } from './icons/animation/playIcon';
 import { icon as pauseIcon } from './icons/animation/pauseIcon';
 
@@ -41,6 +41,9 @@ import { icon as pauseIcon } from './icons/animation/pauseIcon';
 import infoDivAsString from './info.html?raw';
 import chartInfoDivAsString from './chart-info.html?raw';
 import diffInfoDivAsString from './diff-info.html?raw';
+import infoDivAsStringDe from './info.de.html?raw';
+import chartInfoDivAsStringDe from './chart-info.de.html?raw';
+import diffInfoDivAsStringDe from './diff-info.de.html?raw';
 
 const containerDiv = document.createElement('DIV');
 const CONTAINER_DIV = '.container-div';
@@ -217,10 +220,17 @@ function onSceneChanged(): void {
     updateInfoContent();
 }
 
-const INFO_CONTENT_BY_SCENE: Record<Scene, string> = {
-    [Scene.HELIX]: infoDivAsString,
-    [Scene.CHARTS]: chartInfoDivAsString,
-    [Scene.DIFF]: diffInfoDivAsString,
+const INFO_CONTENT_BY_SCENE: Record<Language, Record<Scene, string>> = {
+    en: {
+        [Scene.HELIX]: infoDivAsString,
+        [Scene.CHARTS]: chartInfoDivAsString,
+        [Scene.DIFF]: diffInfoDivAsString,
+    },
+    de: {
+        [Scene.HELIX]: infoDivAsStringDe,
+        [Scene.CHARTS]: chartInfoDivAsStringDe,
+        [Scene.DIFF]: diffInfoDivAsStringDe,
+    },
 };
 
 function updateInfoContent(): void {
@@ -228,7 +238,7 @@ function updateInfoContent(): void {
     if (!infoDiv) {
         return;
     }
-    infoDiv.innerHTML = INFO_CONTENT_BY_SCENE[sceneSwitcher.scene];
+    infoDiv.innerHTML = INFO_CONTENT_BY_SCENE[language()][sceneSwitcher.scene];
     updateInfoEndDate();
 }
 
@@ -302,7 +312,7 @@ function createInfoIcon(): void {
 function createInfoDiv() {
     const div = document.createElement('DIV');
     div.setAttribute('id', 'info-div');
-    div.innerHTML = infoDivAsString;
+    div.innerHTML = INFO_CONTENT_BY_SCENE[language()][Scene.HELIX];
     const infoIcon = document.querySelector('.info-button');
     infoIcon?.insertAdjacentElement('beforebegin', div);
     updateInfoEndDate();

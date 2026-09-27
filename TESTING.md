@@ -76,6 +76,7 @@ Playwright, run locally with `npm run test:e2e`. `playwright.config.ts` builds t
 - **Browsers.** Chromium and Firefox, installed once with `npx playwright install chromium firefox`.
 - **Imprint.** The imprint tests need the private `src/imprint-gen.js`; with the CI stub there is no imprint to show.
 - **Helpers.** `e2e/app.ts` opens the app (collecting console errors), switches scenes and moves the year sliders. `withStoredState()` starts the app with a remembered state that has seen the current version, so What's new stays closed; use it rather than writing `climate-helix.state` directly.
+- **Language.** The unit tests (`test/setup.ts`) and the Playwright configs (`locale: 'en-US'`) pin English, whatever the machine's language. `e2e/german.spec.ts` runs with `locale: 'de-DE'`.
 
 - The app loads without console errors, and the helix title matches the selected dataset and region.
 - Dataset buttons and the region selector redraw the helix; the info panel's end date matches.
@@ -84,6 +85,7 @@ Playwright, run locally with `npm run test:e2e`. `playwright.config.ts` builds t
 - The theme switcher changes the theme, and the info panel opens and closes.
 - The service worker registers in the production build.
 - The version label opens the changelog, which closes with the X button and Escape (v0.12.0); What's new appears once after an update, not for new visitors, and leads to the full changelog (v0.13.0).
+- A German browser gets the app in German (title, info panel, settings, chart numbers and region names), and the Language setting switches to English and back to Automatic across reloads (v1.1.0).
 
 No screenshot comparisons of the helix: WebGL output varies too much between machines. Screenshot checks for the SVG charts can be added later if needed.
 

@@ -55,6 +55,8 @@ type StoredState = {
     charts?: Record<string, ChartState>,
     /** The app version whose news were shown last (What's new); kept by Restore defaults. */
     lastSeenVersion?: string,
+    /** Only set once the user chose a language; until then it follows the browser. */
+    language?: 'en' | 'de',
 };
 
 type Validator<T> = (value: unknown) => T | undefined;
@@ -141,6 +143,7 @@ const validateState = object<StoredState>({
     diffBaseline: string,
     charts: record(object<ChartState>({ hidden: stringArray, autoScale: bool, movingAverage: bool })),
     lastSeenVersion: string,
+    language: oneOf(['en', 'de'] as const),
 });
 
 function parseJson(text: string | null): unknown {
