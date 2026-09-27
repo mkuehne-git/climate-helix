@@ -15,10 +15,6 @@
     --b-color: rgb(var(--b-grey), var(--b-grey), var(--b-grey));
 }
 
-/* Remove title control, which usually closes the GUI. */
-#gui > .lil-title:first-of-type {
-    display: none
-}
 
 .lil-gui {
     /* lil-gui paints .lil-root with this variable, so override it rather than background-color. */

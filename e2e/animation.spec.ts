@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { openApp, openSettings, setSliderYears, switchScene, withStoredState } from './app';
+import { openApp, openSection, openSettings, setSliderYears, switchScene, withStoredState } from './app';
 
 const playButton = (page: Page) => page.locator('.toggle-div.animation-button');
 const label = (page: Page) => page.locator('.animation-label');
@@ -88,9 +88,9 @@ test('leaving the Helix view pauses the animation', async ({ page }) => {
 test('Play on start runs once and is remembered across reloads', async ({ page }) => {
     await openApp(page);
     await openSettings(page);
-    const gui = page.locator('#gui');
-    await gui.getByRole('button', { name: /Animation/ }).click();
-    await expect(gui.getByText('Duration (s)')).toBeVisible();
+    const gui = page.locator('#settings-panel');
+    await openSection(page, 'Animation');
+    await expect(gui.getByRole('slider', { name: 'Duration' })).toHaveValue('10');
     await expect(gui.getByRole('checkbox', { name: 'Loop' })).not.toBeChecked();
     await gui.getByRole('checkbox', { name: 'Play on start' }).check();
 
@@ -98,7 +98,7 @@ test('Play on start runs once and is remembered across reloads', async ({ page }
     await expect(label(page)).toBeVisible();
     await expect(shownIcon(page)).toHaveId('pause-icon');
     await openSettings(page);
-    await gui.getByRole('button', { name: /Animation/ }).click();
+    await openSection(page, 'Animation');
     await expect(gui.getByRole('checkbox', { name: 'Play on start' })).toBeChecked();
 });
 

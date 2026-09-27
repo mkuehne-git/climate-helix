@@ -71,3 +71,16 @@ export async function openSettings(page: Page): Promise<void> {
     await page.locator('.toggle-div.settings').click();
     await expect(page.locator('#settings-panel')).toBeVisible();
 }
+
+/** Opens a section of the settings panel (they are <details>) by its title, if closed. */
+export async function openSection(page: Page, title: string): Promise<void> {
+    const section = page.locator('#settings-panel details', { has: page.locator('summary', { hasText: title }) });
+    if (!(await section.evaluate((details: HTMLDetailsElement) => details.open))) {
+        await section.locator('summary').click();
+    }
+}
+
+/** Picks a region in the settings' Data section by its full name (the buttons show short names). */
+export async function pickRegion(page: Page, region: string): Promise<void> {
+    await page.locator('#settings-panel').getByRole('button', { name: region, exact: true }).click();
+}

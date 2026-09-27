@@ -1,6 +1,12 @@
 # Changelog
 
-## v1.2.0 · 2026-09-27
+## v1.3.0 · 2026-09-27
+
+* Rebuild the settings in the settings panel as collapsible sections with ordinary controls: **Data** (snapshot and region as buttons), **View** (year range slider, legend, colors, navigation), **Animation** and **Screen capture** (what to capture, and a button to save the image). They are larger and easier to use by touch and keyboard, follow the light and dark theme, and show a value changed elsewhere, such as the snapshot picked below the helix.
+* The mesh parameters of the helix (wireframe, faces, segments, radius factor) move to a collapsed **Advanced** section.
+* A screen capture of the whole page no longer includes the settings panel.
+
+## v1.2.0 · 2026-09-27 · [d7d1a4c](https://github.com/mkuehne-git/climate-helix/commit/d7d1a4c)
 
 * The settings open as a panel on the right side of the window, full screen on phones, with a header and a footer that stays in view. The footer holds Language, Check for updates, Imprint and Restore defaults, now as ordinary buttons, and the version with a link to the changelog, since the panel covers the version label. The settings themselves still look as before; the next versions rebuild them.
 * The `h` key opens and closes the settings panel, and Escape closes it.

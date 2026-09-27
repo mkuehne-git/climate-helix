@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { openApp, openSettings } from './app';
+import { openApp, openSection, openSettings, pickRegion } from './app';
 
 test('loads without errors and shows the newest global dataset', async ({ page }) => {
     const errors = await openApp(page);
@@ -27,8 +27,7 @@ test('the region selector switches between the three regions', async ({ page }) 
         ['Southern HS', 'Land-Ocean: Southern Hemispheric Means'],
         ['Global', 'Land-Ocean: Global Means'],
     ]) {
-        await page.locator('#gui').getByRole('button', { name: /Region: / }).click();
-        await page.locator('#gui').getByRole('checkbox', { name: region, exact: true }).check();
+        await pickRegion(page, region);
         await expect(heading).toHaveText(`${title} (August 2026)`);
     }
 });
@@ -108,4 +107,40 @@ test('the settings panel keeps the theme and gear buttons usable, and shows the 
     await page.keyboard.press('Escape');
     await expect(page.locator('.overlay-page.changelog')).toHaveCount(0);
     await expect(page.locator('#settings-panel')).toBeVisible();
+});
+
+test('the settings panel follows the dataset buttons below the helix', async ({ page }) => {
+    await openApp(page);
+    await openSettings(page);
+    const panel = page.locator('#settings-panel');
+    await page.locator('#dataset-buttons').getByRole('button', { name: '2023' }).click();
+    await expect(panel.getByRole('button', { name: '2023-09-03' })).toHaveAttribute('aria-pressed', 'true');
+    await panel.getByRole('button', { name: '2024-10-22' }).click();
+    await expect(page.locator('.heading-div')).toHaveText('Land-Ocean: Global Means (September 2024)');
+});
+
+test('the view settings redraw the helix and are remembered', async ({ page }) => {
+    await openApp(page);
+    await openSettings(page);
+    await openSection(page, 'View');
+    const panel = page.locator('#settings-panel');
+    await panel.getByRole('checkbox', { name: 'Year range' }).uncheck();
+    await expect(page.locator('#dataset-controls')).toHaveClass(/hidden/);
+    await panel.getByRole('slider', { name: 'Year ticks' }).fill('8');
+    await expect(panel.getByRole('slider', { name: 'Year ticks' }).locator('xpath=following-sibling::output')).toHaveText('8');
+    await page.waitForTimeout(400);
+    await page.reload();
+    await openSettings(page);
+    await openSection(page, 'View');
+    await expect(panel.getByRole('checkbox', { name: 'Year range' })).not.toBeChecked();
+    await expect(panel.getByRole('slider', { name: 'Year ticks' })).toHaveValue('8');
+});
+
+test('Advanced holds the geometry in lil-gui', async ({ page }) => {
+    await openApp(page);
+    await openSettings(page);
+    await openSection(page, 'Advanced');
+    const gui = page.locator('#settings-panel #gui');
+    await expect(gui.locator('.lil-title', { hasText: 'Geometry' })).toBeVisible();
+    await expect(gui.getByRole('checkbox', { name: 'Wireframe' })).not.toBeChecked();
 });

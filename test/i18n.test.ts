@@ -16,7 +16,7 @@ const REGION_FILES: Record<Showcase, string> = {
 
 describe('t', () => {
     it('fills in parameters and leaves unknown ones visible', () => {
-        expect(t('settings.date', { date: '2026-09-16' })).toBe('Date: 2026-09-16');
+        expect(t('charts.title', { date: '2026-09-16' })).toBe('2026-09-16 snapshot');
         expect(t('helix.heading', { title: 'T' })).toBe('T ({date})');
         expect(t('settings.loop')).toBe('Loop');
     });

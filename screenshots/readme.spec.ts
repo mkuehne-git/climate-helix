@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { NEWEST_NEWS_VERSION, openApp, openSettings, switchScene, withStoredState } from '../e2e/app';
+import { NEWEST_NEWS_VERSION, openApp, openSection, openSettings, switchScene, withStoredState } from '../e2e/app';
 
 // The README screenshots, see playwright.screenshots.config.ts. A phone-sized
 // viewport, like the app is mostly used; the legend one is wider for the
@@ -33,9 +33,7 @@ test('legend settings', async ({ page }) => {
     await page.setViewportSize({ width: 1200, height: 700 });
     await openApp(page);
     await openSettings(page);
-    const gui = page.locator('#gui');
-    await gui.locator('.lil-title', { hasText: /^View$/ }).click();
-    await gui.locator('.lil-title', { hasText: /^Legend$/ }).click();
+    await openSection(page, 'View');
     await shoot(page, 'climate-helix-legend');
 });
 

@@ -28,6 +28,9 @@ export enum Events {
     ANIMATION_CHANGED = "animation-changed",
 
     CONTROLS_CHANGED = "controls-changed",
+
+    /** Saves a screen capture, see ScreenCapture.ts. */
+    SCREEN_CAPTURE = "screen-capture",
 }
 export namespace Events {
     export function dispatchEvent(event: Events): void {

@@ -86,6 +86,11 @@ export function regionName(showcase: Showcase): string {
     return t(`region.${REGION_KEYS[showcase]}`);
 }
 
+/** A region's short name, e.g. "North", for narrow buttons. */
+export function regionShortName(showcase: Showcase): string {
+    return t(`region.short.${REGION_KEYS[showcase]}`);
+}
+
 /** The helix title of a region, e.g. "Land-Ocean: Global Means". */
 export function regionTitle(showcase: Showcase): string {
     return t(`title.${REGION_KEYS[showcase]}`);

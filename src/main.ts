@@ -185,7 +185,7 @@ function init() {
         All: document.body,
         Helix: renderer.domElement
     }
-    capture = new ScreenCapture(settings.captureSettings(), captureControls);
+    capture = new ScreenCapture(settings, captureControls);
     createSceneSwitcher();
     createPlayButton();
     infoIcon = createInfoIcon();

@@ -1,10 +1,7 @@
 import html2canvas from "html2canvas";
 
-import { Settings } from "./Settings";
-import { t, type MessageKey } from "./i18n";
-
-/** The display names of the capture choices; the keys identify them. */
-const CAPTURE_LABELS: Record<string, MessageKey> = { All: "settings.captureAll", Helix: "settings.captureHelix" };
+import { Events } from "./Enums";
+import type { CaptureTarget } from "./Settings";
 // This is for the screen capture. Without the WebGL content would not be showing.
 //
 // https://stackoverflow.com/questions/55760121/html2canvas-captures-everything-except-the-content-of-an-inner-canvas
@@ -22,59 +19,27 @@ type CaptureControls = {
 }
 
 /**
- * Allow to take screen captures of existing DOM elements. Reacts on keyboard key 's'.
+ * Takes screen captures of the page or the helix alone, as the settings'
+ * Screen capture section chooses: from its button or with Alt+S.
  */
 class ScreenCapture {
-  #fBeforeCapture: () => HTMLElement;
-  #optionsArray: any;
-  #captionIndex: string;
-  constructor(
-    settings: any,
-    options: CaptureControls = {
-      All: undefined,
-      Helix: undefined,
-    }
-  ) {
-    this.#fBeforeCapture = () => document.body;
-    this.#configureSettings(settings, options);
+  #targets: CaptureControls;
+  #settings: { captureTarget: CaptureTarget };
+
+  constructor(settings: { captureTarget: CaptureTarget }, targets: CaptureControls) {
+    this.#settings = settings;
+    this.#targets = targets;
+    document.body.addEventListener(Events.SCREEN_CAPTURE.toString(), () => this.capture());
     document.addEventListener("keydown", (e) => {
       if (e.altKey && e.key === "s") {
-        e.stopPropagation(); 
-        e.preventDefault();       
+        e.stopPropagation();
+        e.preventDefault();
         this.capture();
       }
     });
   }
 
-  #configureSettings(settings, options) {
-    const captures = {};
-    this.#optionsArray = options
-    for (const [key, value] of Object.entries(options)) {
-      captures[key]=undefined
-      // this.#optionsArray[key]=value;
-    }
-    const folder = settings.folder;
-    const property = settings.property;
-    property.selection = "All";
-    this.#captionIndex = "All";
-    this.#fBeforeCapture = () => {
-      console.log(this.#captionIndex);
-      console.log(this.#optionsArray);
-      return this.#optionsArray[this.#captionIndex];
-    };
-    property.on_capture_clicked = () => this.capture();
-    Settings.addRadioButtons(
-      folder,
-      property.selection,
-      captures,
-      (obj, prop, index) => {
-        console.log(`${obj}, ${prop}, ${index}`)
-        this.#captionIndex = index;
-      },
-      (key) => CAPTURE_LABELS[key] ? t(CAPTURE_LABELS[key]) : key
-    );
-    folder.add(property, "on_capture_clicked").name(t("settings.captureButton"));
-  }
+  #fBeforeCapture = (): HTMLElement | undefined => this.#targets[this.#settings.captureTarget];
 
   capture(fBeforeCapture = this.#fBeforeCapture) {
     console.log(`screenCapture ${fBeforeCapture}`);
@@ -85,7 +50,8 @@ class ScreenCapture {
     setTimeout(() => {
       const style = window.getComputedStyle(document.body);
       const backgroundColor = style.getPropertyValue("background-color");
-      html2canvas(elementToCapture, { backgroundColor }).then((canvas) => {
+      // The settings panel the capture may be started from is not part of the picture.
+      html2canvas(elementToCapture, { backgroundColor, ignoreElements: (element) => element.id === 'settings-panel' }).then((canvas) => {
         const a = document.createElement("a");
         a.href = canvas.toDataURL();
         a.download = "climate-helix.png";

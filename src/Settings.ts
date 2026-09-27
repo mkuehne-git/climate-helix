@@ -6,11 +6,12 @@ import './css/lil-gui.css';
 
 import { SettingsButton } from "./SettingsButton";
 import { SettingsPanel } from "./SettingsPanel";
+import { button, checkbox, color, range, section, segmented, subheading, type Control } from './settingsControls';
 import { checkForPwaUpdates, showPwaStatus } from './PwaUpdate';
 import { GISSParser } from './GISSParser';
 import { YearRange } from './YearRange';
 import { persistentState, storedDate, type StoredState } from './PersistentState';
-import { LANGUAGE_NAMES, LANGUAGES, formatMonthYear, formatTemperature, regionName, t, type Language } from './i18n';
+import { LANGUAGE_NAMES, LANGUAGES, formatMonthYear, formatNumber, formatTemperature, regionName, regionShortName, t, type Language } from './i18n';
 
 /** `endMonth`: the last month with data, 0 (January) to 11. */
 export type Dataset = { endMonth?: { year: number, month: number }, csv: Record<Showcase, string>, firstYear: number, lastYear: number };
@@ -109,10 +110,11 @@ const SETTINGS = {
         }
     },
     animation: { duration: 10, loop: false, playOnStart: false },
-    capture: {},
+    capture: 'All' as CaptureTarget,
 }
 
 type ColorName = 'cold' | 'zero' | 'warm';
+export type CaptureTarget = 'All' | 'Helix';
 const COLOR_NAMES: ColorName[] = ['cold', 'zero', 'warm'];
 
 /** The settings as shipped, to store only what the user changed - a changed default then still reaches everyone else. */
@@ -164,9 +166,7 @@ function styledColor(propertyName: string): THREE.Color {
 class Settings {
     #datasets: Record<string, Dataset>;
     #csv: Record<Showcase, string> = {} as Record<Showcase, string>;
-    #captureFolder: any;
-    #dateFolder: GUI;
-    #showcaseFolder: GUI;
+    #controls: Control[] = [];
     #gui: GUI;
     #panel: SettingsPanel;
     #yearRange: YearRange;
@@ -179,52 +179,6 @@ class Settings {
         return styledColor(propertyName);
     }
 
-    static addRadioButtonsFolder(
-        parent: GUI,
-        folderName: string,
-        object,
-        options,
-        onChange = (obj, prop, index) => { },
-        label = (key: string) => key
-    ) {
-        // Create the folder
-        const folder = parent.addFolder(folderName);
-        Settings.addRadioButtons(folder, object, options, onChange, label);
-        return folder;
-    }
-
-    static addRadioButtons(
-        parent: GUI,
-        initial: any,
-        options: any,
-        onChange = (obj, prop, index) => { },
-        label = (key: string) => key
-    ) {
-        const object = {};
-        // create property for each object
-        Object.entries(options).forEach(entry => {
-            const [key, value] = entry;
-            // console.log(`key: ${key}, value: ${value}`);
-            const property = `option_${key}`;
-            object[property] = initial === key;
-        });
-
-        // create the dat.gui buttons
-        Object.keys(options).forEach(key => {
-            const property = `option_${key}`;
-            parent
-                .add(object, property)
-                .name(label(key))
-                .listen()
-                .onChange(() => {
-                    for (let prop in object) {
-                        object[prop] = property === prop;
-                    }
-                    // console.log(`${object}, ${property}, ${key}`)
-                    onChange(object, property, key);
-                });
-        });
-    }
     private constructor(datasets: Record<string, Dataset>) {
         this.#datasets = datasets;
         const stored = persistentState.state;
@@ -238,19 +192,25 @@ class Settings {
         );
         this.#yearRange.restore(stored.yearRange ?? {});
         this.#panel = new SettingsPanel(document.querySelector('.container-div') ?? document.body);
-        this.#gui = new GUI({ container: this.#panel.body, autoPlace: false });
-        this.#gui.domElement.id = "gui";
-        this.createDateFolder();
-        this.createShowcaseFolder();
-        this.createViewFolder();
-        this.createAnimationFolder();
-        this.createCaptureFolder();
+        this.selectDate(SETTINGS.date);
+        this.createDataSection();
+        this.createViewSection();
+        this.createAnimationSection();
+        this.createCaptureSection();
+        this.createAdvancedSection();
         this.createAppFunctions(this.#panel.footer);
         this.createSettingsIcon();
         // Every settings, dataset, region and year range change of the helix ends in one of these.
         document.body.addEventListener(Events.CREATE_HELIX.toString(), () => this.save());
         document.body.addEventListener(Events.ANIMATION_CHANGED.toString(), () => this.save());
         document.body.addEventListener(Events.CONTROLS_CHANGED.toString(), () => this.save());
+        // Values can change elsewhere: the dataset buttons below the helix, the theme's colors.
+        document.body.addEventListener(Events.CREATE_HELIX.toString(), () => this.refreshControls());
+        document.body.addEventListener(Events.THEME_CHANGED.toString(), () => this.refreshControls());
+    }
+
+    private refreshControls(): void {
+        this.#controls.forEach((control) => control.update());
     }
 
     /** Applies the stored settings before the controls are built, so they show the restored values. */
@@ -297,45 +257,9 @@ class Settings {
         new SettingsButton(this.#panel);
     }
 
-    createShowcaseFolder(): void {
-        this.selectDate(SETTINGS.date);
-        this.#showcaseFolder = Settings.addRadioButtonsFolder(
-            this.#gui,
-            t('settings.region', { region: regionName(SETTINGS.radio) }),
-            SETTINGS.radio,
-            this.#csv,
-            (object, property, key) => {
-                SETTINGS.radio = key;
-                SETTINGS.showcaseCSV = this.#csv[key];
-                this.clampYearRange();
-                Events.dispatchEvent(Events.CREATE_HELIX);
-                this.#showcaseFolder.title(t('settings.region', { region: regionName(key) }));
-                this.#showcaseFolder.close();
-            },
-            (key) => regionName(key as Showcase)
-        );
-        SETTINGS.showcaseCSV = this.#csv[SETTINGS.radio];
-        this.#showcaseFolder.close();
-    }
-
-    createDateFolder(): void {
-        this.#dateFolder = Settings.addRadioButtonsFolder(
-            this.#gui,
-            t('settings.date', { date: SETTINGS.date }),
-            SETTINGS.date,
-            this.#datasets,
-            (object, property, key) => {
-                this.setDate(key);
-            }
-        );
-        this.#dateFolder.close();
-    }
-
     setDate(date: string): void {
         SETTINGS.date = date;
         this.selectDate(date);
-        this.#dateFolder.title(t('settings.date', { date }));
-        this.#dateFolder.close();
         Events.dispatchEvent(Events.CREATE_HELIX);
     }
 
@@ -466,23 +390,6 @@ class Settings {
         return SETTINGS.radio;
     }
 
-    createAnimationFolder() {
-        const folder = this.#gui.addFolder(t('settings.animation'));
-        const changed = () => Events.dispatchEvent(Events.ANIMATION_CHANGED);
-        limited(folder.add(SETTINGS.animation, 'duration'), 'duration')
-            .name(t('settings.duration'))
-            .onChange(changed);
-        folder
-            .add(SETTINGS.animation, 'loop')
-            .name(t('settings.loop'))
-            .onChange(changed);
-        folder
-            .add(SETTINGS.animation, 'playOnStart')
-            .name(t('settings.playOnStart'))
-            .onChange(changed);
-        folder.close();
-    }
-
     /** Seconds to grow the helix over the active dataset's full year span. */
     get animationDuration(): number {
         return SETTINGS.animation.duration;
@@ -496,107 +403,106 @@ class Settings {
         return SETTINGS.animation.playOnStart;
     }
 
-    createViewFolder() {
-        const folder = this.#gui.addFolder(t('settings.view'));
-        folder
-            .add(SETTINGS.view, 'yearRangeVisible')
-            .name(t('settings.yearRange'))
-            .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
-        this.createViewLegendFolder(folder);
-        this.createViewGeometryFolder(folder);
-        this.createViewColorsFolder(folder);
-        this.createViewNavigationFolder(folder);
-        folder.close();
+    /** Data: the snapshot and the region. */
+    private createDataSection(): void {
+        const content = section(this.#panel.body, t('settings.data'), { open: true });
+        this.#controls.push(
+            segmented(content, t('settings.snapshot'),
+                this.dateOptions.map((date) => ({ value: date, label: String(new Date(date).getFullYear()), title: date })),
+                () => SETTINGS.date,
+                (date) => this.setDate(date)),
+            segmented(content, t('settings.region'),
+                Object.values(Showcase).map((showcase) => ({ value: showcase, label: regionShortName(showcase), title: regionName(showcase) })),
+                () => SETTINGS.radio,
+                (showcase) => {
+                    SETTINGS.radio = showcase;
+                    SETTINGS.showcaseCSV = this.#csv[showcase];
+                    this.clampYearRange();
+                    Events.dispatchEvent(Events.CREATE_HELIX);
+                }),
+        );
     }
 
-    createViewNavigationFolder(parent) {
-        const folder = parent.addFolder(t('settings.navigation'));
+    /** View: the year range slider, the legend, the colors and the navigation. */
+    private createViewSection(): void {
+        const content = section(this.#panel.body, t('settings.view'));
+        const redraw = () => Events.dispatchEvent(Events.CREATE_HELIX);
+        const view = SETTINGS.view;
+        const axes = view.axes;
+        const navigation = view.navigation;
+        const bool = (text: string, object: object, key: string, changed = redraw) =>
+            checkbox(content, text, () => object[key], (value) => { object[key] = value; changed(); });
+        const number = (text: string, object: object, key: string, changed = redraw, format?: (value: number) => string) =>
+            range(content, text, LIMITS[key], () => object[key], (value) => { object[key] = value; changed(); }, format);
         // Not CREATE_HELIX: these only change how the camera moves, and must not end a running animation.
-        const changed = () => Events.dispatchEvent(Events.CONTROLS_CHANGED);
-        folder
-            .add(SETTINGS.view.navigation, 'inertia')
-            .name(t('settings.inertia'))
-            .onChange(changed);
-        limited(folder.add(SETTINGS.view.navigation, 'rotateSpeed'), 'rotateSpeed')
-            .name(t('settings.rotationSpeed'))
-            .onChange(changed);
-        folder.close();
+        const controlsChanged = () => Events.dispatchEvent(Events.CONTROLS_CHANGED);
+
+        this.#controls.push(bool(t('settings.yearRange'), view, 'yearRangeVisible'));
+        subheading(content, t('settings.legend'));
+        this.#controls.push(
+            bool(t('settings.yearAxis'), axes, 'yearVisible'),
+            bool(t('settings.temperatureAxis'), axes, 'temperatureVisible'),
+            bool(t('settings.monthAxis'), axes, 'monthVisible'),
+            number(t('settings.yearTicks'), axes, 'yearTickCount'),
+            number(t('settings.temperatureRings'), axes, 'temperatureRingCount'),
+            bool(t('settings.coloredRings'), axes, 'temperatureRingsColored'),
+        );
+        subheading(content, t('settings.colors'));
+        for (const [name, temperature, decimals] of [['cold', -1, 1], ['zero', 0, 0], ['warm', 1.5, 1]] as const) {
+            this.#controls.push(color(content, formatTemperature(temperature, decimals),
+                () => `#${view.colors[name].color.getHexString()}`,
+                (value) => {
+                    view.colors[name].color.set(value);
+                    this.dispatchColorEvent(name);
+                }));
+        }
+        subheading(content, t('settings.navigation'));
+        this.#controls.push(
+            bool(t('settings.inertia'), navigation, 'inertia', controlsChanged),
+            number(t('settings.rotationSpeed'), navigation, 'rotateSpeed', controlsChanged, (value) => formatNumber(value, value % 1 === 0 ? 0 : 1)),
+        );
     }
 
-    createViewLegendFolder(parent) {
-        const folder = parent.addFolder(t('settings.legend'));
-        folder
-            .add(SETTINGS.view.axes, 'yearVisible')
-            .name(t('settings.yearAxis'))
-            .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
-        folder
-            .add(SETTINGS.view.axes, 'temperatureVisible')
-            .name(t('settings.temperatureAxis'))
-            .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
-        folder
-            .add(SETTINGS.view.axes, 'monthVisible')
-            .name(t('settings.monthAxis'))
-            .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
-        limited(folder.add(SETTINGS.view.axes, 'yearTickCount'), 'yearTickCount')
-            .name(t('settings.yearTicks'))
-            .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
-        limited(folder.add(SETTINGS.view.axes, 'temperatureRingCount'), 'temperatureRingCount')
-            .name(t('settings.temperatureRings'))
-            .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
-        folder
-            .add(SETTINGS.view.axes, 'temperatureRingsColored')
-            .name(t('settings.coloredRings'))
-            .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
-        folder.close();
+    private createAnimationSection(): void {
+        const content = section(this.#panel.body, t('settings.animation'));
+        const animation = SETTINGS.animation;
+        const changed = () => Events.dispatchEvent(Events.ANIMATION_CHANGED);
+        this.#controls.push(
+            range(content, t('settings.duration'), LIMITS.duration, () => animation.duration,
+                (value) => { animation.duration = value; changed(); }, (value) => t('format.seconds', { value })),
+            checkbox(content, t('settings.loop'), () => animation.loop, (value) => { animation.loop = value; changed(); }),
+            checkbox(content, t('settings.playOnStart'), () => animation.playOnStart, (value) => { animation.playOnStart = value; changed(); }),
+        );
     }
 
-    createViewGeometryFolder(parent) {
-        const folder = parent.addFolder(t('settings.geometry'));
-        const geometry =
-            SETTINGS.view.geometry;
-        folder
-            .add(geometry, "meshVisible")
-            .name(t('settings.wireframe'))
-            // .onChange(() => Settings.dispatchEvent(Events.UPDATE_VISIBLE));
-            .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
-        folder
-            .add(geometry, "facesVisible")
-            .name(t('settings.faces'))
-            // .onChange(() => Settings.dispatchEvent(Events.UPDATE_VISIBLE));
-            .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
-        limited(folder.add(geometry, "tubularSegments"), 'tubularSegments')
-            .name(t('settings.monthlySegments'))
-            .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
-        limited(folder.add(geometry, "radialSegments"), 'radialSegments')
-            .name(t('settings.radiusSegments'))
-            .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
-        limited(folder.add(geometry, "radiusFactor"), 'radiusFactor')
-            .name(t('settings.radiusFactor'))
-            .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
-        folder.close();
+    /** Screen capture: what to save, and the button (Alt+S does the same, see ScreenCapture.ts). */
+    private createCaptureSection(): void {
+        const content = section(this.#panel.body, t('settings.capture'));
+        this.#controls.push(segmented<CaptureTarget>(content, t('settings.captureWhat'),
+            [{ value: 'All', label: t('settings.captureAll') }, { value: 'Helix', label: t('settings.captureHelix') }],
+            () => SETTINGS.capture,
+            (target) => { SETTINGS.capture = target; }));
+        button(content, t('settings.captureButton'), () => Events.dispatchEvent(Events.SCREEN_CAPTURE)).classList.add('wide');
     }
-    createViewColorsFolder(parent) {
-        const folder = parent.addFolder(t('settings.colors'));
-        const colors =
-            SETTINGS.view.colors;
-        folder
-            .addColor(colors.cold, "color")
-            .name(formatTemperature(-1, 1))
-            .listen()
-            .onChange(() => this.dispatchColorEvent('cold'));
-        folder
-            .addColor(colors.zero, "color")
-            .name(formatTemperature(0, 0))
-            .listen()
-            .onChange(() => this.dispatchColorEvent('zero'));
-        folder
-            .addColor(colors.warm, "color")
-            .name(formatTemperature(1.5, 1))
-            .listen()
-            .onChange(() => this.dispatchColorEvent('warm'));
 
-        folder.close();
+    /** Advanced: the helix's mesh parameters, still lil-gui - a developer's panel inside the native one. */
+    private createAdvancedSection(): void {
+        const content = section(this.#panel.body, t('settings.advanced'), { hint: t('settings.geometry') });
+        const note = document.createElement('p');
+        note.className = 'settings-note';
+        note.textContent = t('settings.advancedNote');
+        content.appendChild(note);
+        this.#gui = new GUI({ container: content, autoPlace: false, title: t('settings.geometry') });
+        this.#gui.domElement.id = "gui";
+        const geometry = SETTINGS.view.geometry;
+        const redraw = () => Events.dispatchEvent(Events.CREATE_HELIX);
+        this.#gui.add(geometry, "meshVisible").name(t('settings.wireframe')).onChange(redraw);
+        this.#gui.add(geometry, "facesVisible").name(t('settings.faces')).onChange(redraw);
+        limited(this.#gui.add(geometry, "tubularSegments"), 'tubularSegments').name(t('settings.monthlySegments')).onChange(redraw);
+        limited(this.#gui.add(geometry, "radialSegments"), 'radialSegments').name(t('settings.radiusSegments')).onChange(redraw);
+        limited(this.#gui.add(geometry, "radiusFactor"), 'radiusFactor').name(t('settings.radiusFactor')).onChange(redraw);
     }
+
     initializeColors() {
         if (!SETTINGS.view.colors.cold.modified) {
             SETTINGS.view.colors.cold.color = styledColorByTemp('cold');
@@ -612,12 +518,6 @@ class Settings {
         SETTINGS.view.colors[temp].modified = !SETTINGS.view.colors[temp].color.equals(styledColorByTemp(temp));
         Events.dispatchEvent(Events.CREATE_HELIX);
     }
-    createCaptureFolder(): void {
-        const folder = this.#gui.addFolder(t('settings.capture'));
-        folder.close();
-        this.#captureFolder = folder;
-    }
-
     /**
      * The app functions, native in the panel's footer: Language (Automatic
      * follows the browser; a change is stored at once and reloads the app,
@@ -705,11 +605,9 @@ class Settings {
         return SETTINGS.view.colors.warm.color;
     }
 
-    captureSettings(): { folder: any, property: any } {
-        return {
-            folder: this.#captureFolder,
-            property: SETTINGS.capture
-        }
+    /** What a screen capture saves: the whole page or the helix alone. */
+    get captureTarget(): CaptureTarget {
+        return SETTINGS.capture;
     }
 }
 

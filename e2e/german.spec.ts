@@ -37,10 +37,10 @@ test('a German browser gets the app in German', async ({ page }) => {
     await page.locator('.toggle-div.info-button').click();
 
     await openSettings(page);
-    const gui = page.locator('#gui');
     await expect(page.getByRole('heading', { name: 'Einstellungen' })).toBeVisible();
     await expect(page.locator('#settings-panel').getByRole('button', { name: 'Standardwerte wiederherstellen' })).toBeVisible();
-    await expect(gui.locator('.lil-title', { hasText: /^Ansicht$/ })).toBeVisible();
+    await expect(page.locator('#settings-panel summary', { hasText: 'Ansicht' })).toBeVisible();
+    await expect(page.locator('#settings-panel').getByRole('button', { name: 'Nordhalbkugel' })).toHaveText('Nord');
     await expect(languageSelect(page)).toHaveValue('auto');
     await expect(page.getByLabel('Sprache')).toBeVisible();
     expect(errors).toEqual([]);

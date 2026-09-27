@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { APP_VERSION, openApp, openSettings, setSliderYears, sliderYears, switchScene } from './app';
+import { APP_VERSION, openApp, openSettings, pickRegion, setSliderYears, sliderYears, switchScene } from './app';
 
 const heading = (page) => page.locator('.heading-div');
 
@@ -7,9 +7,7 @@ test('settings and state are restored after a reload', async ({ page }) => {
     await page.emulateMedia({ colorScheme: 'light' });
     const errors = await openApp(page);
     await openSettings(page);
-    const gui = page.locator('#gui');
-    await gui.getByRole('button', { name: /Region: / }).click();
-    await gui.getByRole('checkbox', { name: 'Northern HS', exact: true }).check();
+    await pickRegion(page, 'Northern HS');
     await page.locator('#dataset-buttons').getByRole('button', { name: '2024' }).click();
     await setSliderYears(page, 1950, 2000);
     await page.locator('.toggle-div.themes').click();
@@ -21,7 +19,8 @@ test('settings and state are restored after a reload', async ({ page }) => {
     await expect(page.locator('body')).toHaveClass(/\bdark\b/);
     await expect(page.locator('body')).not.toHaveClass(/\blight\b/);
     await openSettings(page);
-    await expect(gui.getByRole('button', { name: 'Region: Northern HS' })).toBeVisible();
+    await expect(page.locator('#settings-panel').getByRole('button', { name: 'Northern HS', exact: true })).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('#settings-panel').getByRole('button', { name: '2024-10-22' })).toHaveAttribute('aria-pressed', 'true');
     expect(errors).toEqual([]);
 });
 
