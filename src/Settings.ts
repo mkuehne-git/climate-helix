@@ -1,8 +1,6 @@
-import { GUI, type Controller } from 'lil-gui';
 import { Imprint } from './Imprint';
 import { Events, Showcase } from './Enums';
 import * as THREE from "three";
-import './css/lil-gui.css';
 
 import { SettingsButton } from "./SettingsButton";
 import { SettingsPanel } from "./SettingsPanel";
@@ -55,16 +53,10 @@ const LIMITS: Record<string, Limit> = {
     temperatureRingCount: { min: 2, max: 10, step: 1 },
     tubularSegments: { min: 1, max: 31, step: 1 },
     radialSegments: { min: 3, max: 32, step: 1 },
-    radiusFactor: { min: 0.1, max: 2 },
+    radiusFactor: { min: 0.1, max: 2, step: 0.05 },
     duration: { min: 2, max: 60, step: 1 },
     rotateSpeed: { min: 0.5, max: 10, step: 0.5 },
 };
-
-function limited(controller: Controller, property: string): Controller {
-    const limit = LIMITS[property];
-    controller.min(limit.min).max(limit.max);
-    return limit.step === undefined ? controller : controller.step(limit.step);
-}
 
 function settingsButton(label: string, onClick: () => void): HTMLButtonElement {
     const button = document.createElement('button');
@@ -88,7 +80,6 @@ const SETTINGS = {
             temperatureRingCount: 5,
             temperatureRingsColored: true,
         },
-        yearRangeVisible: true,
         navigation: {
             /** The helix keeps turning for a moment after a drag. */
             inertia: true,
@@ -120,7 +111,6 @@ const COLOR_NAMES: ColorName[] = ['cold', 'zero', 'warm'];
 /** The settings as shipped, to store only what the user changed - a changed default then still reaches everyone else. */
 const DEFAULTS = {
     radio: SETTINGS.radio,
-    yearRangeVisible: SETTINGS.view.yearRangeVisible,
     navigation: { ...SETTINGS.view.navigation },
     axes: { ...SETTINGS.view.axes },
     geometry: { ...SETTINGS.view.geometry },
@@ -167,7 +157,6 @@ class Settings {
     #datasets: Record<string, Dataset>;
     #csv: Record<Showcase, string> = {} as Record<Showcase, string>;
     #controls: Control[] = [];
-    #gui: GUI;
     #panel: SettingsPanel;
     #yearRange: YearRange;
 
@@ -217,7 +206,6 @@ class Settings {
     private restore(stored: Readonly<StoredState>): void {
         SETTINGS.date = storedDate(stored, DEFAULT_DATE, Object.keys(this.#datasets));
         SETTINGS.radio = stored.region ?? SETTINGS.radio;
-        restoreFields(SETTINGS.view, { yearRangeVisible: stored.view?.yearRangeVisible });
         restoreFields(SETTINGS.view.navigation, stored.view?.navigation);
         restoreFields(SETTINGS.view.axes, stored.view?.axes);
         restoreFields(SETTINGS.view.geometry, stored.view?.geometry);
@@ -243,7 +231,6 @@ class Settings {
             region: SETTINGS.radio !== DEFAULTS.radio ? SETTINGS.radio : undefined,
             yearRange: this.#yearRange.stored,
             view: {
-                yearRangeVisible: SETTINGS.view.yearRangeVisible !== DEFAULTS.yearRangeVisible ? SETTINGS.view.yearRangeVisible : undefined,
                 navigation: changedFields(SETTINGS.view.navigation, DEFAULTS.navigation),
                 axes: changedFields(SETTINGS.view.axes, DEFAULTS.axes),
                 geometry: changedFields(geometry, defaultGeometry),
@@ -342,10 +329,6 @@ class Settings {
         return this.#yearRange.globalLastYear;
     }
 
-    get yearRangeVisible(): boolean {
-        return SETTINGS.view.yearRangeVisible;
-    }
-
     get inertia(): boolean {
         return SETTINGS.view.navigation.inertia;
     }
@@ -423,21 +406,16 @@ class Settings {
         );
     }
 
-    /** View: the year range slider, the legend, the colors and the navigation. */
+    /** View: the legend and the colors. */
     private createViewSection(): void {
         const content = section(this.#panel.body, t('settings.view'));
         const redraw = () => Events.dispatchEvent(Events.CREATE_HELIX);
         const view = SETTINGS.view;
         const axes = view.axes;
-        const navigation = view.navigation;
         const bool = (text: string, object: object, key: string, changed = redraw) =>
             checkbox(content, text, () => object[key], (value) => { object[key] = value; changed(); });
         const number = (text: string, object: object, key: string, changed = redraw, format?: (value: number) => string) =>
             range(content, text, LIMITS[key], () => object[key], (value) => { object[key] = value; changed(); }, format);
-        // Not CREATE_HELIX: these only change how the camera moves, and must not end a running animation.
-        const controlsChanged = () => Events.dispatchEvent(Events.CONTROLS_CHANGED);
-
-        this.#controls.push(bool(t('settings.yearRange'), view, 'yearRangeVisible'));
         subheading(content, t('settings.legend'));
         this.#controls.push(
             bool(t('settings.yearAxis'), axes, 'yearVisible'),
@@ -456,11 +434,6 @@ class Settings {
                     this.dispatchColorEvent(name);
                 }));
         }
-        subheading(content, t('settings.navigation'));
-        this.#controls.push(
-            bool(t('settings.inertia'), navigation, 'inertia', controlsChanged),
-            number(t('settings.rotationSpeed'), navigation, 'rotateSpeed', controlsChanged, (value) => formatNumber(value, value % 1 === 0 ? 0 : 1)),
-        );
     }
 
     private createAnimationSection(): void {
@@ -485,22 +458,35 @@ class Settings {
         button(content, t('settings.captureButton'), () => Events.dispatchEvent(Events.SCREEN_CAPTURE)).classList.add('wide');
     }
 
-    /** Advanced: the helix's mesh parameters, still lil-gui - a developer's panel inside the native one. */
+    /** Advanced, collapsed: the helix's mesh and how it turns - the defaults suit most devices. */
     private createAdvancedSection(): void {
-        const content = section(this.#panel.body, t('settings.advanced'), { hint: t('settings.geometry') });
+        const content = section(this.#panel.body, t('settings.advanced'), { hint: `${t('settings.geometry')}, ${t('settings.navigation')}` });
         const note = document.createElement('p');
         note.className = 'settings-note';
         note.textContent = t('settings.advancedNote');
         content.appendChild(note);
-        this.#gui = new GUI({ container: content, autoPlace: false, title: t('settings.geometry') });
-        this.#gui.domElement.id = "gui";
         const geometry = SETTINGS.view.geometry;
         const redraw = () => Events.dispatchEvent(Events.CREATE_HELIX);
-        this.#gui.add(geometry, "meshVisible").name(t('settings.wireframe')).onChange(redraw);
-        this.#gui.add(geometry, "facesVisible").name(t('settings.faces')).onChange(redraw);
-        limited(this.#gui.add(geometry, "tubularSegments"), 'tubularSegments').name(t('settings.monthlySegments')).onChange(redraw);
-        limited(this.#gui.add(geometry, "radialSegments"), 'radialSegments').name(t('settings.radiusSegments')).onChange(redraw);
-        limited(this.#gui.add(geometry, "radiusFactor"), 'radiusFactor').name(t('settings.radiusFactor')).onChange(redraw);
+        const number = (text: string, key: string, format?: (value: number) => string) =>
+            range(content, text, LIMITS[key], () => geometry[key], (value) => { geometry[key] = value; redraw(); }, format);
+        subheading(content, t('settings.geometry'));
+        this.#controls.push(
+            checkbox(content, t('settings.wireframe'), () => geometry.meshVisible, (value) => { geometry.meshVisible = value; redraw(); }),
+            checkbox(content, t('settings.faces'), () => geometry.facesVisible, (value) => { geometry.facesVisible = value; redraw(); }),
+            number(t('settings.monthlySegments'), 'tubularSegments'),
+            number(t('settings.radiusSegments'), 'radialSegments'),
+            number(t('settings.radiusFactor'), 'radiusFactor', (value) => formatNumber(value, 2)),
+        );
+
+        const navigation = SETTINGS.view.navigation;
+        // Not CREATE_HELIX: these only change how the camera moves, and must not end a running animation.
+        const controlsChanged = () => Events.dispatchEvent(Events.CONTROLS_CHANGED);
+        subheading(content, t('settings.navigation'));
+        this.#controls.push(
+            checkbox(content, t('settings.inertia'), () => navigation.inertia, (value) => { navigation.inertia = value; controlsChanged(); }),
+            range(content, t('settings.rotationSpeed'), LIMITS.rotateSpeed, () => navigation.rotateSpeed,
+                (value) => { navigation.rotateSpeed = value; controlsChanged(); }, (value) => formatNumber(value, value % 1 === 0 ? 0 : 1)),
+        );
     }
 
     initializeColors() {

@@ -12,7 +12,7 @@ The climate helix uses data from [NASA, Goddard Space Flight Center](https://dat
 
 The data starts in 1880 and, in the newest bundled snapshot, runs until August 2026. Each year is visualized as a loop within the helix. Each loop is divided into 12 segments, one for each month of the year. The distance from the center per month is proportional to the difference to the mean temperature of that month. For details regarding the data and the theory behind it, please check out the [GISS](https://data.giss.nasa.gov/gistemp/) documentation.
 
-The use of [TrackballControls](https://threejs.org/docs/#examples/en/controls/TrackballControls) makes it possible to easily navigate through the scene, by moving around a virtual camera: drag with the left mouse button (or one finger) to rotate the helix freely in any direction, including end over end, zoom with the mouse wheel (or a pinch), and pan with the right mouse button (or two fingers). A double-click returns to the initial view. The ***View > Navigation*** section of the settings panel sets the **Rotation speed** and **Inertia**: with inertia, the helix keeps turning for a moment after a drag; without it, it stops with the pointer.
+The use of [TrackballControls](https://threejs.org/docs/#examples/en/controls/TrackballControls) makes it possible to easily navigate through the scene, by moving around a virtual camera: drag with the left mouse button (or one finger) to rotate the helix freely in any direction, including end over end, zoom with the mouse wheel (or a pinch), and pan with the right mouse button (or two fingers). A double-click returns to the initial view. The ***Advanced*** section of the settings panel sets, under Navigation, the **Rotation speed** and **Inertia**: with inertia, the helix keeps turning for a moment after a drag; without it, it stops with the pointer.
 
 The controller UI (Icon in the upper right corner) provides options to configure the image. Not only can you choose, which region of the world you want to be visualized. With the ***View*** menu item you can show the year range slider and the legend axes, change the colors, and adjust the geometry and navigation; the ***Animation*** menu sets up the creation animation. With the ***Screen capture*** menu you can create images and download them to your computer.
 
@@ -22,7 +22,7 @@ Climate Helix bundles multiple retrievals of the NASA GISS data, currently with 
 
 # Year range slider
 
-A dual-handle slider below the helix lets you narrow the displayed years to any range within the selected dataset. Dragging either handle updates the start or end year and redraws the helix immediately. The slider itself can be shown or hidden with the **Year range** toggle under the ***View*** menu. The Charts and Diff views have the same slider, and all three share the chosen range: switching views keeps it, limited to the years the view can show. The small X button to the right of a slider resets it to all years.
+A dual-handle slider below the helix lets you narrow the displayed years to any range within the selected dataset. Dragging either handle updates the start or end year and redraws the helix immediately. The Charts and Diff views have the same slider, and all three share the chosen range: switching views keeps it, limited to the years the view can show. The small X button to the right of a slider resets it to all years.
 
 # Animation
 
@@ -119,7 +119,6 @@ The tests are described in [TESTING.md](TESTING.md), the changes of each version
 
 * [Vite](https://github.com/vitejs/vite) - Next Generation Frontend Tooling
 * WebGL [three.js](https://threejs.org/)
-* Settings with [lil-gui](https://github.com/georgealways/lil-gui)
 * [vite-plugin-pwa](https://vite-pwa-org.netlify.app/) - PWA Vite Plugin, used to transform the application into PWA, see `vite.config.ts`.
 * [FavIcon Generator](https://realfavicongenerator.net/) - I used this to generate the `favicons` and the related section in `index.html`. PWA icons were generated with `PWABuilder Studio` inside VS Code.
 # License

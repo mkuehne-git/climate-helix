@@ -285,8 +285,7 @@ function createHelix(): void {
     applyAnimation();
     createDateButtons();
     const controls = document.querySelector('#dataset-controls');
-    controls?.classList.toggle('hidden', !settings.yearRangeVisible);
-    if (settings.yearRangeVisible && controls) {
+    if (controls) {
         if (yearRangeSlider) {
             yearRangeSlider.refresh();
         } else {

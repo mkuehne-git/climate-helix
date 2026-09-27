@@ -24,7 +24,6 @@ type StoredState = {
     /** The requested year range; an omitted end means "from the first" / "to the last" year of all datasets. */
     yearRange?: { first?: number, last?: number },
     view?: {
-        yearRangeVisible?: boolean,
         navigation?: { inertia?: boolean, rotateSpeed?: number },
         axes?: {
             yearVisible?: boolean,
@@ -117,7 +116,6 @@ const validateState = object<StoredState>({
     region: oneOf(Object.values(Showcase)),
     yearRange: object({ first: finite, last: finite }),
     view: object<NonNullable<StoredState['view']>>({
-        yearRangeVisible: bool,
         navigation: object({ inertia: bool, rotateSpeed: finite }),
         axes: object({
             yearVisible: bool,

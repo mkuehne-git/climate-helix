@@ -22,7 +22,7 @@ class OverlayPage {
         this.#classToken = classToken;
         this.#hideEvent = hideEvent;
         this.#onHide = onHide;
-        // Capture phase on window: lil-gui stops key events from propagating,
+        // Capture phase on window: a focused control may stop key events from propagating,
         // and the button that opened the overlay keeps the focus.
         window.addEventListener("keydown", (e) => {
             if ((e.key === "Esc" || e.key === "Escape") && this.isOpen) {

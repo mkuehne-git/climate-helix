@@ -1,6 +1,5 @@
-/* Styling of Settings- and ThemesChanger-button.
- * Support dark/light themes for lil-gui, remove title control, which is
- * replaced by Settings button.
+/* The round icon buttons (SVGToggleButton.ts): settings, theme, info, Play
+ * and the overlays' X, with their click pulse.
  */
 :root {
     /* Size of the Settings icon, including empty margins around */
@@ -15,35 +14,6 @@
     --b-color: rgb(var(--b-grey), var(--b-grey), var(--b-grey));
 }
 
-
-.lil-gui {
-    /* lil-gui paints .lil-root with this variable, so override it rather than background-color. */
-    --background-color: #fff;
-    --text-color: var(--text-color);
-    --title-background-color: #e1e1e1;
-    --title-text-color: var(--text-color);
-    
-    --widget-color: #e0e0e0;
-    --hover-color: #e8e8e8;
-    --focus-color: #eee;
-    
-    --number-color: #024e68;
-    --string-color: #5a8d04;
-}
-
-.dark .lil-gui {
-    --background-color: #212121;
-    --text-color: var(--text-color);
-    --title-background-color: #111111;
-    --title-text-color: var(--text-color);
-
-    --widget-color: #424242;
-    --hover-color: #4f4f4f;
-    --focus-color: #595959;
-
-    --number-color: #2cc9ff;
-    --string-color: #a2db3c;
-}
 
 div.toggle-div {
     /* z-index: 2; */

@@ -124,23 +124,33 @@ test('the view settings redraw the helix and are remembered', async ({ page }) =
     await openSettings(page);
     await openSection(page, 'View');
     const panel = page.locator('#settings-panel');
-    await panel.getByRole('checkbox', { name: 'Year range' }).uncheck();
-    await expect(page.locator('#dataset-controls')).toHaveClass(/hidden/);
+    await panel.getByRole('checkbox', { name: 'Month axis' }).uncheck();
     await panel.getByRole('slider', { name: 'Year ticks' }).fill('8');
     await expect(panel.getByRole('slider', { name: 'Year ticks' }).locator('xpath=following-sibling::output')).toHaveText('8');
     await page.waitForTimeout(400);
     await page.reload();
     await openSettings(page);
     await openSection(page, 'View');
-    await expect(panel.getByRole('checkbox', { name: 'Year range' })).not.toBeChecked();
+    await expect(panel.getByRole('checkbox', { name: 'Month axis' })).not.toBeChecked();
     await expect(panel.getByRole('slider', { name: 'Year ticks' })).toHaveValue('8');
 });
 
-test('Advanced holds the geometry in lil-gui', async ({ page }) => {
+test('Advanced holds the geometry, remembered across reloads', async ({ page }) => {
     await openApp(page);
     await openSettings(page);
     await openSection(page, 'Advanced');
-    const gui = page.locator('#settings-panel #gui');
-    await expect(gui.locator('.lil-title', { hasText: 'Geometry' })).toBeVisible();
-    await expect(gui.getByRole('checkbox', { name: 'Wireframe' })).not.toBeChecked();
+    const panel = page.locator('#settings-panel');
+    await expect(panel.getByRole('checkbox', { name: 'Wireframe' })).not.toBeChecked();
+    await expect(panel.getByRole('checkbox', { name: 'Faces' })).toBeChecked();
+    await expect(panel.getByRole('checkbox', { name: 'Inertia' })).toBeChecked();
+    await expect(panel.getByRole('slider', { name: 'Rotation speed' })).toHaveValue('3');
+    await panel.getByRole('checkbox', { name: 'Wireframe' }).check();
+    await panel.getByRole('slider', { name: 'Radius factor' }).fill('1.5');
+    await expect(panel.getByRole('slider', { name: 'Radius factor' }).locator('xpath=following-sibling::output')).toHaveText('1.50');
+    await page.waitForTimeout(400);
+    await page.reload();
+    await openSettings(page);
+    await openSection(page, 'Advanced');
+    await expect(panel.getByRole('checkbox', { name: 'Wireframe' })).toBeChecked();
+    await expect(panel.getByRole('slider', { name: 'Radius factor' })).toHaveValue('1.5');
 });

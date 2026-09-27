@@ -48,7 +48,7 @@ Always ask the project owner for approval before creating a commit. Do not commi
 - `src/main.ts` initializes the DOM, Three.js scene, camera, renderer, controls, event listeners, and animation loop.
 - `src/ClimateHelix.ts` converts parsed temperature data into colored Three.js geometry.
 - `src/GISSParser.ts` parses the NASA GISS CSV format used by the app.
-- `src/Settings.ts` owns the settings, their controls and the app functions, and dispatches application events when settings change. `src/SettingsPanel.ts` is the native settings panel (the gear button, `src/SettingsButton.ts`, opens it; `h` and Escape too): a scrolling body for the settings and a fixed footer for Language, Check for updates, Imprint, Restore defaults and the changelog. The body holds native sections (Data, View, Animation, Screen capture), built from `src/settingsControls.ts` (section, checkbox, range, segmented buttons, color, button; each control's `update()` shows a value that changed elsewhere), and a collapsed Advanced section where lil-gui still holds the geometry parameters.
+- `src/Settings.ts` owns the settings, their controls and the app functions, and dispatches application events when settings change. `src/SettingsPanel.ts` is the native settings panel (the gear button, `src/SettingsButton.ts`, opens it; `h` and Escape too): a scrolling body for the settings and a fixed footer for Language, Check for updates, Imprint, Restore defaults and the changelog. The body holds native sections (Data, View, Animation, Screen capture), built from `src/settingsControls.ts` (section, checkbox, range, segmented buttons, color, button; each control's `update()` shows a value that changed elsewhere), and a collapsed Advanced section with the helix's geometry. The icon buttons' styles are in `src/css/toggle-buttons.css`.
 - `src/Enums.ts` contains shared event and showcase identifiers.
 - `src/HelixGeometry.js` provides the custom tube geometry used for the helix.
 - `src/PersistentState.ts` keeps the settings and application state across reloads in one Local Storage entry (`climate-helix.state`). Modules read their part on startup and report changes with `persistentState.update()`; "Restore defaults" in the settings clears it and reloads.
@@ -76,7 +76,7 @@ The current priorities and implementation notes are maintained separately in `RO
 
 - Follow the existing TypeScript style and keep changes focused on the owning module.
 - Use the existing `Events` mechanism for communication between settings, theme changes, and scene redraws.
-- Reuse existing Three.js, lil-gui, and PWA dependencies rather than adding parallel abstractions.
+- Reuse existing Three.js and PWA dependencies and the settings controls in `src/settingsControls.ts` rather than adding parallel abstractions.
 - Keep static assets in `public/` and import them using the project’s existing Vite asset patterns.
 - Preserve the PWA base path and offline behavior when modifying `vite.config.ts` or asset URLs.
 - Do not edit generated output in `dist/` or `dev-dist/` as a source change; regenerate it with the build when needed.

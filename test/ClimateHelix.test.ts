@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import * as THREE from 'three';
 import { describe, expect, it, vi } from 'vitest';
 
-// Settings builds lil-gui and reads CSS custom properties on import; the helix only needs its static color lookup.
+// Settings builds the settings panel and reads CSS custom properties on import; the helix only needs its static color lookup.
 vi.mock('../src/Settings', () => ({ Settings: { styledColor: () => new THREE.Color('white') } }));
 
 import { ClimateHelix, temperatureColor } from '../src/ClimateHelix';

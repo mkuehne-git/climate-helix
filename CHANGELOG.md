@@ -1,6 +1,14 @@
 # Changelog
 
-## v1.3.0 · 2026-09-27
+## v1.4.0 · 2026-09-27
+
+* Remove the **Year range** switch from the View settings, which hid the year slider and the snapshot buttons below the helix: they are always shown now.
+* The **Advanced** section of the settings has ordinary controls too, like the rest of the panel: Wireframe and Faces as switches, and sliders for the monthly and radius segments and the radius factor. The app no longer uses lil-gui.
+* Move the Navigation settings (Inertia, Rotation speed) from View to Advanced.
+* Fix the short message after Check for updates, such as "No update available.", being dark text on a dark background in the light theme: it now shows in the theme's inverted colors.
+* Fix the checkboxes and sliders in the settings looking different in the light and the dark theme: unchecked checkboxes were dark in the light theme while the system was set to dark, and the sliders' filled part changed color with the theme. Checkboxes, sliders and other built-in controls now follow the app's theme, and the sliders look like the year slider below the helix.
+
+## v1.3.0 · 2026-09-27 · [1cfa0b0](https://github.com/mkuehne-git/climate-helix/commit/1cfa0b0)
 
 * Rebuild the settings in the settings panel as collapsible sections with ordinary controls: **Data** (snapshot and region as buttons), **View** (year range slider, legend, colors, navigation), **Animation** and **Screen capture** (what to capture, and a button to save the image). They are larger and easier to use by touch and keyboard, follow the light and dark theme, and show a value changed elsewhere, such as the snapshot picked below the helix.
 * The mesh parameters of the helix (wireframe, faces, segments, radius factor) move to a collapsed **Advanced** section.
