@@ -14,11 +14,23 @@ The data starts in 1880 and, in the newest bundled snapshot, runs until August 2
 
 The use of [TrackballControls](https://threejs.org/docs/#examples/en/controls/TrackballControls) makes it possible to easily navigate through the scene, by moving around a virtual camera: drag with the left mouse button (or one finger) to rotate the helix freely in any direction, including end over end, zoom with the mouse wheel (or a pinch), and pan with the right mouse button (or two fingers). A double-click returns to the initial view. The ***Advanced*** section of the settings panel sets, under Navigation, the **Rotation speed** and **Inertia**: with inertia, the helix keeps turning for a moment after a drag; without it, it stops with the pointer.
 
-The controller UI (Icon in the upper right corner) provides options to configure the image. Not only can you choose, which region of the world you want to be visualized. With the ***View*** menu item you can show the year range slider and the legend axes, change the colors, and adjust the geometry and navigation; the ***Animation*** menu sets up the creation animation. With the ***Screen capture*** menu you can create images and download them to your computer.
+# Settings
+
+<img src="./src/images/climate-helix-settings.png" alt="Climate-helix settings on a phone" width="300">
+
+The gear icon in the upper right corner (or the `h` key) opens the settings panel: on the right side of the window, or full screen on a phone. Its sections open and close with a click on their title:
+
+* ***Data***: the snapshot and the region (Global, Northern and Southern Hemisphere).
+* ***View***: the legend around the helix and the helix colors.
+* ***Animation***: duration, loop and play on start of the creation animation.
+* ***Screen capture***: save the whole page or only the helix as an image (also with `Alt + s`).
+* ***Advanced***, closed by default: the helix's mesh (wireframe, faces, segments, radius) and the navigation (inertia, rotation speed). The defaults suit most devices.
+
+The footer stays in view: the **Language**, **Check for updates**, the **Imprint**, **Restore defaults**, and the version with a link to the changelog. The gear, now an X, or Escape closes the panel.
 
 # Dataset selector
 
-Climate Helix bundles multiple retrievals of the NASA GISS data, currently with data up to March 2023, September 2024 and August 2026 (retrieved in September 2023, October 2024 and September 2026). Buttons below the helix, labeled with the snapshot's year, let you jump directly between these snapshots, and the same choice is available as a **Date** section in the settings panel. Switching datasets keeps your selected region and year range, clamping it to whatever years are available in the newly selected snapshot.
+Climate Helix bundles multiple retrievals of the NASA GISS data, currently with data up to March 2023, September 2024 and August 2026 (retrieved in September 2023, October 2024 and September 2026). Buttons below the helix, labeled with the snapshot's year, let you jump directly between these snapshots, and the same choice is available in the settings panel's ***Data*** section. Switching datasets keeps your selected region and year range, clamping it to whatever years are available in the newly selected snapshot.
 
 # Year range slider
 
@@ -30,7 +42,7 @@ The Play/Pause button in the top-left corner of the Helix view grows the helix m
 
 # Remembered settings
 
-The app remembers your settings and where you left off: the dataset, region and year range, the ***View*** and ***Animation*** settings, changed helix colors, the theme (once you switch it; until then it follows your system), the active view, the camera angle and zoom, the Diff view's baseline, and the chart checkboxes. They are kept in your browser's Local Storage and never leave your device. When a newer data snapshot ships, the app opens on it instead of the snapshot you last chose. **Restore defaults** in the settings panel forgets all of this and reloads the app.
+The app remembers your settings and where you left off: the dataset, region and year range, the ***View***, ***Animation*** and ***Advanced*** settings, changed helix colors, the theme (once you switch it; until then it follows your system), the active view, the camera angle and zoom, the Diff view's baseline, and the chart checkboxes. They are kept in your browser's Local Storage and never leave your device. When a newer data snapshot ships, the app opens on it instead of the snapshot you last chose. **Restore defaults** in the settings panel forgets all of this and reloads the app.
 
 # Language
 
@@ -42,13 +54,13 @@ The app is available in English and German. It follows your browser's language: 
 
 The first time the app opens after an update, it shows what's new since the version you used last. Versions without a visible change (tests, documentation) are left out, and the **Full changelog** button shows every version. It appears once per version: not again after a reload, not after **Restore defaults**, and not on your very first visit.
 
-Click the version number in the lower right corner to see the full changelog at any time. Each version lists its date and links to its commit on GitHub. Close it, like the imprint, with the X button at the bottom or with Escape. The changelog is the same as [CHANGELOG.md](CHANGELOG.md).
+Click the version number in the lower right corner, or in the settings panel's footer, to see the full changelog at any time. Each version lists its date and links to its commit on GitHub. Close it, like the imprint, with the X button at the bottom or with Escape. The changelog is the same as [CHANGELOG.md](CHANGELOG.md).
 
 # Legend
 
 ![Climate-helix with legend](./src/images/climate-helix-legend.png)
 
-The ***View > Legend*** section in the settings panel (shown open above) adds optional reference axes around the helix: a **Year axis** marking the year range along the side, a **Temperature axis** of concentric rings labeling anomaly values from -1.0°C to +1.5°C, and a **Month axis** labeling Jan/Apr/Jul/Oct around the outer rim. The number of year ticks and temperature rings shown is configurable.
+The legend in the settings panel's ***View*** section (shown open above) adds optional reference axes around the helix: a **Year axis** marking the year range along the side, a **Temperature axis** of concentric rings labeling anomaly values from -1.0°C to +1.5°C, and a **Month axis** labeling Jan/Apr/Jul/Oct around the outer rim. The number of year ticks and temperature rings shown is configurable.
 
 # Charts
 

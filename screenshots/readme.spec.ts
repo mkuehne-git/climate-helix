@@ -30,11 +30,21 @@ test('helix', async ({ page }) => {
 });
 
 test('legend settings', async ({ page }) => {
-    await page.setViewportSize({ width: 1200, height: 700 });
+    await page.setViewportSize({ width: 1440, height: 800 });
     await openApp(page);
     await openSettings(page);
+    // Data is open by default; closed, the legend and the colors fit.
+    await page.locator('#settings-panel summary', { hasText: 'Data' }).click();
     await openSection(page, 'View');
     await shoot(page, 'climate-helix-legend');
+});
+
+test('settings on a phone', async ({ page }) => {
+    await page.setViewportSize(PHONE);
+    await openApp(page);
+    await openSettings(page);
+    await openSection(page, 'Animation');
+    await shoot(page, 'climate-helix-settings');
 });
 
 test('charts', async ({ page }) => {

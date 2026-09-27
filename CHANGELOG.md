@@ -1,6 +1,12 @@
 # Changelog
 
-## v1.4.0 · 2026-09-27
+## v2.0.0 · 2026-09-27
+
+Climate Helix 2.0 has new settings. The gear icon in the upper right corner opens them as a panel on the right side of the window, or full screen on a phone. Sections that open with a click hold the settings: **Data** (snapshot and region), **View** (legend and colors), **Animation**, **Screen capture** and, closed by default, **Advanced** (the helix's mesh and navigation). A footer that stays in view holds the language, the update check, the imprint, Restore defaults and the changelog. The controls are larger, work with touch, mouse and keyboard, follow the light and dark theme, and are available in English and German.
+
+* Revise the README for the new settings: a Settings section with a picture of the panel on a phone, updated descriptions, and all screenshots retaken.
+
+## v1.4.0 · 2026-09-27 · [3910a07](https://github.com/mkuehne-git/climate-helix/commit/3910a07)
 
 * Remove the **Year range** switch from the View settings, which hid the year slider and the snapshot buttons below the helix: they are always shown now.
 * The **Advanced** section of the settings has ordinary controls too, like the rest of the panel: Wireframe and Faces as switches, and sliders for the monthly and radius segments and the radius factor. The app no longer uses lil-gui.

@@ -5,12 +5,13 @@ description: Retake the Climate Helix README screenshots in src/images/ with Pla
 
 # Screenshots
 
-The README shows five screenshots in `src/images/`. `npm run screenshots` retakes them all with Playwright (`playwright.screenshots.config.ts`, specs in `screenshots/readme.spec.ts`), always in the light theme.
+The README shows six screenshots in `src/images/`. `npm run screenshots` retakes them all with Playwright (`playwright.screenshots.config.ts`, specs in `screenshots/readme.spec.ts`), always in the light theme.
 
 | Image | Shows | Viewport |
 | --- | --- | --- |
 | `climate-helix.png` | Helix view, default settings | 390 x 844 |
-| `climate-helix-legend.png` | Helix with the settings panel open at View > Legend | 1200 x 700 |
+| `climate-helix-legend.png` | Helix with the settings panel open at View | 1440 x 800 |
+| `climate-helix-settings.png` | Settings panel on a phone, Data and Animation open | 390 x 844 |
 | `climate-helix-charts.png` | Charts view | 390 x 844 |
 | `climate-helix-diff.png` | Diff view | 390 x 844 |
 | `climate-helix-whats-new.png` | What's new, as seen when updating from v0.11.1 | 390 x 844 |
