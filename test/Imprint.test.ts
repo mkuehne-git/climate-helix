@@ -34,15 +34,19 @@ const overlay = () => document.querySelector('.imprint');
 const closeButton = () => document.querySelector<HTMLElement>('.imprint div.overlay-close');
 
 describe('Imprint', () => {
-    it('shows the close button right away, before rendering finishes (v0.8.6)', () => {
+    it('shows the close button right away, before rendering finishes (v0.8.6)', async () => {
         imprint.show();
         expect(overlay()).not.toBeNull();
+        expect(closeButton()).not.toBeNull();
+        // html2canvas is loaded on first use.
+        await vi.dynamicImportSettled();
         expect(html2canvas).toHaveBeenCalledOnce();
         expect(closeButton()).not.toBeNull();
     });
 
     it('keeps the close button once rendered, next to the canvas and trailer', async () => {
         imprint.show();
+        await vi.dynamicImportSettled();
         finishRendering();
         await vi.waitFor(() => expect(overlay()!.querySelector('canvas')).not.toBeNull());
         expect(closeButton()).not.toBeNull();
@@ -63,12 +67,14 @@ describe('Imprint', () => {
         expect(overlay()).toBeNull();
     });
 
-    it('stays closed when closed while a resize redraw is pending', () => {
+    it('stays closed when closed while a resize redraw is pending', async () => {
         vi.useFakeTimers();
         imprint.show();
+        await vi.dynamicImportSettled();
         window.dispatchEvent(new Event('resize'));
         closeButton()!.click();
         vi.advanceTimersByTime(250);
+        await vi.dynamicImportSettled();
         expect(overlay()).toBeNull();
         expect(html2canvas).toHaveBeenCalledOnce();
     });
@@ -98,15 +104,17 @@ describe('Imprint', () => {
         expect(overlay()).toBeNull();
     });
 
-    it('redraws once after a burst of resize events (v0.8.6)', () => {
+    it('redraws once after a burst of resize events (v0.8.6)', async () => {
         vi.useFakeTimers();
         imprint.show();
+        await vi.dynamicImportSettled();
         for (let i = 0; i < 10; i++) {
             window.dispatchEvent(new Event('resize'));
             vi.advanceTimersByTime(30);
         }
         expect(html2canvas).toHaveBeenCalledOnce();
         vi.advanceTimersByTime(250);
+        await vi.dynamicImportSettled();
         expect(html2canvas).toHaveBeenCalledTimes(2);
         expect(document.querySelectorAll('.imprint')).toHaveLength(1);
         expect(closeButton()).not.toBeNull();

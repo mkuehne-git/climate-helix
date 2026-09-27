@@ -1,6 +1,12 @@
 # Changelog
 
-## v2.0.4 · 2026-09-27
+## v2.0.5 · 2026-09-27
+
+* The app uses less battery: the 3D view is only drawn again when something changed (the camera moved, the helix was rebuilt or animated, the window or theme changed), and not at all while the Charts or Diff view covers it. Before, it was drawn at the display's full frame rate all the time.
+* The app starts faster: the code for screen captures and the imprint (about 270 kB) loads on first use instead of at startup, and the helix is built once at startup instead of twice.
+* The snapshot buttons below the helix and in the Diff view tell screen readers which one is selected, and name the snapshot by its full date.
+
+## v2.0.4 · 2026-09-27 · [a358868](https://github.com/mkuehne-git/climate-helix/commit/a358868)
 
 * Restructure the larger modules: the 3D view moves from `main.ts` into its own class (`helix/HelixScene.ts`), the Charts and Diff views share a base class (`charts/ChartScene.ts`) instead of duplicated code, and `Settings.ts` is split into the snapshot list (`data/datasets.ts`), the setting values (`settings/settingsValues.ts`) and the building of the settings panel (`settings/settingsSections.ts`). No functional change.
 

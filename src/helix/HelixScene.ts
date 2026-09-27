@@ -36,6 +36,10 @@ class HelixScene {
     #yearRangeSlider: YearRangeSlider | undefined;
     // Below the title while the helix is incomplete: the month the growing tip has reached.
     #animationLabel = document.createElement('div');
+    /** Something changed since the last frame; nothing is drawn otherwise, which saves battery. */
+    #needsRender = true;
+    /** False while a chart view covers the helix. */
+    #visible = true;
 
     constructor(container: HTMLElement, settings: Settings) {
         this.#container = container;
@@ -48,10 +52,14 @@ class HelixScene {
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setSize(width, height);
         container.appendChild(this.renderer.domElement);
-        // The scene's background follows the theme (a class on <body>).
-        new ClassMutationObserver(document.body, () => {
+        // The scene's background follows the theme (a class on <body>), set
+        // now too: the theme's class is on <body> before this observer exists.
+        const updateBackground = () => {
             this.#scene.background = new THREE.Color(window.getComputedStyle(document.body).getPropertyValue("background-color"));
-        });
+            this.#needsRender = true;
+        };
+        updateBackground();
+        new ClassMutationObserver(document.body, updateBackground);
 
         this.#camera = new THREE.PerspectiveCamera(50, width / height);
         this.#camera.position.set(4.5, 4.5, 4.5);
@@ -79,15 +87,25 @@ class HelixScene {
         this.#playButton = this.createPlayButton();
     }
 
-    /** Starts rendering, one frame per display refresh. */
+    /**
+     * Starts the render loop. It runs once per display refresh, since the
+     * trackball controls need an update per frame for their inertia, but it
+     * draws only when something changed and the helix is visible.
+     */
     start(): void {
         const animate = () => {
             requestAnimationFrame(animate);
+            if (!this.#visible) {
+                return;
+            }
             if (this.animation.update(performance.now())) {
                 this.applyAnimation();
             }
             this.#controls.update();
-            this.renderer.render(this.#scene, this.#camera);
+            if (this.#needsRender) {
+                this.#needsRender = false;
+                this.renderer.render(this.#scene, this.#camera);
+            }
         };
         animate();
     }
@@ -98,10 +116,16 @@ class HelixScene {
         this.createHelix();
     }
 
-    /** Leaving the helix view pauses the animation. */
+    /** Leaving the helix view pauses the animation and stops drawing. */
     onHidden(): void {
         this.animation.pause();
         this.applyAnimation();
+        this.#visible = false;
+    }
+
+    onShown(): void {
+        this.#visible = true;
+        this.#needsRender = true;
     }
 
     /** A one-off run of the creation animation: it stops at the end even when Loop is on. */
@@ -136,6 +160,7 @@ class HelixScene {
             camera.lookAt(controls.target);
         }
         // 'change', not 'end': the camera keeps moving for a moment after a drag.
+        controls.addEventListener('change', () => this.#needsRender = true);
         controls.addEventListener('change', () => persistentState.update({
             camera: {
                 position: camera.position.toArray() as Vector3,
@@ -219,7 +244,11 @@ class HelixScene {
             button.type = 'button';
             button.textContent = String(new Date(date).getFullYear());
             button.className = 'dataset-button';
+            // Named by the full date: two snapshots can share a year.
+            button.title = date;
+            button.setAttribute('aria-label', date);
             button.classList.toggle('active', date === settings.date);
+            button.setAttribute('aria-pressed', String(date === settings.date));
             button.addEventListener('click', () => settings.setDate(date));
             buttons.appendChild(button);
         }
@@ -258,6 +287,7 @@ class HelixScene {
                 mesh.geometry.setDrawRange(0, drawCount(this.animation.progress, tubularSegments, radialSegments));
             }
         }
+        this.#needsRender = true;
         const points = this.#helix?.curve.length ?? 0;
         const label = this.#animationLabel;
         label.classList.toggle('hidden', this.animation.complete || points === 0);
@@ -272,6 +302,7 @@ class HelixScene {
         this.#camera.updateProjectionMatrix();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.#controls.handleResize();
+        this.#needsRender = true;
     }
 }
 

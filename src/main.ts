@@ -49,7 +49,8 @@ const containerDiv = document.createElement('div');
 containerDiv.className = 'container-div';
 document.body.appendChild(containerDiv);
 
-const switcher = new ThemesSwitcher({ container: containerDiv });
+// Sets the theme's class on <body> right away; init() announces it (THEME_CHANGED), which builds the helix once.
+new ThemesSwitcher({ container: containerDiv });
 const changelog = new Changelog();
 
 let settings: Settings;
@@ -80,7 +81,9 @@ function init(): void {
 function onSceneChanged(): void {
     const helixActive = sceneSwitcher.scene === Scene.HELIX;
     containerDiv.classList.toggle('scene-not-helix', !helixActive);
-    if (!helixActive) {
+    if (helixActive) {
+        helixScene.onShown();
+    } else {
         helixScene.onHidden();
     }
     // Pick up a year range chosen on a chart view's slider.
@@ -134,7 +137,6 @@ async function start(): Promise<void> {
     // mobile connections.
     await document.fonts.load("32px 'Special Elite'").catch(() => undefined);
     init();
-    switcher.initTheme();
     // Play on start waits until the news are closed.
     await showWhatsNewOnce(changelog, persistentState, APP_VERSION);
     if (settings.playOnStart && sceneSwitcher.scene === Scene.HELIX) {

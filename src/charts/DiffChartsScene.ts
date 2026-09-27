@@ -49,14 +49,19 @@ class DiffChartsScene extends ChartScene {
             button.className = 'dataset-button';
             button.textContent = String(new Date(date).getFullYear());
             button.title = date;
+            button.setAttribute('aria-label', date);
             button.classList.toggle('active', date === this.#baselineDate);
+            button.setAttribute('aria-pressed', String(date === this.#baselineDate));
             button.addEventListener('click', () => {
                 if (this.#baselineDate === date) {
                     return;
                 }
                 this.#baselineDate = date;
                 persistentState.update({ diffBaseline: date });
-                buttons.forEach((otherButton, otherDate) => otherButton.classList.toggle('active', otherDate === date));
+                buttons.forEach((otherButton, otherDate) => {
+                    otherButton.classList.toggle('active', otherDate === date);
+                    otherButton.setAttribute('aria-pressed', String(otherDate === date));
+                });
                 this.renderDiffCharts();
             });
             buttons.set(date, button);

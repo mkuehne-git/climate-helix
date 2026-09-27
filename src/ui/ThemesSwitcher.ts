@@ -40,7 +40,7 @@ class ThemesSwitcher {
     /**
      * Determine the system preferred theme.
      * 
-     * @returns {@code false} is dark mode, {@code true} light mode
+     * @returns true for dark mode, false for light mode
      */
     preferredTheme(): boolean {
         return window.matchMedia('(prefers-color-scheme: dark)').matches;
