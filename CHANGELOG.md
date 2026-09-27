@@ -1,6 +1,12 @@
 # Changelog
 
-## v2.0.0 · 2026-09-27
+## v2.0.1 · 2026-09-27
+
+* Fix months with a temperature anomaly of exactly 0.00 °C missing from the helix: each one moved every later month one step around the circle, so from 1881 on many months sat at the wrong place, and the helix ended a year too low. Depending on the snapshot and region, 10 to 18 months were affected.
+* Fix the app using more and more graphics memory while settings change: every redraw of the helix, many per second while a slider moves, kept the old one in memory. On phones this could eventually stop the 3D view.
+* Give the Diff charts two more line colors, so that a fourth and fifth data snapshot will each get a color of their own instead of repeating the first ones.
+
+## v2.0.0 · 2026-09-27 · [7c75a25](https://github.com/mkuehne-git/climate-helix/commit/7c75a25)
 
 Climate Helix 2.0 has new settings. The gear icon in the upper right corner opens them as a panel on the right side of the window, or full screen on a phone. Sections that open with a click hold the settings: **Data** (snapshot and region), **View** (legend and colors), **Animation**, **Screen capture** and, closed by default, **Advanced** (the helix's mesh and navigation). A footer that stays in view holds the language, the update check, the imprint, Restore defaults and the changelog. The controls are larger, work with touch, mouse and keyboard, follow the light and dark theme, and are available in English and German.
 

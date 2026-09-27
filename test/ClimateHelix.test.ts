@@ -50,6 +50,21 @@ describe('ClimateHelix', () => {
         expect(size).toBeCloseTo(HEIGHT + 2 * tubeRadius, 2);
     });
 
+    it('keeps months with an anomaly of exactly 0.00 (July 1881)', () => {
+        const helix = new ClimateHelix(fakeSettings(1881, 1881), -1.0, 1.5, 0.4, 1.0, HEIGHT);
+        helix.createMesh();
+        expect(helix.curve).toHaveLength(12);
+        expect(helix.curve[6].temperature).toBe(0);
+        expect(helix.curve[6].color.equals(zero)).toBe(true);
+    });
+
+    it('has a point for every month with data, so months keep their place on the circle', () => {
+        const helix = new ClimateHelix(fakeSettings(1880, 2026), -1.0, 1.5, 0.4, 1.0, HEIGHT);
+        helix.createMesh();
+        // 1880 to 2025 complete, January to August 2026.
+        expect(helix.curve).toHaveLength((2025 - 1880 + 1) * 12 + 8);
+    });
+
     it('builds one curve point per month with data in the selected years', () => {
         const helix = new ClimateHelix(fakeSettings(2025, 2026), -1.0, 1.5, 0.4, 1.0, HEIGHT);
         helix.createMesh();

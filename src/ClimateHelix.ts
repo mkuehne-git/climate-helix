@@ -99,7 +99,9 @@ class ClimateHelix {
     private helixPoint(year: number, month: number): Info | undefined {
         // First column contains year
         const temperature = this.csv.getNumber(year, month + 1);
-        if (temperature) {
+        // Not `if (temperature)`: an anomaly of exactly 0.00 is a value too.
+        // Dropping it would move every later month one step on the circle.
+        if (!Number.isNaN(temperature)) {
             const radius = map(this.helixConfiguration.minT, this.helixConfiguration.maxT, this.helixConfiguration.minR, this.helixConfiguration.maxR, temperature);
             const color = temperatureColor(temperature, this.#cold, this.#zero, this.#warm);
             return {

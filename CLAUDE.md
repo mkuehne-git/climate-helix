@@ -46,7 +46,8 @@ Always ask the project owner for approval before creating a commit. Do not commi
 ## Source Layout
 
 - `src/main.ts` initializes the DOM, Three.js scene, camera, renderer, controls, event listeners, and animation loop.
-- `src/ClimateHelix.ts` converts parsed temperature data into colored Three.js geometry.
+- `src/ClimateHelix.ts` converts parsed temperature data into colored Three.js geometry; `main.ts` frees the old meshes (`disposeMesh`) whenever it rebuilds the helix.
+- `src/chartColors.ts` lists the validated categorical chart colors (`--chart-color-1` to `-5` in `style.css`); each Diff snapshot keeps its own, so there can be no more snapshots than colors.
 - `src/GISSParser.ts` parses the NASA GISS CSV format used by the app.
 - `src/Settings.ts` owns the settings, their controls and the app functions, and dispatches application events when settings change. `src/SettingsPanel.ts` is the native settings panel (the gear button, `src/SettingsButton.ts`, opens it; `h` and Escape too): a scrolling body for the settings and a fixed footer for Language, Check for updates, Imprint, Restore defaults and the changelog. The body holds native sections (Data, View, Animation, Screen capture), built from `src/settingsControls.ts` (section, checkbox, range, segmented buttons, color, button; each control's `update()` shows a value that changed elsewhere), and a collapsed Advanced section with the helix's geometry. The icon buttons' styles are in `src/css/toggle-buttons.css`.
 - `src/Enums.ts` contains shared event and showcase identifiers.

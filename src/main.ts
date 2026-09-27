@@ -59,9 +59,9 @@ let camera: THREE.PerspectiveCamera;
 let scene: THREE.Scene;
 let renderer: THREE.WebGLRenderer;
 let controls: TrackballControls;
-let helixMesh: THREE.Mesh;
-let wireframeMesh: THREE.Mesh;
-let climateAxes: ClimateAxes;
+let helixMesh: THREE.Mesh | undefined;
+let wireframeMesh: THREE.Mesh | undefined;
+let climateAxes: ClimateAxes | undefined;
 let observer: ClassMutationObserver;
 let capture: ScreenCapture;
 let yearRangeSlider: YearRangeSlider;
@@ -254,16 +254,28 @@ function updateSceneBackgroundDueToThemeChange(): ClassMutationObserver {
     });
 }
 
+/**
+ * Takes a mesh out of the scene and frees its GPU buffers: the helix is
+ * rebuilt on every settings change, many times a second while a slider moves.
+ */
+function disposeMesh(mesh: THREE.Mesh | undefined): void {
+    if (!mesh) {
+        return;
+    }
+    group.remove(mesh);
+    mesh.geometry.dispose();
+    (Array.isArray(mesh.material) ? mesh.material : [mesh.material]).forEach((material) => material.dispose());
+}
+
 function createHelix(): void {
-    if (helixMesh) {
-        group.remove(helixMesh);
-    }
-    if (wireframeMesh) {
-        group.remove(wireframeMesh);
-    }
+    disposeMesh(helixMesh);
+    disposeMesh(wireframeMesh);
+    helixMesh = undefined;
+    wireframeMesh = undefined;
     if (climateAxes) {
         group.remove(climateAxes);
         climateAxes.dispose();
+        climateAxes = undefined;
     }
     const helix = new ClimateHelix(settings);
     if (settings.showFaces) {

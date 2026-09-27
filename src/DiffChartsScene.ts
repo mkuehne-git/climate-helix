@@ -5,10 +5,9 @@ import { ChartControl } from "./ChartControl";
 import { SceneSwitcher } from "./SceneSwitcher";
 import { YearRangeSlider } from "./YearRangeSlider";
 import { persistentState } from "./PersistentState";
+import { CHART_COLOR_VARS } from "./chartColors";
 import { regionName, t } from "./i18n";
 
-/** The three validated categorical chart colors, assigned positionally. */
-const CHART_COLOR_VARS = ['var(--chart-color-1)', 'var(--chart-color-2)', 'var(--chart-color-3)'];
 
 /**
  * The Diff scene's content: a baseline-snapshot picker, then one chart per
@@ -201,10 +200,9 @@ class DiffChartsScene {
         return new Map(series.map((entry) => [entry.x, entry.value]));
     }
 
-    /** Each snapshot keeps the same color regardless of which one is picked as baseline. */
+    /** Each snapshot keeps its own color, oldest first, whichever one is the baseline. */
     private dateColorVar(date: string): string {
-        const index = this.#settings.dateOptions.indexOf(date);
-        return CHART_COLOR_VARS[index % CHART_COLOR_VARS.length];
+        return CHART_COLOR_VARS[this.#settings.dateOptions.indexOf(date)];
     }
 }
 

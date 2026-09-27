@@ -22,6 +22,11 @@
     --chart-color-1: #2a78d6;
     --chart-color-2: #eb6834;
     --chart-color-3: #1baf7a;
+    /* 4 and 5 color the Diff charts' snapshots from the fourth on; the same
+       validated order, below 3:1 on white like 3, so identity also comes
+       from the legend's names and the tooltip. */
+    --chart-color-4: #eda100;
+    --chart-color-5: #e87ba4;
 
     /* Settings panel lines and the destructive Restore defaults. */
     --settings-border: #e3e3e3;
@@ -46,6 +51,8 @@
     --chart-color-1: #3987e5;
     --chart-color-2: #d95926;
     --chart-color-3: #199e70;
+    --chart-color-4: #c98500;
+    --chart-color-5: #d55181;
 
     --settings-border: #3a3a3a;
     --settings-border-strong: #5c5c5c;
