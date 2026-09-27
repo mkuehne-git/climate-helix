@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { APP_VERSION, openApp, openSettings, switchScene, withStoredState } from '../e2e/app';
+import { NEWEST_NEWS_VERSION, openApp, openSettings, switchScene, withStoredState } from '../e2e/app';
 
 // The README screenshots, see playwright.screenshots.config.ts. A phone-sized
 // viewport, like the app is mostly used; the legend one is wider for the
@@ -58,6 +58,6 @@ test('what\'s new', async ({ page }) => {
     // Overrides the version seen: someone updating from v0.11.1.
     await page.addInitScript(() => localStorage.setItem('climate-helix.state', JSON.stringify({ version: 1, lastSeenVersion: '0.11.1' })));
     await openApp(page);
-    await expect(page.locator('.changelog h2').first()).toContainText(`v${APP_VERSION}`);
+    await expect(page.locator('.changelog h2').first()).toContainText(`v${NEWEST_NEWS_VERSION}`);
     await shoot(page, 'climate-helix-whats-new');
 });

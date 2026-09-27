@@ -5,6 +5,7 @@ import { ChartControl } from "./ChartControl";
 import { SceneSwitcher } from "./SceneSwitcher";
 import { YearRangeSlider } from "./YearRangeSlider";
 import { persistentState } from "./PersistentState";
+import { regionName, t } from "./i18n";
 
 /** The three validated categorical chart colors, assigned positionally. */
 const CHART_COLOR_VARS = ['var(--chart-color-1)', 'var(--chart-color-2)', 'var(--chart-color-3)'];
@@ -67,7 +68,7 @@ class DiffChartsScene {
 
         const heading = document.createElement('h2');
         heading.className = 'chart-scene-heading';
-        heading.textContent = 'Differences between dataset snapshots';
+        heading.textContent = t('diff.heading');
         content.appendChild(heading);
 
         const controls = document.createElement('div');
@@ -158,7 +159,7 @@ class DiffChartsScene {
             // Per region, not per baseline: the options apply to whichever baseline is picked.
             const id = `diff:${showcase}`;
             this.#charts.push(new ChartControl(block, {
-                title: `${showcase} - baseline ${baseline}`,
+                title: t('diff.title', { region: regionName(showcase), date: baseline }),
                 series,
                 xDomain: this.xDomain(),
                 yZeroLine: true,

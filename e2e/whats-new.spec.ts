@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { APP_VERSION, openApp } from './app';
+import { NEWEST_NEWS_VERSION, openApp } from './app';
 
 const overlay = (page: Page) => page.locator('.overlay-page.changelog');
 
@@ -18,7 +18,7 @@ test('What\'s new shows the news since the last used version, once', async ({ pa
     await lastUsed(page, { lastSeenVersion: '0.12.0' });
     const errors = await openApp(page);
     await expect(overlay(page).locator('h1')).toHaveText("What's new");
-    await expect(overlay(page).locator('h2').first()).toContainText(`v${APP_VERSION}`);
+    await expect(overlay(page).locator('h2').first()).toContainText(`v${NEWEST_NEWS_VERSION}`);
     await expect(overlay(page).locator('h2', { hasText: 'v0.12.0' })).toHaveCount(0);
     await overlay(page).locator('div.overlay-close').click();
     await expect(overlay(page)).toHaveCount(0);

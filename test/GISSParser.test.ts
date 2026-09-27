@@ -9,7 +9,6 @@ const REGIONS = {
     'NH.Ts+dSST.csv': 'Land-Ocean: Northern Hemispheric Means',
     'SH.Ts+dSST.csv': 'Land-Ocean: Southern Hemispheric Means',
 };
-const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 const snapshots = readdirSync(CSV_DIR).filter((name) => /^\d{4}-\d{2}-\d{2}$/.test(name)).sort();
 
@@ -54,7 +53,7 @@ describe('GISSParser with the bundled snapshots', () => {
             it('reports the last month with a value as the end date', () => {
                 const last = parser.monthlySeries[parser.monthlySeries.length - 1];
                 const month = Math.round((last.x - Math.floor(last.x)) * 12);
-                expect(parser.lastValidDate).toBe(`${MONTHS[month]} ${Math.floor(last.x)}`);
+                expect(parser.lastValidMonth).toEqual({ year: Math.floor(last.x), month });
                 // Snapshots are taken mid-year, so the last row is still incomplete.
                 expect(Math.floor(last.x)).toBe(lastRowYear);
                 expect(month).toBeLessThan(11);
@@ -98,7 +97,7 @@ describe('GISSParser with inline data', () => {
     });
 
     it('reports the last month with a value as the end date', () => {
-        expect(parser.lastValidDate).toBe('February 2001');
+        expect(parser.lastValidMonth).toEqual({ year: 2001, month: 1 });
     });
 
     it('returns empty results for missing data', () => {
@@ -106,6 +105,6 @@ describe('GISSParser with inline data', () => {
         expect(empty.title).toBe('');
         expect(empty.monthlySeries).toEqual([]);
         expect(empty.annualSeries).toEqual([]);
-        expect(empty.lastValidDate).toBeUndefined();
+        expect(empty.lastValidMonth).toBeUndefined();
     });
 });

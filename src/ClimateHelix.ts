@@ -3,6 +3,7 @@ import { Events } from './Enums';
 import { Settings } from './Settings';
 import { GISSParser } from './GISSParser';
 import { HelixGeometry } from "./HelixGeometry";
+import { regionTitle, t } from './i18n';
 
 const MONTHS = 12;
 const sin: number[] = [];
@@ -139,7 +140,7 @@ class ClimateHelix {
             this.#headingDiv.setAttribute('class', HEADING_DIV);
             container.appendChild(this.#headingDiv);
         }
-        this.#headingDiv.innerText = `${this.csv.title} (${this.settings.dataEndDate})`;
+        this.#headingDiv.innerText = t('helix.heading', { title: regionTitle(this.settings.region), date: this.settings.dataEndDate });
         return this.#headingDiv;
     }
 }

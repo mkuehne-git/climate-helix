@@ -1,6 +1,5 @@
 import type { ChartPoint } from './ChartControl';
-
-const MONTH_ABBR = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+import { formatMonthYear as formatMonth, monthName } from './i18n';
 
 /**
  * A centered moving average over `points` (already sorted by `x`): each
@@ -24,7 +23,7 @@ function movingAverage(points: ChartPoint[], window: number): ChartPoint[] {
 function formatMonthYear(x: number): string {
     const month = Math.round((x % 1) * 12) % 12;
     const year = Math.round(x - month / 12);
-    return `${MONTH_ABBR[month]} ${year}`;
+    return formatMonth(year, month);
 }
 
 /** How many decimal places a "nice" tick step needs to display distinct labels. */
@@ -44,7 +43,7 @@ function monthTicks(min: number, max: number, count: number): { x: number, label
     const ticks: { x: number, label: string }[] = [];
     for (let k = Math.ceil(first / step) * step; k <= last; k += step) {
         const month = ((k % 12) + 12) % 12;
-        ticks.push({ x: k / 12, label: month === 0 ? String(k / 12) : MONTH_ABBR[month] });
+        ticks.push({ x: k / 12, label: month === 0 ? String(k / 12) : monthName(month) });
     }
     return ticks;
 }

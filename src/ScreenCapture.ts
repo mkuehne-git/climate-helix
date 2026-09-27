@@ -1,6 +1,10 @@
 import html2canvas from "html2canvas";
 
 import { Settings } from "./Settings";
+import { t, type MessageKey } from "./i18n";
+
+/** The display names of the capture choices; the keys identify them. */
+const CAPTURE_LABELS: Record<string, MessageKey> = { All: "settings.captureAll", Helix: "settings.captureHelix" };
 // This is for the screen capture. Without the WebGL content would not be showing.
 //
 // https://stackoverflow.com/questions/55760121/html2canvas-captures-everything-except-the-content-of-an-inner-canvas
@@ -66,9 +70,10 @@ class ScreenCapture {
       (obj, prop, index) => {
         console.log(`${obj}, ${prop}, ${index}`)
         this.#captionIndex = index;
-      }
+      },
+      (key) => CAPTURE_LABELS[key] ? t(CAPTURE_LABELS[key]) : key
     );
-    folder.add(property, "on_capture_clicked").name("Click or press 'alt s'");
+    folder.add(property, "on_capture_clicked").name(t("settings.captureButton"));
   }
 
   capture(fBeforeCapture = this.#fBeforeCapture) {

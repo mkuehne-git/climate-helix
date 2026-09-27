@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 import { Settings } from './Settings';
 import { temperatureColor } from './ClimateHelix';
+import { formatTemperature, monthName } from './i18n';
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONTH_COUNT = 12;
 const LABELED_MONTHS = new Set([0, 3, 6, 9]);
 const MIN_LEGEND_TEMPERATURE = -1;
 const MAX_LEGEND_TEMPERATURE = 1.5;
@@ -88,7 +89,7 @@ class ClimateAxes extends THREE.Group {
             // top-down this overlaps the ring, but the Z offset below the
             // ring's plane keeps it legible from the actual camera angle.
             this.addLabel(
-                `${temperature >= 0 ? '+' : ''}${temperature.toFixed(2)}°C`,
+                formatTemperature(temperature, 2, 'always'),
                 new THREE.Vector3(Math.cos(labelAngle) * circleRadius, Math.sin(labelAngle) * circleRadius, labelZ),
                 ringColor,
                 0.5,
@@ -100,15 +101,15 @@ class ClimateAxes extends THREE.Group {
     private addMonthAxis(settings: Settings, radius: number, color: THREE.Color, z: number): void {
         const outerRadius = radius + 0.08;
         const monthColor = this.legendColor(settings, MAX_LEGEND_TEMPERATURE, color);
-        for (let month = 0; month < MONTHS.length; month++) {
-            const angle = month / MONTHS.length * Math.PI * 2;
+        for (let month = 0; month < MONTH_COUNT; month++) {
+            const angle = month / MONTH_COUNT * Math.PI * 2;
             const innerRadius = radius;
             this.addLine([
                 [Math.cos(angle) * innerRadius, Math.sin(angle) * innerRadius, z],
                 [Math.cos(angle) * outerRadius, Math.sin(angle) * outerRadius, z]
             ], new THREE.LineBasicMaterial({ color: monthColor }));
             if (LABELED_MONTHS.has(month)) {
-                this.addLabel(MONTHS[month], new THREE.Vector3(Math.cos(angle) * (outerRadius + 0.14), Math.sin(angle) * (outerRadius + 0.14), z), monthColor, 0.4, 0.12);
+                this.addLabel(monthName(month), new THREE.Vector3(Math.cos(angle) * (outerRadius + 0.14), Math.sin(angle) * (outerRadius + 0.14), z), monthColor, 0.4, 0.12);
             }
         }
     }

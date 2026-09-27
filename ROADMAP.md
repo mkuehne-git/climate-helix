@@ -85,7 +85,7 @@ If accessibility, a phone-friendly layout, localization or a consistent look bec
 
 ### Localization: English and German
 
-The app would be available in English and German, and ready for more languages. It does not depend on the native settings panel: lil-gui labels can be translated with `.name(t(...))`.
+The app would be available in English and German, and ready for more languages. It does not depend on the native settings panel: lil-gui labels can be translated with `.name(t(...))`. In progress on the branch `feature/localization`; step 1 is done (v1.0.3).
 
 #### What has to be translated or formatted
 
@@ -101,7 +101,7 @@ The app would be available in English and German, and ready for more languages. 
 
 #### Design
 
-- **Catalogs**: `src/i18n/en.ts` and `de.ts`, plain TypeScript objects. `de` is typed like `en`, so a missing or misspelled key fails the build; a unit test checks completeness too. A small `t(key, params)` looks strings up, with English as the fallback. No i18n library: `Intl` covers numbers, dates, month names and plurals (`Intl.PluralRules`). Reconsider i18next or FormatJS only for a language with complex plural rules.
+- **Catalogs**: `src/i18n/en.ts` and `de.ts`, plain TypeScript objects with the messages, the short and long month names and the `Intl` locale. `de` is typed as a `Catalog` (every key of `en`), which the editor checks; the build does not type-check (Vite only strips types, and the project has no `tsc`), so a unit test must check that every catalog has exactly the English keys and parameters. `t(key, params)` looks strings up (`src/i18n/index.ts`). No i18n library: `Intl.NumberFormat` formats numbers; month names come from the catalogs rather than `Intl.DateTimeFormat`, whose output differs between browsers ("Sep" or "Sept") and whose German abbreviations carry periods. Reconsider i18next or FormatJS only for a language with complex plural rules.
 - **Choosing the language**: by default German if `navigator.languages` starts with `de`, otherwise English. A **Language** setting (Auto / English / Deutsch) in `PersistentState`. Changing it reloads the app, because many labels are fixed when things are built (lil-gui names, canvas text in the 3D scene, charts).
 - **More languages later**: one catalog file and translated info panels, no code changes.
 
@@ -117,7 +117,7 @@ The app would be available in English and German, and ready for more languages. 
 
 Each step is its own version:
 
-1. **Move the strings out, no visible change** (patch): catalogs, `t()`, `Intl` formatting, region keys separated from their labels. The largest step.
+1. **Move the strings out, no visible change** (patch, done in v1.0.3): the English catalog and `t()`, number and month formatting, region names separated from the `Showcase` keys, chart series identified by an `id` instead of their label (the stored hidden series keep working), the helix title from the catalog by region instead of the CSV title, and the parser's end date as year and month. The info panels and `index.html` stay English until step 2. Snapshot dates stay ISO (`2026-09-16`) in both languages unless step 2 decides otherwise.
 2. **German and the Language setting** (minor): the `de` catalog, language detection, the setting, German info panels, the German e2e smoke test.
 3. **Polish** (patch): layout at phone width, fonts, the manifest, possibly German What's new.
 

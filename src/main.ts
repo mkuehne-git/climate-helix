@@ -31,6 +31,7 @@ import { HelixAnimation, drawCount, playSeconds, tipIndex } from './HelixAnimati
 import { SVGToggleButton } from './SVGToggleButton';
 import { persistentState, type Vector3 } from './PersistentState';
 import { formatMonthYear } from './chartMath';
+import { t } from './i18n';
 import { icon as playIcon } from './icons/animation/playIcon';
 import { icon as pauseIcon } from './icons/animation/pauseIcon';
 
@@ -311,7 +312,7 @@ function createInfoDiv() {
     button.type = 'button';
     button.id = 'version-info';
     button.textContent = `v${APP_VERSION}`;
-    button.title = 'Show the changelog';
+    button.title = t('version.title');
     button.addEventListener('click', () => Events.dispatchEvent(Events.SHOW_CHANGELOG));
     infoIcon?.insertAdjacentElement('beforebegin', button);
 }

@@ -32,7 +32,7 @@ The README shows five screenshots in `src/images/`. `npm run screenshots` retake
 Open every changed image (the Read tool shows images) and check:
 
 - No tooltip, hover highlight, animation frame or half-drawn chart.
-- What's new shows the current version on top.
+- What's new shows the newest version with a visible change on top (versions marked "No functional change." are left out).
 - The version label shows the new version.
 
 `git status` shows which images changed. Revert images that changed only by rendering noise, unless the version label differs.

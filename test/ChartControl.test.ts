@@ -128,6 +128,19 @@ describe('ChartControl', () => {
             expect(Math.max(...yValues())).toBeLessThan(2);
         });
 
+        it('remembers hidden series by id, not by their (translated) label', () => {
+            const onStateChange = vi.fn();
+            annualChart({
+                series: [{ id: 'Global', label: 'Weltweit', color: 'red', points: annual() }, { id: 'NH', label: 'Nord', color: 'blue', points: annual(0.1) }],
+                state: { hidden: ['Global'] },
+                onStateChange,
+            });
+            const checkboxes = container.querySelectorAll<HTMLInputElement>('.chart-legend-checkbox');
+            expect([...checkboxes].map((box) => box.checked)).toEqual([false, true]);
+            checkboxes[1].click();
+            expect(onStateChange).toHaveBeenLastCalledWith(expect.objectContaining({ hidden: ['Global', 'NH'] }));
+        });
+
         it('reports legend and option changes, keeping hidden labels of series it lacks', () => {
             const onStateChange = vi.fn();
             annualChart({ series: twoSeries, movingAverageVisible: true, state: { hidden: ['C'] }, onStateChange });

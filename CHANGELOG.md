@@ -1,6 +1,11 @@
 # Changelog
 
-## v1.0.2 · 2026-09-26
+## v1.0.3 · 2026-09-26
+
+* Prepare the app for more languages, step 1 of the localization plan in the roadmap: all user-visible text of the app moves into an English message catalog (`src/i18n/`), and numbers, temperatures and month names are formatted in one place. Charts remember hidden series by an identifier instead of their label, and the helix title comes from the catalog instead of the data file. No functional change.
+* Fix the end-to-end test of What's new, which expected the current version on top even when that version has no functional change and is left out.
+
+## v1.0.2 · 2026-09-26 · [3223cb5](https://github.com/mkuehne-git/climate-helix/commit/3223cb5)
 
 * Add a plan for localizing the app in English and German to the roadmap: what has to be translated, how the language is chosen, and the steps. No functional change.
 

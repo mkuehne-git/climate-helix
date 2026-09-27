@@ -5,6 +5,7 @@ import { ChartControl } from "./ChartControl";
 import { SceneSwitcher } from "./SceneSwitcher";
 import { YearRangeSlider } from "./YearRangeSlider";
 import { persistentState } from "./PersistentState";
+import { regionName, t } from "./i18n";
 
 const REGION_COLOR_VARS: Record<Showcase, string> = {
     [Showcase.GLOBAL]: 'var(--chart-color-1)',
@@ -60,7 +61,7 @@ class ChartsScene {
 
         const heading = document.createElement('h2');
         heading.className = 'chart-scene-heading';
-        heading.textContent = 'Temperature anomaly per dataset snapshot';
+        heading.textContent = t('charts.heading');
         content.appendChild(heading);
 
         const controls = document.createElement('div');
@@ -97,13 +98,14 @@ class ChartsScene {
             const block = document.createElement('div');
             content.appendChild(block);
             const series = Object.values(Showcase).map((showcase) => ({
-                label: showcase,
+                id: showcase,
+                label: regionName(showcase),
                 color: REGION_COLOR_VARS[showcase],
                 points: new GISSParser(dataset.csv[showcase]).annualSeries.map((entry) => ({ x: entry.year, y: entry.value })),
             }));
             const id = `charts:${date}`;
             this.#charts.push(new ChartControl(block, {
-                title: `${date} snapshot`,
+                title: t('charts.title', { date }),
                 series,
                 xDomain: this.xDomain(),
                 state: persistentState.state.charts?.[id],

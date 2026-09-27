@@ -1,5 +1,6 @@
 import { Events } from "./Enums";
 import { OverlayPage } from "./OverlayPage";
+import { t } from "./i18n";
 import { parseChangelog, renderEntries, whatsNewEntries, type ChangelogEntry } from "./changelogFormat";
 
 /** CHANGELOG.md is loaded on demand, in its own chunk; the build adds the newest entry's commit (vite.config.ts). */
@@ -36,11 +37,11 @@ class Changelog {
     }
     const closed = new Promise<void>((resolve) => this.#resolveClosed = resolve);
     const content = this.#page.show();
-    content.innerHTML = `<h1>What's new</h1>\n${renderEntries(news)}`;
+    content.innerHTML = `<h1>${t("whatsNew.heading")}</h1>\n${renderEntries(news)}`;
     const full = document.createElement("button");
     full.type = "button";
     full.className = "changelog-full pwa-update-button secondary";
-    full.textContent = "Full changelog";
+    full.textContent = t("whatsNew.fullChangelog");
     // Replaces the content rather than reopening the page, which would count as closing it.
     full.addEventListener("click", () => {
       this.renderFull(content, entries);
@@ -56,7 +57,7 @@ class Changelog {
   }
 
   private renderFull(content: HTMLElement, entries: ChangelogEntry[]): void {
-    content.innerHTML = `<h1>Changelog</h1>\n${renderEntries(entries)}`;
+    content.innerHTML = `<h1>${t("changelog.heading")}</h1>\n${renderEntries(entries)}`;
   }
 }
 export { Changelog };

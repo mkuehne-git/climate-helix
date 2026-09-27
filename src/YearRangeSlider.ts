@@ -1,4 +1,5 @@
 import closeIcon from './icons/info/close.svg?raw';
+import { t } from './i18n';
 
 /** The value source and sink a {@link YearRangeSlider} drives. */
 interface YearRange {
@@ -46,8 +47,8 @@ class YearRangeSlider {
         this.resetButton = document.createElement('button');
         this.resetButton.type = 'button';
         this.resetButton.className = 'year-slider-reset';
-        this.resetButton.title = 'Show all years';
-        this.resetButton.setAttribute('aria-label', 'Show all years');
+        this.resetButton.title = t('yearRange.reset');
+        this.resetButton.setAttribute('aria-label', t('yearRange.reset'));
         this.resetButton.innerHTML = closeIcon;
         this.resetButton.addEventListener('click', () => {
             this.range.reset();
@@ -64,7 +65,7 @@ class YearRangeSlider {
         input.type = 'range';
         input.className = `year-slider-input ${position}`;
         input.step = '1';
-        input.setAttribute('aria-label', position === 'start' ? 'Start year' : 'End year');
+        input.setAttribute('aria-label', t(position === 'start' ? 'yearRange.start' : 'yearRange.end'));
         input.addEventListener('input', () => {
             const year = Number(input.value);
             if (position === 'start') {

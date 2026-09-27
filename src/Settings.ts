@@ -9,8 +9,10 @@ import { checkForPwaUpdates, showPwaStatus } from './PwaUpdate';
 import { GISSParser } from './GISSParser';
 import { YearRange } from './YearRange';
 import { persistentState, storedDate, type StoredState } from './PersistentState';
+import { formatMonthYear, formatTemperature, regionName, t } from './i18n';
 
-export type Dataset = { endDate: string, csv: Record<Showcase, string>, firstYear: number, lastYear: number };
+/** `endMonth`: the last month with data, 0 (January) to 11. */
+export type Dataset = { endMonth?: { year: number, month: number }, csv: Record<Showcase, string>, firstYear: number, lastYear: number };
 
 const datasetPaths: Record<string, { files: Record<Showcase, string> }> = {
     '2026-09-16': { files: { [Showcase.GLOBAL]: 'GLB.Ts+dSST.csv', [Showcase.NORTHERN_HEMISPHERE]: 'NH.Ts+dSST.csv', [Showcase.SOUTHERN_HEMISPHERE]: 'SH.Ts+dSST.csv' } },
@@ -32,8 +34,8 @@ async function loadDatasets(): Promise<Record<string, Dataset>> {
             .map((row) => row.split(',')[0].trim())
             .filter((year) => /^\d{4}$/.test(year))
             .map(Number));
-        const endDate = new GISSParser(csv[Showcase.GLOBAL]).lastValidDate ?? '';
-        return [date, { endDate, csv, firstYear: Math.min(...years), lastYear: Math.max(...years) }] as const;
+        const endMonth = new GISSParser(csv[Showcase.GLOBAL]).lastValidMonth;
+        return [date, { endMonth, csv, firstYear: Math.min(...years), lastYear: Math.max(...years) }] as const;
     }));
     return Object.fromEntries(entries);
 }
@@ -173,11 +175,12 @@ class Settings {
         folderName: string,
         object,
         options,
-        onChange = (obj, prop, index) => { }
+        onChange = (obj, prop, index) => { },
+        label = (key: string) => key
     ) {
         // Create the folder
         const folder = parent.addFolder(folderName);
-        Settings.addRadioButtons(folder, object, options, onChange);
+        Settings.addRadioButtons(folder, object, options, onChange, label);
         return folder;
     }
 
@@ -185,7 +188,8 @@ class Settings {
         parent: GUI,
         initial: any,
         options: any,
-        onChange = (obj, prop, index) => { }
+        onChange = (obj, prop, index) => { },
+        label = (key: string) => key
     ) {
         const object = {};
         // create property for each object
@@ -201,7 +205,7 @@ class Settings {
             const property = `option_${key}`;
             parent
                 .add(object, property)
-                .name(key)
+                .name(label(key))
                 .listen()
                 .onChange(() => {
                     for (let prop in object) {
@@ -297,7 +301,7 @@ class Settings {
         this.selectDate(SETTINGS.date);
         this.#showcaseFolder = Settings.addRadioButtonsFolder(
             this.#gui,
-            `Region: ${SETTINGS.radio}`,
+            t('settings.region', { region: regionName(SETTINGS.radio) }),
             SETTINGS.radio,
             this.#csv,
             (object, property, key) => {
@@ -305,9 +309,10 @@ class Settings {
                 SETTINGS.showcaseCSV = this.#csv[key];
                 this.clampYearRange();
                 Events.dispatchEvent(Events.CREATE_HELIX);
-                this.#showcaseFolder.title(`Region: ${key}`);
+                this.#showcaseFolder.title(t('settings.region', { region: regionName(key) }));
                 this.#showcaseFolder.close();
-            }
+            },
+            (key) => regionName(key as Showcase)
         );
         SETTINGS.showcaseCSV = this.#csv[SETTINGS.radio];
         this.#showcaseFolder.close();
@@ -316,7 +321,7 @@ class Settings {
     createDateFolder(): void {
         this.#dateFolder = Settings.addRadioButtonsFolder(
             this.#gui,
-            `Date: ${SETTINGS.date}`,
+            t('settings.date', { date: SETTINGS.date }),
             SETTINGS.date,
             this.#datasets,
             (object, property, key) => {
@@ -329,7 +334,7 @@ class Settings {
     setDate(date: string): void {
         SETTINGS.date = date;
         this.selectDate(date);
-        this.#dateFolder.title(`Date: ${date}`);
+        this.#dateFolder.title(t('settings.date', { date }));
         this.#dateFolder.close();
         Events.dispatchEvent(Events.CREATE_HELIX);
     }
@@ -450,23 +455,30 @@ class Settings {
         this.save();
     }
 
+    /** The last month with data, e.g. "August 2026". */
     get dataEndDate(): string {
-        return this.#datasets[SETTINGS.date].endDate;
+        const end = this.#datasets[SETTINGS.date].endMonth;
+        return end ? formatMonthYear(end.year, end.month, 'long') : '';
+    }
+
+    /** The active region. */
+    get region(): Showcase {
+        return SETTINGS.radio;
     }
 
     createAnimationFolder() {
-        const folder = this.#gui.addFolder("Animation");
+        const folder = this.#gui.addFolder(t('settings.animation'));
         const changed = () => Events.dispatchEvent(Events.ANIMATION_CHANGED);
         limited(folder.add(SETTINGS.animation, 'duration'), 'duration')
-            .name('Duration (s)')
+            .name(t('settings.duration'))
             .onChange(changed);
         folder
             .add(SETTINGS.animation, 'loop')
-            .name('Loop')
+            .name(t('settings.loop'))
             .onChange(changed);
         folder
             .add(SETTINGS.animation, 'playOnStart')
-            .name('Play on start')
+            .name(t('settings.playOnStart'))
             .onChange(changed);
         folder.close();
     }
@@ -485,10 +497,10 @@ class Settings {
     }
 
     createViewFolder() {
-        const folder = this.#gui.addFolder("View");
+        const folder = this.#gui.addFolder(t('settings.view'));
         folder
             .add(SETTINGS.view, 'yearRangeVisible')
-            .name('Year range')
+            .name(t('settings.yearRange'))
             .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
         this.createViewLegendFolder(folder);
         this.createViewGeometryFolder(folder);
@@ -498,88 +510,88 @@ class Settings {
     }
 
     createViewNavigationFolder(parent) {
-        const folder = parent.addFolder('Navigation');
+        const folder = parent.addFolder(t('settings.navigation'));
         // Not CREATE_HELIX: these only change how the camera moves, and must not end a running animation.
         const changed = () => Events.dispatchEvent(Events.CONTROLS_CHANGED);
         folder
             .add(SETTINGS.view.navigation, 'inertia')
-            .name('Inertia')
+            .name(t('settings.inertia'))
             .onChange(changed);
         limited(folder.add(SETTINGS.view.navigation, 'rotateSpeed'), 'rotateSpeed')
-            .name('Rotation speed')
+            .name(t('settings.rotationSpeed'))
             .onChange(changed);
         folder.close();
     }
 
     createViewLegendFolder(parent) {
-        const folder = parent.addFolder('Legend');
+        const folder = parent.addFolder(t('settings.legend'));
         folder
             .add(SETTINGS.view.axes, 'yearVisible')
-            .name('Year axis')
+            .name(t('settings.yearAxis'))
             .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
         folder
             .add(SETTINGS.view.axes, 'temperatureVisible')
-            .name('Temperature axis')
+            .name(t('settings.temperatureAxis'))
             .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
         folder
             .add(SETTINGS.view.axes, 'monthVisible')
-            .name('Month axis')
+            .name(t('settings.monthAxis'))
             .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
         limited(folder.add(SETTINGS.view.axes, 'yearTickCount'), 'yearTickCount')
-            .name('Year ticks')
+            .name(t('settings.yearTicks'))
             .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
         limited(folder.add(SETTINGS.view.axes, 'temperatureRingCount'), 'temperatureRingCount')
-            .name('Temperature rings')
+            .name(t('settings.temperatureRings'))
             .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
         folder
             .add(SETTINGS.view.axes, 'temperatureRingsColored')
-            .name('Colored rings')
+            .name(t('settings.coloredRings'))
             .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
         folder.close();
     }
 
     createViewGeometryFolder(parent) {
-        const folder = parent.addFolder('Geometry');
+        const folder = parent.addFolder(t('settings.geometry'));
         const geometry =
             SETTINGS.view.geometry;
         folder
             .add(geometry, "meshVisible")
-            .name("Wireframe")
+            .name(t('settings.wireframe'))
             // .onChange(() => Settings.dispatchEvent(Events.UPDATE_VISIBLE));
             .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
         folder
             .add(geometry, "facesVisible")
-            .name("Faces")
+            .name(t('settings.faces'))
             // .onChange(() => Settings.dispatchEvent(Events.UPDATE_VISIBLE));
             .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
         limited(folder.add(geometry, "tubularSegments"), 'tubularSegments')
-            .name(`Monthly Segments`)
+            .name(t('settings.monthlySegments'))
             .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
         limited(folder.add(geometry, "radialSegments"), 'radialSegments')
-            .name(`Radius Segments`)
+            .name(t('settings.radiusSegments'))
             .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
         limited(folder.add(geometry, "radiusFactor"), 'radiusFactor')
-            .name(`Radius Factor`)
+            .name(t('settings.radiusFactor'))
             .onChange(() => Events.dispatchEvent(Events.CREATE_HELIX));
         folder.close();
     }
     createViewColorsFolder(parent) {
-        const folder = parent.addFolder('Colors');
+        const folder = parent.addFolder(t('settings.colors'));
         const colors =
             SETTINGS.view.colors;
         folder
             .addColor(colors.cold, "color")
-            .name("-1.0°C")
+            .name(formatTemperature(-1, 1))
             .listen()
             .onChange(() => this.dispatchColorEvent('cold'));
         folder
             .addColor(colors.zero, "color")
-            .name("0°C")
+            .name(formatTemperature(0, 0))
             .listen()
             .onChange(() => this.dispatchColorEvent('zero'));
         folder
             .addColor(colors.warm, "color")
-            .name("+1.5°C")
+            .name(formatTemperature(1.5, 1))
             .listen()
             .onChange(() => this.dispatchColorEvent('warm'));
 
@@ -601,7 +613,7 @@ class Settings {
         Events.dispatchEvent(Events.CREATE_HELIX);
     }
     createCaptureFolder(): void {
-        const folder = this.#gui.addFolder("Screen capture");
+        const folder = this.#gui.addFolder(t('settings.capture'));
         folder.close();
         this.#captureFolder = folder;
     }
@@ -610,26 +622,26 @@ class Settings {
     createRestoreDefaults(): void {
         this.#gui.add({
             restoreDefaults: () => {
-                if (window.confirm('Restore all settings to their defaults? The app reloads.')) {
+                if (window.confirm(t('settings.restoreDefaultsConfirm'))) {
                     persistentState.clear();
                     window.location.reload();
                 }
             }
-        }, 'restoreDefaults').name('Restore defaults');
+        }, 'restoreDefaults').name(t('settings.restoreDefaults'));
     }
 
     createImprint(): void {
         const imprint = new Imprint();
-        this.#gui.add(SETTINGS, "imprint").name("Imprint");
+        this.#gui.add(SETTINGS, "imprint").name(t('settings.imprint'));
         this.#gui.add({
             checkForUpdates: async () => {
-                showPwaStatus('Checking for updates...', 'info');
+                showPwaStatus(t('pwa.checking'), 'info');
                 const wasChecked = await checkForPwaUpdates();
                 if (!wasChecked) {
                     console.info('No app update check was possible right now.');
                 }
             }
-        }, 'checkForUpdates').name('Check for updates');
+        }, 'checkForUpdates').name(t('settings.checkForUpdates'));
     }
 
     get showcaseCSV(): string | undefined {

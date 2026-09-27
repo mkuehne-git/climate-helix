@@ -1,4 +1,5 @@
 import { decimalsForStep, formatMonthYear, monthTicks, movingAverage, niceTicks } from './chartMath';
+import { formatTemperature, t } from './i18n';
 import type { ChartState } from './PersistentState';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -17,7 +18,10 @@ const PLOT_HEIGHT = HEIGHT - MARGIN.top - MARGIN.bottom;
 let nextClipId = 0;
 
 type ChartPoint = { x: number, y: number };
-type ChartSeries = { label: string, color: string, points: ChartPoint[] };
+/** `id` identifies the series in the stored chart state (hidden series); it defaults to `label`, which is display text. */
+type ChartSeries = { id?: string, label: string, color: string, points: ChartPoint[] };
+
+const seriesId = (series: ChartSeries): string => series.id ?? series.label;
 type ChartConfig = {
     title: string,
     series: ChartSeries[],
@@ -104,9 +108,9 @@ class ChartControl {
     private render(config: ChartConfig): void {
         this.#config = config;
         const hidden = config.state?.hidden ?? [];
-        const labels = config.series.map((series) => series.label);
-        this.#visible = labels.map((label) => !hidden.includes(label));
-        this.#otherHidden = hidden.filter((label) => !labels.includes(label));
+        const ids = config.series.map(seriesId);
+        this.#visible = ids.map((id) => !hidden.includes(id));
+        this.#otherHidden = hidden.filter((id) => !ids.includes(id));
         this.#autoScale = (config.autoScaleVisible ? config.state?.autoScale : undefined) ?? config.autoScaleDefault ?? false;
         this.#movingAverage = config.movingAverageVisible ? (config.state?.movingAverage ?? config.movingAverageDefault ?? false) : false;
 
@@ -140,14 +144,14 @@ class ChartControl {
             wrapper.appendChild(options);
 
             if (config.autoScaleVisible) {
-                options.appendChild(this.createOptionToggle('Auto-scale', this.#autoScale, (checked) => {
+                options.appendChild(this.createOptionToggle(t('chart.autoScale'), this.#autoScale, (checked) => {
                     this.#autoScale = checked;
                     this.redrawPlot();
                     this.notifyStateChange();
                 }));
             }
             if (config.movingAverageVisible) {
-                options.appendChild(this.createOptionToggle('Moving average', this.#movingAverage, (checked) => {
+                options.appendChild(this.createOptionToggle(t('chart.movingAverage'), this.#movingAverage, (checked) => {
                     this.#movingAverage = checked;
                     this.redrawPlot();
                     this.notifyStateChange();
@@ -179,7 +183,7 @@ class ChartControl {
             checkbox.checked = this.#visible[index];
             checkbox.className = 'chart-legend-checkbox';
             checkbox.style.accentColor = series.color;
-            checkbox.setAttribute('aria-label', `Show ${series.label}`);
+            checkbox.setAttribute('aria-label', t('chart.showSeries', { series: series.label }));
             checkbox.addEventListener('change', () => this.setSeriesVisible(index, checkbox.checked));
             item.appendChild(checkbox);
             item.appendChild(document.createTextNode(series.label));
@@ -318,7 +322,7 @@ class ChartControl {
             label.setAttribute('x', String(MARGIN.left - 8));
             label.setAttribute('y', String(y));
             label.setAttribute('class', 'chart-axis-label chart-axis-label-y');
-            label.textContent = `${tick > 0 ? '+' : ''}${tick.toFixed(yDecimals)}°C`;
+            label.textContent = formatTemperature(tick, yDecimals);
             svg.appendChild(label);
         }
 
@@ -457,7 +461,7 @@ class ChartControl {
                 marker.setAttribute('cx', String(x));
                 marker.setAttribute('cy', String(this.scaleY(point.y)));
                 marker.style.display = 'block';
-                rows.push(`<span class="chart-tooltip-swatch" style="background:${series.color}"></span>${series.label}: ${point.y > 0 ? '+' : ''}${point.y.toFixed(2)}°C`);
+                rows.push(`<span class="chart-tooltip-swatch" style="background:${series.color}"></span>${series.label}: ${formatTemperature(point.y, 2)}`);
             } else {
                 marker.style.display = 'none';
             }
@@ -470,7 +474,7 @@ class ChartControl {
     }
 
     private notifyStateChange(): void {
-        const hidden = this.#config.series.filter((_, index) => !this.#visible[index]).map((series) => series.label);
+        const hidden = this.#config.series.filter((_, index) => !this.#visible[index]).map(seriesId);
         this.#config.onStateChange?.({
             hidden: [...this.#otherHidden, ...hidden],
             autoScale: this.#config.autoScaleVisible ? this.#autoScale : undefined,

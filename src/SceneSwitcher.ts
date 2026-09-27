@@ -1,15 +1,16 @@
 import { Events, Scene } from "./Enums";
 import { persistentState } from "./PersistentState";
+import { t, type MessageKey } from "./i18n";
 import { icon as helixIcon } from "./icons/helix/helixIcon";
 import { icon as chartIcon } from "./icons/charts/chartIcon";
 import { icon as diffIcon } from "./icons/diff/diffIcon";
 
-type SceneDescriptor = { scene: Scene, label: string, icon: { id: string, svg: string } };
+type SceneDescriptor = { scene: Scene, label: MessageKey, icon: { id: string, svg: string } };
 
 const SCENES: SceneDescriptor[] = [
-    { scene: Scene.HELIX, label: 'Helix', icon: helixIcon },
-    { scene: Scene.CHARTS, label: 'Charts', icon: chartIcon },
-    { scene: Scene.DIFF, label: 'Diff', icon: diffIcon },
+    { scene: Scene.HELIX, label: 'scene.helix', icon: helixIcon },
+    { scene: Scene.CHARTS, label: 'scene.charts', icon: chartIcon },
+    { scene: Scene.DIFF, label: 'scene.diff', icon: diffIcon },
 ];
 
 /**
@@ -56,7 +57,8 @@ class SceneSwitcher {
         const button = document.createElement('button');
         button.type = 'button';
         button.className = 'scene-button';
-        button.setAttribute('aria-label', `${descriptor.label} view`);
+        const label = t(descriptor.label);
+        button.setAttribute('aria-label', t('scene.button', { scene: label }));
 
         const template = document.createElement('template');
         template.innerHTML = descriptor.icon.svg;
@@ -68,7 +70,7 @@ class SceneSwitcher {
 
         const tooltip = document.createElement('span');
         tooltip.className = 'scene-tooltip';
-        tooltip.textContent = descriptor.label;
+        tooltip.textContent = label;
         button.appendChild(tooltip);
 
         button.addEventListener('click', () => this.select(descriptor.scene));
