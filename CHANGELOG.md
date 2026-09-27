@@ -1,6 +1,17 @@
 # Changelog
 
-## v2.0.6 · 2026-09-27
+## v2.1.0 · 2026-09-27
+
+Climate Helix 2.1 uses less battery and starts faster, and it fixes how the helix shows some months.
+
+* **Less battery:** the 3D view is drawn again only when something changes - you turn it, the helix grows or is rebuilt, the window or theme changes - and not at all while the Charts or Diff view covers it. Before, it was redrawn at the display's full frame rate all the time, which kept phones busy even while nothing moved.
+* **Faster start:** the code for screen captures and the imprint loads when first used, and the helix is built once at startup instead of twice.
+* **Stable memory:** changing settings no longer uses more and more graphics memory, which could eventually stop the 3D view on phones.
+* **Correct months:** months with a temperature anomaly of exactly 0.00 °C are back in the helix; before, every later month was drawn one step off around the circle.
+
+Details in the entries v2.0.1 to v2.0.6 below.
+
+## v2.0.6 · 2026-09-27 · [466a291](https://github.com/mkuehne-git/climate-helix/commit/466a291)
 
 * Port the helix's tube geometry from JavaScript to TypeScript (`helix/HelixGeometry.ts`); it writes the vertex colors directly and drops two unused, broken methods. The geometry is the same as before.
 * Split the 1,200-line `style.css` into one file per area (`src/css/`), imported in the same order. Two unused rules are gone. Screenshots of the app before and after the split are identical. No functional change.
