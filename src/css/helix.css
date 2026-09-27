@@ -1,0 +1,53 @@
+/* The helix view: its title, the animation label and Play button (helix/HelixScene.ts). */
+
+.heading-div {
+    position: absolute;
+    top: var(--settings-size);
+
+    font-family: 'Special Elite', sans-serif;
+    font-size: 28px;
+    text-align: center;
+
+    /* transparent */
+    background-color: rgba(255, 200, 0, 0);
+    color: var(--text-color);
+    margin: 0px;
+
+    width: 100%;
+    display: flex;
+    /* Column: the animation label sits below the title. */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 0;
+}
+
+.animation-label {
+    font-size: 20px;
+    opacity: 0.8;
+    margin-top: 4px;
+}
+
+.animation-label.hidden {
+    display: none;
+}
+
+.toggle-div.animation-button {
+    /* Top-left corner, mirroring the settings button; above .full-scene like the other buttons. */
+    z-index: 5;
+    top: 0;
+    left: 0;
+    right: auto;
+    cursor: pointer;
+}
+
+/* The Play button and the snapshot/year-range picker are helix-only (the
+   picker drives the 3D z-axis) and hidden while a chart view is active; the
+   chart views have their own year slider. */
+.container-div.scene-not-helix .toggle-div.animation-button {
+    display: none;
+}
+
+.container-div.scene-not-helix #dataset-controls {
+    display: none;
+}

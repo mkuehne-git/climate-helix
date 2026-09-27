@@ -1,6 +1,6 @@
 {
   "name": "climate-helix",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "3D Climate Helix",
   "main": "main.js",
   "engines": {

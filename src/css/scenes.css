@@ -1,0 +1,117 @@
+/* The scene switcher and the full-page chart views (charts/ChartScene.ts). */
+
+.scene-switcher {
+    z-index: 5;
+    position: absolute;
+    left: 8px;
+    /* Vertically centered on the info button, which must stay put: that
+       button's own center sits (--div-size/2 - 16px) above the container's
+       bottom edge (--div-size is --settings-size*1.5, see .toggle-div
+       .info-button), so this row's bottom is solved to center its
+       --settings-size-tall buttons on that same point. */
+    bottom: calc(var(--settings-size) * 0.25 - 16px);
+    display: flex;
+    gap: 0;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 2s ease, visibility 2s ease;
+}
+
+.scene-switcher.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.scene-button {
+    position: relative;
+    display: grid;
+    place-items: center;
+    /* Narrower than tall so the row stays clear of the centered info button on phones. */
+    width: calc(var(--settings-size) * 5 / 6);
+    height: var(--settings-size);
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+    opacity: 0.55;
+}
+
+.scene-button:focus-visible {
+    opacity: 0.85;
+}
+
+/* Touch screens keep :hover on the last tapped element, which would leave the
+   tooltip stuck on screen - only real pointers get the hover styling. */
+@media (hover: hover) {
+    .scene-button:hover {
+        opacity: 0.85;
+    }
+
+    .scene-button:hover .scene-tooltip {
+        opacity: 1;
+    }
+}
+
+.scene-button.active {
+    opacity: 1;
+    cursor: default;
+}
+
+.scene-button:disabled {
+    cursor: default;
+}
+
+.scene-icon {
+    width: calc(var(--settings-size)/2);
+    height: calc(var(--settings-size)/2);
+    fill: var(--text-color);
+}
+
+.scene-tooltip {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-family: 'Special Elite', sans-serif;
+    font-size: 0.8rem;
+    padding: 3px 8px;
+    border-radius: 4px;
+    color: var(--text-color);
+    background: var(--background-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+}
+
+.scene-button:focus-visible .scene-tooltip {
+    opacity: 1;
+}
+
+.full-scene {
+    display: none;
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    overflow-y: auto;
+    /* Always fully opaque, even while dimmed (see .full-scene-content below)
+       - the canvas keeps rendering behind every scene, so a translucent
+       *container* would let it bleed through instead of just receding. */
+    background: var(--background-color);
+}
+
+.full-scene.show {
+    display: block;
+}
+
+.full-scene-content {
+    padding: calc(var(--settings-size) + 16px) 16px 64px;
+}
+
+.full-scene-content.transparent {
+    opacity: 0.2;
+    transition: opacity 2s;
+}

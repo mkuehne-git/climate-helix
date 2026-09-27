@@ -32,7 +32,7 @@ In `src/data/datasets.ts`:
 
 Nothing else in the app lists snapshots: the dataset buttons, the settings panel's Data section, the Charts and Diff views and the year ranges all derive from `datasetPaths`.
 
-Each snapshot has its own line color in the Diff charts (`src/charts/chartColors.ts`, five so far). With more snapshots than colors, `test/chartColors.test.ts` fails: add the next validated color (`--chart-color-6` in both themes of `src/css/style.css`, checked with the dataviz skill's validator) rather than reusing one.
+Each snapshot has its own line color in the Diff charts (`src/charts/chartColors.ts`, five so far). With more snapshots than colors, `test/chartColors.test.ts` fails: add the next validated color (`--chart-color-6` in both themes of `src/css/base.css`, checked with the dataviz skill's validator) rather than reusing one.
 
 ## 3. Update what names the newest snapshot
 

@@ -6,6 +6,8 @@
  * https://data.giss.nasa.gov/gistemp/
  */
 
+// First, so the app's styles come first in the cascade, as the <link> in index.html did before.
+import './css/style.css';
 import '@fontsource/special-elite';
 import '@fontsource/dejavu-sans';
 import { Settings } from './settings/Settings';

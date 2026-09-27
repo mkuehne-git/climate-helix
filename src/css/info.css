@@ -1,0 +1,60 @@
+/* The info button and panel, and the version label. */
+
+#version-info {
+    z-index: 5;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    /* A larger hit area than the small label, for fingers. */
+    padding: 8px;
+    border: none;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: x-small;
+    opacity: 0.5;
+    cursor: pointer;
+}
+
+#version-info:hover,
+#version-info:focus-visible {
+    opacity: 1;
+    text-decoration: underline;
+}
+
+.toggle-div.info-button {
+    /* Above .full-scene (z-index 2) so it stays usable - and visible - in
+       both scenes, per InfoButton needing to work while Charts is active. */
+    z-index: 5;
+    --div-size: calc(var(--settings-size)*1.5);
+    bottom: -16px;
+    left: calc(50% - calc(var(--div-size)/2));
+    width: var(--div-size);
+    height: var(--div-size);
+}
+
+.toggle-icon.info-button.show {
+    width: calc(var(--settings-size));
+    height: calc(var(--settings-size));
+}
+
+
+#info-div {
+    z-index: 5;
+    position: absolute;
+    display: none;
+    left: 3%;
+    right: 3%;
+    bottom: 60px;
+
+    max-height: 50%;
+    overflow-y: scroll;
+
+    opacity: 0;
+}
+
+#info-div.show {
+    z-index: 5;
+    display: block;
+    opacity: 1.0;
+}

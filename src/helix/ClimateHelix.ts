@@ -89,11 +89,7 @@ class ClimateHelix {
     private createGeometry(): HelixGeometry {
         const datasetYears = this.settings.datasetLastYear - this.settings.datasetFirstYear + 1;
         const tubeRadius = this.settings.radiusFactor * this.helixConfiguration.height / datasetYears;
-        const geometry = new HelixGeometry(new HelixCurve(this), this.settings.tubularSegments * (this.curve.length - 1), tubeRadius, this.settings.radialSegments, false);
-        const vcolors = geometry.getAttribute('vColors');
-        const colorAttribute = new THREE.BufferAttribute(new Float32Array(vcolors.array), 3)
-        geometry.setAttribute('color', colorAttribute)
-        return geometry;
+        return new HelixGeometry(new HelixCurve(this), this.settings.tubularSegments * (this.curve.length - 1), tubeRadius, this.settings.radialSegments, false);
     }
 
     private helixPoint(year: number, month: number): Info | undefined {

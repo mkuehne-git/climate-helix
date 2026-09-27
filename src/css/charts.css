@@ -1,0 +1,193 @@
+/* The SVG line charts (charts/ChartControl.ts). */
+
+.chart-scene-heading {
+    font-family: 'Special Elite', sans-serif;
+    font-weight: normal;
+    text-align: center;
+    margin: 48px 0 24px;
+}
+
+.chart-scene-heading:first-child {
+    margin-top: 0;
+}
+
+.chart-scene-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 32px;
+}
+
+.chart-block {
+    margin: 0 auto 48px;
+}
+
+.chart-title {
+    font-family: 'Special Elite', sans-serif;
+    font-size: 1rem;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.chart-plot-wrapper {
+    position: relative;
+}
+
+.chart-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    margin: 0 0 4px;
+}
+
+.chart-option-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: fit-content;
+    font-family: 'Special Elite', sans-serif;
+    font-size: 0.8rem;
+    opacity: 0.75;
+    cursor: pointer;
+}
+
+.chart-option-toggle input {
+    margin: 0;
+    cursor: pointer;
+}
+
+.chart-svg {
+    width: 100%;
+    display: block;
+}
+
+.chart-gridline {
+    stroke: var(--text-color);
+    stroke-opacity: 0.12;
+    stroke-width: 1;
+}
+
+.chart-axis {
+    stroke: var(--text-color);
+    stroke-opacity: 0.55;
+    stroke-width: 1;
+}
+
+.chart-zero-line {
+    stroke: var(--text-color);
+    stroke-opacity: 0.55;
+    stroke-width: 1;
+    stroke-dasharray: 4 3;
+}
+
+.chart-axis-label {
+    fill: var(--text-color);
+    opacity: 0.65;
+    font-family: 'DejaVu Sans', sans-serif;
+    font-size: 11px;
+}
+
+.chart-axis-label-y {
+    text-anchor: end;
+    dominant-baseline: middle;
+}
+
+.chart-axis-label-x {
+    text-anchor: middle;
+}
+
+.chart-series-line {
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: opacity 0.2s ease;
+}
+
+/* Raw lines recede while their moving average overlays are shown, so the
+   smoothed trend reads clearly instead of competing with the monthly noise. */
+.chart-svg.showing-average .chart-series-line {
+    opacity: 0.3;
+    stroke-width: 1;
+}
+
+.chart-series-average {
+    fill: none;
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.chart-crosshair {
+    stroke: var(--text-color);
+    stroke-opacity: 0.35;
+    stroke-width: 1;
+}
+
+.chart-hover-marker {
+    stroke: var(--background-color);
+    stroke-width: 1.5;
+}
+
+.chart-hover-capture {
+    fill: transparent;
+    cursor: crosshair;
+}
+
+.chart-tooltip {
+    position: absolute;
+    top: 4px;
+    transform: translateX(-50%);
+    min-width: 140px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: var(--text-color);
+    background: var(--background-color);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.chart-tooltip-title {
+    font-weight: bold;
+    margin-bottom: 2px;
+}
+
+.chart-tooltip-swatch {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    margin-right: 6px;
+}
+
+.chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px 20px;
+    margin-top: 10px;
+    font-size: 0.85rem;
+}
+
+.chart-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.chart-legend-checkbox {
+    width: 12px;
+    height: 12px;
+    margin: 0;
+    cursor: pointer;
+}
+
+.chart-legend-item:has(.chart-legend-checkbox:not(:checked)) {
+    opacity: 0.5;
+}

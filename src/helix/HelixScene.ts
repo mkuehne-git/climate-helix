@@ -5,6 +5,7 @@ import { Settings } from '../settings/Settings';
 import { persistentState, type Vector3 } from '../settings/PersistentState';
 import { ClimateHelix } from './ClimateHelix';
 import { ClimateAxes } from './ClimateAxes';
+import { HelixGeometry } from './HelixGeometry';
 import { HelixAnimation, drawCount, playSeconds, tipIndex } from './HelixAnimation';
 import { ClassMutationObserver } from '../ui/ClassMutationObserver';
 import { SVGToggleButton } from '../ui/SVGToggleButton';
@@ -283,7 +284,7 @@ class HelixScene {
     private applyAnimation(): void {
         for (const mesh of [this.#helixMesh, this.#wireframeMesh]) {
             if (mesh?.parent) {
-                const { tubularSegments, radialSegments } = (mesh.geometry as any).parameters;
+                const { tubularSegments, radialSegments } = (mesh.geometry as HelixGeometry).parameters;
                 mesh.geometry.setDrawRange(0, drawCount(this.animation.progress, tubularSegments, radialSegments));
             }
         }

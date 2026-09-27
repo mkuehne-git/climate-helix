@@ -1,6 +1,11 @@
 # Changelog
 
-## v2.0.5 · 2026-09-27
+## v2.0.6 · 2026-09-27
+
+* Port the helix's tube geometry from JavaScript to TypeScript (`helix/HelixGeometry.ts`); it writes the vertex colors directly and drops two unused, broken methods. The geometry is the same as before.
+* Split the 1,200-line `style.css` into one file per area (`src/css/`), imported in the same order. Two unused rules are gone. Screenshots of the app before and after the split are identical. No functional change.
+
+## v2.0.5 · 2026-09-27 · [9fd4a27](https://github.com/mkuehne-git/climate-helix/commit/9fd4a27)
 
 * The app uses less battery: the 3D view is only drawn again when something changed (the camera moved, the helix was rebuilt or animated, the window or theme changed), and not at all while the Charts or Diff view covers it. Before, it was drawn at the display's full frame rate all the time.
 * The app starts faster: the code for screen captures and the imprint (about 270 kB) loads on first use instead of at startup, and the helix is built once at startup instead of twice.
