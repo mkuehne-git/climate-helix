@@ -5,7 +5,7 @@ import { openApp, openSettings } from './app';
 
 async function openImprint(page: Page): Promise<void> {
     await openSettings(page);
-    await page.locator('#gui').getByRole('button', { name: 'Imprint' }).click();
+    await page.locator('#settings-panel').getByRole('button', { name: 'Imprint' }).click();
     await expect(page.locator('.imprint')).toBeVisible();
 }
 

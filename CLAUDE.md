@@ -48,7 +48,7 @@ Always ask the project owner for approval before creating a commit. Do not commi
 - `src/main.ts` initializes the DOM, Three.js scene, camera, renderer, controls, event listeners, and animation loop.
 - `src/ClimateHelix.ts` converts parsed temperature data into colored Three.js geometry.
 - `src/GISSParser.ts` parses the NASA GISS CSV format used by the app.
-- `src/Settings.ts` owns the lil-gui controls and dispatches application events when settings change.
+- `src/Settings.ts` owns the settings, their controls and the app functions, and dispatches application events when settings change. `src/SettingsPanel.ts` is the native settings panel (the gear button, `src/SettingsButton.ts`, opens it; `h` and Escape too): a scrolling body for the settings and a fixed footer for Language, Check for updates, Imprint, Restore defaults and the changelog. The settings are still lil-gui folders inside the panel's body while the native panel is being built (see `ROADMAP.md`).
 - `src/Enums.ts` contains shared event and showcase identifiers.
 - `src/HelixGeometry.js` provides the custom tube geometry used for the helix.
 - `src/PersistentState.ts` keeps the settings and application state across reloads in one Local Storage entry (`climate-helix.state`). Modules read their part on startup and report changes with `persistentState.update()`; "Restore defaults" in the settings clears it and reloads.

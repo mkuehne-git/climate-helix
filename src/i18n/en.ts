@@ -43,6 +43,7 @@ export const en = {
         'yearRange.start': 'Start year',
         'yearRange.end': 'End year',
 
+        'settings.title': 'Settings',
         'settings.date': 'Date: {date}',
         'settings.region': 'Region: {region}',
         'settings.view': 'View',

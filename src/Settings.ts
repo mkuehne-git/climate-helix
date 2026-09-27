@@ -5,6 +5,7 @@ import * as THREE from "three";
 import './css/lil-gui.css';
 
 import { SettingsButton } from "./SettingsButton";
+import { SettingsPanel } from "./SettingsPanel";
 import { checkForPwaUpdates, showPwaStatus } from './PwaUpdate';
 import { GISSParser } from './GISSParser';
 import { YearRange } from './YearRange';
@@ -64,6 +65,15 @@ function limited(controller: Controller, property: string): Controller {
     return limit.step === undefined ? controller : controller.step(limit.step);
 }
 
+function settingsButton(label: string, onClick: () => void): HTMLButtonElement {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'settings-button';
+    button.textContent = label;
+    button.addEventListener('click', onClick);
+    return button;
+}
+
 const SETTINGS = {
     showcaseCSV: undefined,
     radio: Showcase.GLOBAL,
@@ -100,7 +110,6 @@ const SETTINGS = {
     },
     animation: { duration: 10, loop: false, playOnStart: false },
     capture: {},
-    imprint: () => Events.dispatchEvent(Events.SHOW_IMPRINT)
 }
 
 type ColorName = 'cold' | 'zero' | 'warm';
@@ -158,8 +167,8 @@ class Settings {
     #captureFolder: any;
     #dateFolder: GUI;
     #showcaseFolder: GUI;
-    #hidden: boolean;
     #gui: GUI;
+    #panel: SettingsPanel;
     #yearRange: YearRange;
 
     static async create(): Promise<Settings> {
@@ -228,17 +237,15 @@ class Settings {
             datasets[SETTINGS.date].lastYear,
         );
         this.#yearRange.restore(stored.yearRange ?? {});
-        this.#gui = new GUI({ container: document.querySelector('.container-div') as HTMLElement | undefined, autoPlace: false });
+        this.#panel = new SettingsPanel(document.querySelector('.container-div') ?? document.body);
+        this.#gui = new GUI({ container: this.#panel.body, autoPlace: false });
         this.#gui.domElement.id = "gui";
         this.createDateFolder();
         this.createShowcaseFolder();
         this.createViewFolder();
         this.createAnimationFolder();
         this.createCaptureFolder();
-        this.createLanguage();
-        this.createRestoreDefaults();
-        this.createImprint();
-        this.createShowHideListener();
+        this.createAppFunctions(this.#panel.footer);
         this.createSettingsIcon();
         // Every settings, dataset, region and year range change of the helix ends in one of these.
         document.body.addEventListener(Events.CREATE_HELIX.toString(), () => this.save());
@@ -287,15 +294,7 @@ class Settings {
     }
 
     createSettingsIcon() {
-        new SettingsButton(this.#gui);
-    }
-    createShowHideListener(): void {
-        window.addEventListener('keydown', (e) => {
-            if (e.key === "h" || e.key === "H") {
-                this.#hidden ? this.#gui.show() : this.#gui.hide();
-                this.#hidden = !this.#hidden;
-            }
-        })
+        new SettingsButton(this.#panel);
     }
 
     createShowcaseFolder(): void {
@@ -620,47 +619,61 @@ class Settings {
     }
 
     /**
-     * Automatic follows the browser's language. A change is stored at once and
-     * reloads the app: many labels are fixed when things are built (lil-gui,
-     * the text drawn into the 3D scene, the charts).
+     * The app functions, native in the panel's footer: Language (Automatic
+     * follows the browser; a change is stored at once and reloads the app,
+     * because many labels are fixed when things are built), Check for updates,
+     * Imprint, Restore defaults, and the version with the changelog.
      */
-    createLanguage(): void {
-        const options: Record<string, Language | 'auto'> = { [t('settings.languageAuto')]: 'auto' };
-        for (const language of LANGUAGES) {
-            options[LANGUAGE_NAMES[language]] = language;
+    createAppFunctions(footer: HTMLElement): void {
+        new Imprint();
+        const languageRow = document.createElement('div');
+        languageRow.className = 'settings-row';
+        const languageLabel = document.createElement('label');
+        languageLabel.htmlFor = 'settings-language';
+        languageLabel.textContent = t('settings.language');
+        const select = document.createElement('select');
+        select.id = 'settings-language';
+        const choices: [Language | 'auto', string][] = [['auto', t('settings.languageAuto')], ...LANGUAGES.map((language): [Language, string] => [language, LANGUAGE_NAMES[language]])];
+        for (const [value, label] of choices) {
+            select.add(new Option(label, value, false, value === (persistentState.state.language ?? 'auto')));
         }
-        const object = { language: persistentState.state.language ?? 'auto' };
-        this.#gui.add(object, 'language', options).name(t('settings.language')).onChange((value: Language | 'auto') => {
+        select.addEventListener('change', () => {
+            const value = select.value as Language | 'auto';
             persistentState.update({ language: value === 'auto' ? undefined : value });
             persistentState.flush();
             window.location.reload();
         });
-    }
+        languageRow.append(languageLabel, select);
 
-    /** Forgets the stored settings and state and reloads: the simplest way to reset everything, including the camera and the views. */
-    createRestoreDefaults(): void {
-        this.#gui.add({
-            restoreDefaults: () => {
-                if (window.confirm(t('settings.restoreDefaultsConfirm'))) {
-                    persistentState.clear();
-                    window.location.reload();
-                }
-            }
-        }, 'restoreDefaults').name(t('settings.restoreDefaults'));
-    }
-
-    createImprint(): void {
-        const imprint = new Imprint();
-        this.#gui.add(SETTINGS, "imprint").name(t('settings.imprint'));
-        this.#gui.add({
-            checkForUpdates: async () => {
+        const buttons = document.createElement('div');
+        buttons.className = 'settings-buttons';
+        buttons.append(
+            settingsButton(t('settings.checkForUpdates'), async () => {
                 showPwaStatus(t('pwa.checking'), 'info');
                 const wasChecked = await checkForPwaUpdates();
                 if (!wasChecked) {
                     console.info('No app update check was possible right now.');
                 }
+            }),
+            settingsButton(t('settings.imprint'), () => Events.dispatchEvent(Events.SHOW_IMPRINT)),
+        );
+
+        // Forgets the stored settings and state and reloads: the simplest way to reset everything, including the camera and the views.
+        const restore = settingsButton(t('settings.restoreDefaults'), () => {
+            if (window.confirm(t('settings.restoreDefaultsConfirm'))) {
+                persistentState.clear();
+                window.location.reload();
             }
-        }, 'checkForUpdates').name(t('settings.checkForUpdates'));
+        });
+        restore.classList.add('danger');
+
+        const version = document.createElement('div');
+        version.className = 'settings-version';
+        const changelog = settingsButton(`v${APP_VERSION} · ${t('changelog.heading')}`, () => Events.dispatchEvent(Events.SHOW_CHANGELOG));
+        changelog.className = 'settings-link';
+        version.appendChild(changelog);
+
+        footer.append(languageRow, buttons, restore, version);
     }
 
     get showcaseCSV(): string | undefined {

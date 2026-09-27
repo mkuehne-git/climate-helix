@@ -25,7 +25,9 @@ class OverlayPage {
         // Capture phase on window: lil-gui stops key events from propagating,
         // and the button that opened the overlay keeps the focus.
         window.addEventListener("keydown", (e) => {
-            if (e.key === "Esc" || e.key === "Escape") {
+            if ((e.key === "Esc" || e.key === "Escape") && this.isOpen) {
+                // Handled: the settings panel below stays open.
+                e.preventDefault();
                 this.hide();
             }
         }, { capture: true });

@@ -22,6 +22,11 @@
     --chart-color-1: #2a78d6;
     --chart-color-2: #eb6834;
     --chart-color-3: #1baf7a;
+
+    /* Settings panel lines and the destructive Restore defaults. */
+    --settings-border: #e3e3e3;
+    --settings-border-strong: #c9c9c9;
+    --danger-color: #b3261e;
 }
 
 :root .dark {
@@ -39,6 +44,10 @@
     --chart-color-1: #3987e5;
     --chart-color-2: #d95926;
     --chart-color-3: #199e70;
+
+    --settings-border: #3a3a3a;
+    --settings-border-strong: #5c5c5c;
+    --danger-color: #f2b8b5;
 }
 
 * {
@@ -66,13 +75,6 @@ canvas.transparent {
     transition: opacity 2s;
 }
 
-#gui {
-    /* GUI shall be on top. */
-    z-index: 3;
-    position: absolute;
-    top: 0;
-    right: 0;
-}
 
 #gui-icon {
     /* Icon shall be on top. */
@@ -879,4 +881,118 @@ canvas.transparent {
 /* Focused on opening, for keyboard scrolling; no ring around the whole page. */
 .overlay-page:focus {
     outline: none;
+}
+
+/* The settings panel (SettingsPanel.ts): on the right, full screen on phones.
+   Above the scenes, the info button and the version label (z-index 5), below
+   the theme and gear buttons (7), which stay in its header's corner. */
+.settings-panel {
+    z-index: 6;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(360px, 100vw);
+    display: flex;
+    flex-direction: column;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    border-left: 1px solid var(--settings-border);
+    box-shadow: -8px 0 24px rgba(0, 0, 0, 0.08);
+    font-size: 13px;
+}
+
+.settings-panel[hidden] {
+    display: none;
+}
+
+@media (max-width: 599px) {
+    .settings-panel {
+        width: 100vw;
+        border-left: 0;
+        box-shadow: none;
+        font-size: 14px;
+    }
+}
+
+.settings-header {
+    display: flex;
+    align-items: center;
+    min-height: var(--settings-size);
+    /* Leaves the corner to the theme and gear buttons. */
+    padding: 0 calc(var(--settings-size) * 2) 0 20px;
+}
+
+.settings-header h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.settings-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    border-top: 1px solid var(--settings-border);
+}
+
+.settings-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px 20px 16px;
+    border-top: 1px solid var(--settings-border);
+}
+
+.settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 40px;
+}
+
+.settings-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.settings-buttons > * {
+    flex: 1 1 0;
+}
+
+.settings-panel select,
+.settings-button {
+    min-height: 36px;
+    padding: 0 12px;
+    border: 1px solid var(--settings-border-strong);
+    border-radius: 8px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font: inherit;
+    cursor: pointer;
+}
+
+.settings-button.danger {
+    border-color: var(--danger-color);
+    color: var(--danger-color);
+}
+
+.settings-version {
+    text-align: center;
+}
+
+.settings-link {
+    padding: 4px;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: 11px;
+    opacity: 0.7;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* lil-gui fills the panel's width instead of floating in the corner. */
+#gui.lil-gui.lil-root {
+    width: auto;
 }

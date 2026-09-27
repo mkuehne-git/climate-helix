@@ -68,9 +68,9 @@ Three icon-buttons at the lower-left switch between equal peer scenes: **Helix**
 
 |Key|Description|
 |---|---|
-|```h```, ```H```|Toggle visibility of control panel|
+|```h```, ```H```|Open or close the settings panel|
 |```Alt + s```|Take screen capture|
-|```Esc```|Close the imprint, the changelog or What's new|
+|```Esc```|Close the imprint, the changelog or What's new, else the settings panel|
 |```a``` + drag|Rotate the helix (like the left mouse button)|
 |```s``` + drag|Zoom (like the mouse wheel)|
 |```d``` + drag|Pan (like the right mouse button)|

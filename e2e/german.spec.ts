@@ -5,7 +5,7 @@ import { APP_VERSION, openSettings } from './app';
 test.use({ locale: 'de-DE' });
 
 const heading = (page: Page) => page.locator('.heading-div');
-const languageSelect = (page: Page, label: string) => page.locator('#gui .lil-controller', { hasText: label }).locator('select');
+const languageSelect = (page: Page) => page.locator('#settings-language');
 
 async function openGerman(page: Page): Promise<string[]> {
     const errors: string[] = [];
@@ -38,10 +38,11 @@ test('a German browser gets the app in German', async ({ page }) => {
 
     await openSettings(page);
     const gui = page.locator('#gui');
-    await expect(gui.getByRole('button', { name: 'Standardwerte wiederherstellen' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Einstellungen' })).toBeVisible();
+    await expect(page.locator('#settings-panel').getByRole('button', { name: 'Standardwerte wiederherstellen' })).toBeVisible();
     await expect(gui.locator('.lil-title', { hasText: /^Ansicht$/ })).toBeVisible();
-    // lil-gui uses the option labels as the <select>'s values.
-    await expect(languageSelect(page, 'Sprache')).toHaveValue('Automatisch');
+    await expect(languageSelect(page)).toHaveValue('auto');
+    await expect(page.getByLabel('Sprache')).toBeVisible();
     expect(errors).toEqual([]);
 });
 
@@ -56,7 +57,7 @@ test('the charts use German numbers and region names', async ({ page }) => {
 test('the Language setting switches to English and back to automatic, remembered across reloads', async ({ page }) => {
     await openGerman(page);
     await openSettings(page);
-    await Promise.all([page.waitForEvent('load'), languageSelect(page, 'Sprache').selectOption({ label: 'English' })]);
+    await Promise.all([page.waitForEvent('load'), languageSelect(page).selectOption('en')]);
     await expect(heading(page)).toHaveText('Land-Ocean: Global Means (August 2026)');
     expect(await page.evaluate(() => document.documentElement.lang)).toBe('en');
 
@@ -64,6 +65,6 @@ test('the Language setting switches to English and back to automatic, remembered
     await expect(heading(page)).toHaveText('Land-Ocean: Global Means (August 2026)');
 
     await openSettings(page);
-    await Promise.all([page.waitForEvent('load'), languageSelect(page, 'Language').selectOption({ label: 'Automatic' })]);
+    await Promise.all([page.waitForEvent('load'), languageSelect(page).selectOption('auto')]);
     await expect(heading(page)).toHaveText('Land und Ozean: Global (August 2026)');
 });

@@ -69,5 +69,5 @@ export async function setSliderYears(page: Page, start: number, end: number): Pr
 /** Opens the settings panel; the button reacts after its click animation. */
 export async function openSettings(page: Page): Promise<void> {
     await page.locator('.toggle-div.settings').click();
-    await expect(page.locator('#gui')).toBeVisible();
+    await expect(page.locator('#settings-panel')).toBeVisible();
 }

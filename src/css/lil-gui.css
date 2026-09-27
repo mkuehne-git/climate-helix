@@ -109,14 +109,15 @@ div.toggle-div.clicked {
 
 div.themes {
     /* Theme is a global preference, usable in every scene - keep it above
-       .full-scene (z-index 2). */
-    z-index: 5;
+       .full-scene (z-index 2) and the settings panel (6). */
+    z-index: 7;
     right: var(--settings-size);
 }
 
 .toggle-div.settings {
-    /* Stays usable in the Charts scene too - above .full-scene (z-index 2). */
-    z-index: 5;
+    /* Stays usable in the Charts scene too - above .full-scene (z-index 2) -
+       and closes the settings panel (6) from its header's corner. */
+    z-index: 7;
 }
 
 .themes.show {
@@ -126,13 +127,3 @@ div.themes {
     height: var(--icon-size);
 }
 
-#gui {
-    /* Stays usable in the Charts scene too (Screen capture, Imprint) - above
-       .full-scene (z-index 2). */
-    z-index: 5;
-    position: absolute;
-    top: var(--settings-size);
-    right: 0;
-    max-height: calc(100vh - var(--settings-size));
-    overflow-y: auto;
-}

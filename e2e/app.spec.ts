@@ -80,3 +80,32 @@ test('the info panel opens and closes with the keyboard', async ({ page }) => {
     await expect(page.locator('#info-div')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Close information' })).toBeVisible();
 });
+
+test('the settings panel opens and closes with the gear, Escape and the h key', async ({ page }) => {
+    await openApp(page);
+    const panel = page.locator('#settings-panel');
+    await page.getByRole('button', { name: 'Open settings' }).click();
+    await expect(panel).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(panel).toBeHidden();
+    await expect(page.getByRole('button', { name: 'Open settings' })).toBeVisible();
+    await page.keyboard.press('h');
+    await expect(panel).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Close settings' })).toBeVisible();
+    await page.getByRole('button', { name: 'Close settings' }).click();
+    await expect(panel).toBeHidden();
+});
+
+test('the settings panel keeps the theme and gear buttons usable, and shows the changelog', async ({ page }) => {
+    await page.emulateMedia({ colorScheme: 'light' });
+    await openApp(page);
+    await openSettings(page);
+    await page.locator('.toggle-div.themes').click();
+    await expect(page.locator('body')).toHaveClass(/\bdark\b/);
+    await page.locator('#settings-panel').getByRole('button', { name: /^v\d+\.\d+\.\d+ · Changelog$/ }).click();
+    await expect(page.locator('.overlay-page.changelog')).toBeVisible();
+    // Escape closes the changelog first; the panel stays open underneath.
+    await page.keyboard.press('Escape');
+    await expect(page.locator('.overlay-page.changelog')).toHaveCount(0);
+    await expect(page.locator('#settings-panel')).toBeVisible();
+});

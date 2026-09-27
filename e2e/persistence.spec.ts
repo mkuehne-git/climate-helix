@@ -55,7 +55,7 @@ test('Restore defaults forgets everything', async ({ page }) => {
     page.once('dialog', (dialog) => dialog.accept());
     await Promise.all([
         page.waitForEvent('load'),
-        page.locator('#gui').getByRole('button', { name: 'Restore defaults' }).click(),
+        page.locator('#settings-panel').getByRole('button', { name: 'Restore defaults' }).click(),
     ]);
     await expect(heading(page)).toHaveText('Land-Ocean: Global Means (August 2026)');
     await expect(page.locator('.full-scene.show')).toHaveCount(0);
@@ -70,7 +70,7 @@ test('a cancelled Restore defaults keeps the settings', async ({ page }) => {
     await page.locator('#dataset-buttons').getByRole('button', { name: '2023' }).click();
     await openSettings(page);
     page.once('dialog', (dialog) => dialog.dismiss());
-    await page.locator('#gui').getByRole('button', { name: 'Restore defaults' }).click();
+    await page.locator('#settings-panel').getByRole('button', { name: 'Restore defaults' }).click();
     await page.reload();
     await expect(heading(page)).toHaveText('Land-Ocean: Global Means (March 2023)');
 });

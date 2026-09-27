@@ -34,6 +34,7 @@ export const de: Catalog = {
         'yearRange.start': 'Startjahr',
         'yearRange.end': 'Endjahr',
 
+        'settings.title': 'Einstellungen',
         'settings.date': 'Datenstand: {date}',
         'settings.region': 'Region: {region}',
         'settings.view': 'Ansicht',

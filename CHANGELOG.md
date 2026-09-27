@@ -1,6 +1,11 @@
 # Changelog
 
-## v1.1.1 · 2026-09-27
+## v1.2.0 · 2026-09-27
+
+* The settings open as a panel on the right side of the window, full screen on phones, with a header and a footer that stays in view. The footer holds Language, Check for updates, Imprint and Restore defaults, now as ordinary buttons, and the version with a link to the changelog, since the panel covers the version label. The settings themselves still look as before; the next versions rebuild them.
+* The `h` key opens and closes the settings panel, and Escape closes it.
+
+## v1.1.1 · 2026-09-27 · [d3415d4](https://github.com/mkuehne-git/climate-helix/commit/d3415d4)
 
 * Fix the X button of the changelog and What's new sitting to the right of the center: it is now exactly where the info button is, like the imprint's.
 * Make the icon buttons (Play/Pause, info, settings, theme and the X buttons) usable with the keyboard and screen readers: Tab reaches them, Enter or Space presses them, and each has a name in English and German that follows its state, such as "Play" and "Pause".
