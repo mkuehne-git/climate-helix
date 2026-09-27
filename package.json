@@ -41,7 +41,7 @@
   "dependencies": {
     "crypto-js": "^4.2.0",
     "html2canvas": "^1.4.1",
-    "three": "^0.186.0"
+    "three": "^0.186.1"
   },
   "author": "",
   "license": "MIT"
