@@ -75,6 +75,7 @@ Three icon-buttons at the lower-left switch between equal peer scenes: **Helix**
 |```s``` + drag|Zoom (like the mouse wheel)|
 |```d``` + drag|Pan (like the right mouse button)|
 |Double-click|Return to the initial view|
+|```Tab```, ```Enter```, ```Space```|Move to the icon buttons (Play, info, settings, theme) and press them|
 
 # PWA version updates
 

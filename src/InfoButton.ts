@@ -3,6 +3,7 @@ import { SVGToggleButton } from "./SVGToggleButton";
 import { icon as infoIcon } from "./icons/info/infoIcon";
 import { icon as closeIcon } from "./icons/info/closeIcon";
 import { SceneSwitcher } from "./SceneSwitcher";
+import { t } from "./i18n";
 
 class InfoButton {
     #button: SVGToggleButton;
@@ -11,7 +12,7 @@ class InfoButton {
         this.#sceneSwitcher = sceneSwitcher;
         this.#button = new SVGToggleButton({
             container,
-            icons: [infoIcon, closeIcon], classToken: 'info-button', event: 'info-clicked'
+            icons: [infoIcon, closeIcon], labels: [t('button.showInfo'), t('button.closeInfo')], classToken: 'info-button', event: 'info-clicked'
         });
         this.#button.show(0);
         this.#button.addOnClickListener(() => this.infoDivShowHide());

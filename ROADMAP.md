@@ -85,7 +85,7 @@ If accessibility, a phone-friendly layout, localization or a consistent look bec
 
 ### Localization: English and German
 
-The app would be available in English and German, and ready for more languages. It does not depend on the native settings panel: lil-gui labels can be translated with `.name(t(...))`. In progress on the branch `feature/localization`; steps 1 (v1.0.3) and 2 (v1.1.0) are done.
+The app would be available in English and German, and ready for more languages. It does not depend on the native settings panel: lil-gui labels can be translated with `.name(t(...))`. Done on the branch `feature/localization` (v1.0.3 to v1.1.1).
 
 #### What has to be translated or formatted
 
@@ -118,8 +118,8 @@ The app would be available in English and German, and ready for more languages. 
 Each step is its own version:
 
 1. **Move the strings out, no visible change** (patch, done in v1.0.3): the English catalog and `t()`, number and month formatting, region names separated from the `Showcase` keys, chart series identified by an `id` instead of their label (the stored hidden series keep working), the helix title from the catalog by region instead of the CSV title, and the parser's end date as year and month. The info panels and `index.html` stay English until step 2. Snapshot dates stay ISO (`2026-09-16`) in both languages unless step 2 decides otherwise.
-2. **German and the Language setting** (minor, done in v1.1.0): the `de` catalog, the language from the Language setting (Automatic, English, Deutsch; stored as `language` in `PersistentState`, a change reloads) or else from `navigator.languages` by primary tag, `<html lang>`, German info panels (`*.de.html`), a note that the changelog entries are English, and `e2e/german.spec.ts`. Unit tests and the English e2e tests pin English (`test/setup.ts`, `locale: 'en-US'`). The German wording uses the informal "du" in the info panels. Snapshot dates stay ISO. The chart's left margin grew to fit "+0,05 °C" with its sign.
-3. **Polish** (patch): layout at phone width, fonts, the manifest, possibly German What's new.
+2. **German and the Language setting** (minor, done in v1.1.0): the `de` catalog, the language from the Language setting (Automatic, English, Deutsch; stored as `language` in `PersistentState`, a change reloads) or else from `navigator.languages` by primary tag, `<html lang>`, German info panels (`*.de.html`), a note that the changelog entries are English, and `e2e/german.spec.ts`. Unit tests and the English e2e tests pin English (`test/setup.ts`, `locale: 'en-US'`). The German wording uses the informal "du" in the info panels, and short helix titles ("Land und Ozean: Nordhalbkugel"). Snapshot dates stay ISO. The chart's left margin grew to fit "+0,05 °C" with its sign.
+3. **Polish** (patch, done in v1.1.1): the icon buttons (Play/Pause, info, settings, theme, the overlays' X) became real buttons for assistive technology and the keyboard (`role`, `tabindex`, Enter and Space), named in both languages after their current state. Checked: the layout at phone width (the shorter German titles, the chart margin of v1.1.0) and the umlauts in both fonts. Decided against: a manifest per language (the name is a proper name; only the rarely shown description is English, and swapping the manifest link at runtime is unreliable for installation) and a German What's new (the changelog stays English).
 
 ## Delivery Notes
 

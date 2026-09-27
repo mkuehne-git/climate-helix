@@ -70,6 +70,16 @@ export const de: Catalog = {
         'settings.imprint': 'Impressum',
         'settings.checkForUpdates': 'Nach Updates suchen',
 
+        'button.play': 'Abspielen',
+        'button.pause': 'Pause',
+        'button.showInfo': 'Informationen anzeigen',
+        'button.closeInfo': 'Informationen schließen',
+        'button.openSettings': 'Einstellungen öffnen',
+        'button.closeSettings': 'Einstellungen schließen',
+        'button.lightTheme': 'Zum hellen Design wechseln',
+        'button.darkTheme': 'Zum dunklen Design wechseln',
+        'button.close': 'Schließen',
+
         'version.title': 'Änderungsprotokoll anzeigen',
         'changelog.heading': 'Änderungsprotokoll',
         'changelog.note': 'Die Einträge gibt es nur auf Englisch.',

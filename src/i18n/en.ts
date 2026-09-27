@@ -80,6 +80,17 @@ export const en = {
         'settings.imprint': 'Imprint',
         'settings.checkForUpdates': 'Check for updates',
 
+        /** Accessible names of the icon buttons, per state. */
+        'button.play': 'Play',
+        'button.pause': 'Pause',
+        'button.showInfo': 'Show information',
+        'button.closeInfo': 'Close information',
+        'button.openSettings': 'Open settings',
+        'button.closeSettings': 'Close settings',
+        'button.lightTheme': 'Switch to light theme',
+        'button.darkTheme': 'Switch to dark theme',
+        'button.close': 'Close',
+
         'version.title': 'Show the changelog',
         'changelog.heading': 'Changelog',
         /** Shown below the changelog and What's new headings when the entries are not in this language; empty in English. */

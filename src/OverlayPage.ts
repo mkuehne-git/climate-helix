@@ -1,5 +1,6 @@
 import { SVGToggleButton } from "./SVGToggleButton";
 import { icon as closeIcon } from "./icons/info/closeIcon";
+import { t } from "./i18n";
 
 /**
  * A full-page overlay above the app, as used by the imprint and the
@@ -44,6 +45,7 @@ class OverlayPage {
         const div = document.createElement("div");
         div.classList.add("overlay-page", this.#classToken);
         const content = document.createElement("div");
+        content.classList.add("overlay-content");
         div.appendChild(content);
         this.appendCloseButton(div);
         document.body.appendChild(div);
@@ -64,7 +66,7 @@ class OverlayPage {
     private appendCloseButton(div: HTMLDivElement) {
         new SVGToggleButton({
             container: div,
-            icons: [closeIcon], classToken: "overlay-close", event: this.#hideEvent
+            icons: [closeIcon], labels: [t("button.close")], classToken: "overlay-close", event: this.#hideEvent
         }).show(0);
         div.querySelector(":scope > .toggle-div.overlay-close")?.addEventListener("click", () => this.hide());
     }

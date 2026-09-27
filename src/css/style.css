@@ -332,7 +332,9 @@ canvas.transparent {
     text-decoration: underline;
 }
 
-.changelog > div {
+/* Only the content: the close button is a div of the overlay too, and
+   margin, padding or max-width would move it off center. */
+.changelog > .overlay-content {
     max-width: 44em;
     margin: 0 auto;
     padding: 0 16px;

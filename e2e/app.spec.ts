@@ -61,3 +61,22 @@ test('the service worker registers', async ({ page }) => {
     const scope = await page.evaluate(async () => (await navigator.serviceWorker.ready).scope);
     expect(scope).toMatch(/\/climate-helix\/$/);
 });
+
+test('the icon buttons have names that follow their state', async ({ page }) => {
+    await openApp(page);
+    await expect(page.getByRole('button', { name: 'Show information' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Open settings' })).toBeVisible();
+    await expect(page.getByRole('button', { name: /^Switch to (light|dark) theme$/ })).toBeVisible();
+    await page.getByRole('button', { name: 'Play' }).click();
+    await expect(page.getByRole('button', { name: 'Pause' })).toBeVisible();
+    await page.getByRole('button', { name: 'Open settings' }).click();
+    await expect(page.getByRole('button', { name: 'Close settings' })).toBeVisible();
+});
+
+test('the info panel opens and closes with the keyboard', async ({ page }) => {
+    await openApp(page);
+    await page.getByRole('button', { name: 'Show information' }).focus();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('#info-div')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Close information' })).toBeVisible();
+});

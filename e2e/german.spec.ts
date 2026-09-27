@@ -28,6 +28,8 @@ test('a German browser gets the app in German', async ({ page }) => {
     await expect(heading(page)).toHaveText('Land und Ozean: Global (August 2026)');
     expect(await page.evaluate(() => document.documentElement.lang)).toBe('de');
     await expect(page.getByRole('button', { name: 'Ansicht Diagramme' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Informationen anzeigen' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Abspielen' })).toBeVisible();
 
     await page.locator('.toggle-div.info-button').click();
     await expect(page.locator('#info-div')).toContainText('Jede Windung der Helix steht für ein Jahr');

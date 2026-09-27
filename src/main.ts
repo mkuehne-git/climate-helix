@@ -345,7 +345,7 @@ function animate() {
 
 function createPlayButton(): void {
     const container = document.querySelector(CONTAINER_DIV) || document.body;
-    playButton = new SVGToggleButton({ container, icons: [playIcon, pauseIcon], classToken: 'animation-button', event: 'animation-clicked' });
+    playButton = new SVGToggleButton({ container, icons: [playIcon, pauseIcon], labels: [t('button.play'), t('button.pause')], classToken: 'animation-button', event: 'animation-clicked' });
     playButton.show(0);
     playButton.addOnClickListener(() => {
         animation.toggle();

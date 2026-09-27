@@ -86,6 +86,7 @@ Playwright, run locally with `npm run test:e2e`. `playwright.config.ts` builds t
 - The service worker registers in the production build.
 - The version label opens the changelog, which closes with the X button and Escape (v0.12.0); What's new appears once after an update, not for new visitors, and leads to the full changelog (v0.13.0).
 - A German browser gets the app in German (title, info panel, settings, chart numbers and region names), and the Language setting switches to English and back to Automatic across reloads (v1.1.0).
+- The icon buttons have names that follow their state, in English and German, and work with the keyboard; the changelog's X sits exactly where the info button is (v1.1.1).
 
 No screenshot comparisons of the helix: WebGL output varies too much between machines. Screenshot checks for the SVG charts can be added later if needed.
 

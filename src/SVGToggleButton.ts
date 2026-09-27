@@ -15,6 +15,8 @@ type IconDescriptor = {
 type ToggleButtonConfiguration = {
     container?: Element | null,
     icons: IconDescriptor[],
+    /** The accessible name per icon, e.g. "Play" and "Pause"; the name of the icon shown applies. */
+    labels?: string[],
     classToken: string,
     event: string
 }
@@ -29,7 +31,10 @@ type ToggleButtonConfiguration = {
 class SVGToggleButton {
     #div: HTMLElement;
     #icons: IconDescriptor[] = [];
+    #labels: string[];
     #event: string;
+    /** The icon shown. */
+    #index = 0;
 
     constructor(p: ToggleButtonConfiguration) {
         this.#event = p.event;
@@ -42,6 +47,17 @@ class SVGToggleButton {
         }
         const container = p.container || document.body;
         container.appendChild(div);
+
+        // A button for assistive technology and the keyboard, too.
+        div.setAttribute('role', 'button');
+        div.tabIndex = 0;
+        div.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                div.click();
+            }
+        });
+        this.#labels = p.labels ?? [];
 
         div.addEventListener('click', () => div.classList.add(CLICKED));
         div.addEventListener('animationend', () => {
@@ -56,6 +72,7 @@ class SVGToggleButton {
 
     show(index: number): void {
         this.icon(index)?.classList.add(SHOW);
+        this.setIndex(index);
     }
 
     /** Shows only the icon at `index`, e.g. to follow a state that changed on its own. */
@@ -63,11 +80,22 @@ class SVGToggleButton {
         for (let i = 0; i < this.#icons.length; i++) {
             this.icon(i)?.classList.toggle(SHOW, i === index);
         }
+        this.setIndex(index);
     }
 
     toggle(): void {
         for (let index = 0; index < this.#icons.length; index++) {
             this.icon(index)?.classList.toggle(SHOW)
+        }
+        // Toggling is used with two icons, one of them shown.
+        this.setIndex(this.#icons.length === 2 ? 1 - this.#index : this.#index);
+    }
+
+    private setIndex(index: number): void {
+        this.#index = index;
+        const label = this.#labels[index];
+        if (label !== undefined) {
+            this.#div.setAttribute('aria-label', label);
         }
     }
 

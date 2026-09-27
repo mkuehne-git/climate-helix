@@ -1,6 +1,7 @@
 import { GUI } from "three/examples/jsm/libs/lil-gui.module.min";
 import { Events } from "./Enums";
 import { SVGToggleButton } from "./SVGToggleButton";
+import { t } from "./i18n";
 
 import { icon as openIcon } from "./icons/settings/openIcon";
 import { icon as closeIcon } from "./icons/settings/closeIcon";
@@ -12,7 +13,7 @@ class SettingsButton {
 
     constructor(gui: GUI) {
         this.#status = true;
-        this.#button = new SVGToggleButton({ container: document.querySelector('.container-div'), icons: [openIcon, closeIcon], classToken: 'settings', event: Events.SETTINGS_CHANGED });
+        this.#button = new SVGToggleButton({ container: document.querySelector('.container-div'), icons: [openIcon, closeIcon], labels: [t('button.openSettings'), t('button.closeSettings')], classToken: 'settings', event: Events.SETTINGS_CHANGED });
         this.#gui = gui;
         this.#gui.hide();
         this.#button.show(this.#status ? 0 : 1);

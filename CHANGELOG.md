@@ -1,6 +1,11 @@
 # Changelog
 
-## v1.1.0 · 2026-09-27
+## v1.1.1 · 2026-09-27
+
+* Fix the X button of the changelog and What's new sitting to the right of the center: it is now exactly where the info button is, like the imprint's.
+* Make the icon buttons (Play/Pause, info, settings, theme and the X buttons) usable with the keyboard and screen readers: Tab reaches them, Enter or Space presses them, and each has a name in English and German that follows its state, such as "Play" and "Pause".
+
+## v1.1.0 · 2026-09-27 · [23879e0](https://github.com/mkuehne-git/climate-helix/commit/23879e0)
 
 * The app is now available in German. It follows your browser's language, and the new **Language** setting near the bottom of the settings panel chooses English or Deutsch explicitly, or returns to Automatic; changing it reloads the app. In German, the settings, titles, info panels, charts and dialogs are translated, and numbers and months are written the German way ("+1,50 °C", "März"). The changelog and What's new stay English.
 * Fix the sign of the y-axis labels in the charts being cut off at the left edge.

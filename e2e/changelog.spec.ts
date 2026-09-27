@@ -38,3 +38,17 @@ test('older entries link their commit', async ({ page }) => {
     await openChangelog(page);
     await expect(overlay(page).locator('h2', { hasText: 'v0.11.1' }).locator('a')).toHaveAttribute('href', /\/commit\/133fc63$/);
 });
+
+test('the X button sits where the info button is, horizontally centered', async ({ page }) => {
+    for (const width of [1280, 390]) {
+        await page.setViewportSize({ width, height: 780 });
+        await openApp(page);
+        const info = (await page.locator('.toggle-div.info-button').boundingBox())!;
+        await openChangelog(page);
+        const close = (await closeButton(page).boundingBox())!;
+        expect(close.x + close.width / 2).toBeCloseTo(width / 2, 0);
+        expect(close).toEqual(info);
+        const padding = await closeButton(page).evaluate((element) => getComputedStyle(element).padding);
+        expect(padding).toBe('0px');
+    }
+});
