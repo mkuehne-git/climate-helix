@@ -1,5 +1,45 @@
 var e=`# Changelog
 
+## v2.1.0 · 2026-09-27 · [23ba7cd](https://github.com/mkuehne-git/climate-helix/commit/23ba7cd)
+
+Climate Helix 2.1 uses less battery and starts faster, and it fixes how the helix shows some months.
+
+* **Less battery:** the 3D view is drawn again only when something changes - you turn it, the helix grows or is rebuilt, the window or theme changes - and not at all while the Charts or Diff view covers it. Before, it was redrawn at the display's full frame rate all the time, which kept phones busy even while nothing moved.
+* **Faster start:** the code for screen captures and the imprint loads when first used, and the helix is built once at startup instead of twice.
+* **Stable memory:** changing settings no longer uses more and more graphics memory, which could eventually stop the 3D view on phones.
+* **Correct months:** months with a temperature anomaly of exactly 0.00 °C are back in the helix; before, every later month was drawn one step off around the circle.
+
+Details in the entries v2.0.1 to v2.0.6 below.
+
+## v2.0.6 · 2026-09-27 · [466a291](https://github.com/mkuehne-git/climate-helix/commit/466a291)
+
+* Port the helix's tube geometry from JavaScript to TypeScript (\`helix/HelixGeometry.ts\`); it writes the vertex colors directly and drops two unused, broken methods. The geometry is the same as before.
+* Split the 1,200-line \`style.css\` into one file per area (\`src/css/\`), imported in the same order. Two unused rules are gone. Screenshots of the app before and after the split are identical. No functional change.
+
+## v2.0.5 · 2026-09-27 · [9fd4a27](https://github.com/mkuehne-git/climate-helix/commit/9fd4a27)
+
+* The app uses less battery: the 3D view is only drawn again when something changed (the camera moved, the helix was rebuilt or animated, the window or theme changed), and not at all while the Charts or Diff view covers it. Before, it was drawn at the display's full frame rate all the time.
+* The app starts faster: the code for screen captures and the imprint (about 270 kB) loads on first use instead of at startup, and the helix is built once at startup instead of twice.
+* The snapshot buttons below the helix and in the Diff view tell screen readers which one is selected, and name the snapshot by its full date.
+
+## v2.0.4 · 2026-09-27 · [a358868](https://github.com/mkuehne-git/climate-helix/commit/a358868)
+
+* Restructure the larger modules: the 3D view moves from \`main.ts\` into its own class (\`helix/HelixScene.ts\`), the Charts and Diff views share a base class (\`charts/ChartScene.ts\`) instead of duplicated code, and \`Settings.ts\` is split into the snapshot list (\`data/datasets.ts\`), the setting values (\`settings/settingsValues.ts\`) and the building of the settings panel (\`settings/settingsSections.ts\`). No functional change.
+
+## v2.0.3 · 2026-09-27 · [6c9b408](https://github.com/mkuehne-git/climate-helix/commit/6c9b408)
+
+* Group the source files in \`src/\` into folders by area: \`data/\`, \`helix/\`, \`charts/\`, \`settings/\`, \`ui/\`, \`changelog/\`, \`imprint/\`, and the info panels in \`i18n/info/\`. The README screenshots move from \`src/images/\` to \`docs/images/\`. No functional change.
+
+## v2.0.2 · 2026-09-27 · [2a91a05](https://github.com/mkuehne-git/climate-helix/commit/2a91a05)
+
+* Check the TypeScript types: \`npm run typecheck\` (TypeScript 7, \`tsconfig.json\`) runs locally and in the CI workflow, since the build itself does not check types. It found three small errors, now fixed. No functional change.
+
+## v2.0.1 · 2026-09-27 · [715135d](https://github.com/mkuehne-git/climate-helix/commit/715135d)
+
+* Fix months with a temperature anomaly of exactly 0.00 °C missing from the helix: each one moved every later month one step around the circle, so from 1881 on many months sat at the wrong place, and the helix ended a year too low. Depending on the snapshot and region, 10 to 18 months were affected.
+* Fix the app using more and more graphics memory while settings change: every redraw of the helix, many per second while a slider moves, kept the old one in memory. On phones this could eventually stop the 3D view.
+* Give the Diff charts two more line colors, so that a fourth and fifth data snapshot will each get a color of their own instead of repeating the first ones.
+
 ## v2.0.0 · 2026-09-27 · [7c75a25](https://github.com/mkuehne-git/climate-helix/commit/7c75a25)
 
 Climate Helix 2.0 has new settings. The gear icon in the upper right corner opens them as a panel on the right side of the window, or full screen on a phone. Sections that open with a click hold the settings: **Data** (snapshot and region), **View** (legend and colors), **Animation**, **Screen capture** and, closed by default, **Advanced** (the helix's mesh and navigation). A footer that stays in view holds the language, the update check, the imprint, Restore defaults and the changelog. The controls are larger, work with touch, mouse and keyboard, follow the light and dark theme, and are available in English and German.
