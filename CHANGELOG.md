@@ -1,6 +1,10 @@
 # Changelog
 
-## v2.0.3 · 2026-09-27
+## v2.0.4 · 2026-09-27
+
+* Restructure the larger modules: the 3D view moves from `main.ts` into its own class (`helix/HelixScene.ts`), the Charts and Diff views share a base class (`charts/ChartScene.ts`) instead of duplicated code, and `Settings.ts` is split into the snapshot list (`data/datasets.ts`), the setting values (`settings/settingsValues.ts`) and the building of the settings panel (`settings/settingsSections.ts`). No functional change.
+
+## v2.0.3 · 2026-09-27 · [6c9b408](https://github.com/mkuehne-git/climate-helix/commit/6c9b408)
 
 * Group the source files in `src/` into folders by area: `data/`, `helix/`, `charts/`, `settings/`, `ui/`, `changelog/`, `imprint/`, and the info panels in `i18n/info/`. The README screenshots move from `src/images/` to `docs/images/`. No functional change.
 

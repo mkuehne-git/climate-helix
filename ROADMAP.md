@@ -23,7 +23,7 @@ The settings and application state are kept across reloads, and **Restore defaul
 
 - **Storage** (`src/settings/PersistentState.ts`): one versioned Local Storage entry, `climate-helix.state`. Each field is validated on load; anything unreadable falls back to its default, and unavailable storage only means nothing is remembered. Writes are grouped (300 ms) and flushed when the page is hidden. The Animation settings of v0.10.0 (`climate-helix.animation`) are carried over once.
 - **What is kept**: dataset, region, the shared year range (an end at the limit of all datasets is stored as open, so it grows with new data), View and Animation settings (only those changed from the defaults), changed colors, the theme once switched, the active view, the camera, the Diff baseline and the chart legend and option checkboxes.
-- **New snapshots win**: the stored dataset is dropped when `DEFAULT_DATE` changed since it was stored.
+- **New snapshots win**: the stored dataset is dropped when `DEFAULT_DATE` (`src/data/datasets.ts`) changed since it was stored.
 - **Restore defaults** clears the entry and reloads, which resets everything, including the camera and the views.
 
 ### Creation animation (v0.10.0)

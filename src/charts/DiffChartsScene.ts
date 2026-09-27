@@ -1,107 +1,44 @@
-import { Events, Scene, Showcase } from "../Enums";
+import { Scene, Showcase } from "../Enums";
 import { Settings } from "../settings/Settings";
 import { GISSParser } from "../data/GISSParser";
 import { ChartControl } from "./ChartControl";
+import { ChartScene } from "./ChartScene";
 import { SceneSwitcher } from "../ui/SceneSwitcher";
-import { YearRangeSlider } from "../ui/YearRangeSlider";
 import { persistentState } from "../settings/PersistentState";
 import { CHART_COLOR_VARS } from "./chartColors";
 import { regionName, t } from "../i18n";
 
-
 /**
- * The Diff scene's content: a baseline-snapshot picker, then one chart per
- * region showing how each other snapshot differs from that baseline, for the
- * years they both cover - revealing revisions to historical data, not just
- * newly added months. Built lazily on first activation and then just
- * shown/hidden on later scene switches, the same caching approach {@link
- * Imprint} already uses for its own content.
+ * The Diff scene: a baseline-snapshot picker, then one chart per region
+ * showing how each other snapshot differs from that baseline, for the years
+ * they both cover - revealing revisions to historical data, not just newly
+ * added months.
  */
-class DiffChartsScene {
-    #settings: Settings;
-    #sceneSwitcher: SceneSwitcher;
-    #container: HTMLElement | undefined;
+class DiffChartsScene extends ChartScene {
     #diffChartsContainer: HTMLElement | undefined;
     #baselineDate: string | undefined;
-    #charts: ChartControl[] = [];
-    #startYear = 0;
-    #endYear = 0;
-    #yearRangeSlider: YearRangeSlider | undefined;
     /** Newest monthly x value across all snapshots (e.g. 2026.58), so the full-range view doesn't end on an empty extra year. */
     #dataMaxX = 0;
 
     constructor(settings: Settings, sceneSwitcher: SceneSwitcher) {
-        this.#settings = settings;
-        this.#sceneSwitcher = sceneSwitcher;
-        document.body.addEventListener(Events.SCENE_CHANGED.toString(), () => this.onSceneChanged());
+        super(settings, sceneSwitcher, Scene.DIFF);
     }
 
-    private onSceneChanged(): void {
-        const active = this.#sceneSwitcher.scene === Scene.DIFF;
-        if (active && !this.#container) {
-            this.build();
-        } else if (active) {
-            this.adoptYearRange();
-        }
-        this.#container?.classList.toggle('show', active);
+    protected get heading(): string {
+        return t('diff.heading');
     }
 
-    private build(): void {
-        const parentDiv = document.querySelector('.container-div') || document.body;
-        const container = document.createElement('div');
-        container.className = 'full-scene';
-        parentDiv.appendChild(container);
-        this.#container = container;
-        [this.#startYear, this.#endYear] = this.#settings.requestedYearRange;
-        this.#dataMaxX = Math.max(...this.#settings.dateOptions.map((date) => {
-            const series = new GISSParser(this.#settings.datasets[date].csv[Showcase.GLOBAL]).monthlySeries;
+    protected buildContent(content: HTMLElement, controls: HTMLElement): void {
+        this.#dataMaxX = Math.max(...this.settings.dateOptions.map((date) => {
+            const series = new GISSParser(this.settings.datasets[date].csv[Showcase.GLOBAL]).monthlySeries;
             return series[series.length - 1]?.x ?? 0;
         }));
-
-        // The info panel dims this inner wrapper, not `container` itself -
-        // `container`'s own background must stay fully opaque so it keeps
-        // fully hiding the (always-rendering) helix canvas behind it.
-        const content = document.createElement('div');
-        content.className = 'full-scene-content';
-        container.appendChild(content);
-
-        const heading = document.createElement('h2');
-        heading.className = 'chart-scene-heading';
-        heading.textContent = t('diff.heading');
-        content.appendChild(heading);
-
-        const controls = document.createElement('div');
-        controls.className = 'chart-scene-controls';
-        content.appendChild(controls);
-
-        const scene = this;
-        this.#yearRangeSlider = new YearRangeSlider(controls, {
-            min: this.#settings.globalFirstYear,
-            max: this.#settings.globalLastYear,
-            get start() { return scene.#startYear; },
-            get end() { return scene.#endYear; },
-            setStart: (year) => {
-                this.#startYear = Math.max(this.#settings.globalFirstYear, Math.min(year, this.#endYear));
-                this.#settings.requestYearRange(this.#startYear, this.#endYear);
-                this.applyXDomain();
-            },
-            setEnd: (year) => {
-                this.#endYear = Math.min(this.#settings.globalLastYear, Math.max(year, this.#startYear));
-                this.#settings.requestYearRange(this.#startYear, this.#endYear);
-                this.applyXDomain();
-            },
-            reset: () => {
-                this.#settings.resetYearRange();
-                [this.#startYear, this.#endYear] = this.#settings.requestedYearRange;
-                this.applyXDomain();
-            },
-        });
 
         const picker = document.createElement('div');
         picker.className = 'chart-baseline-picker';
         controls.appendChild(picker);
 
-        const dates = this.#settings.dateOptions;
+        const dates = this.settings.dateOptions;
         const storedBaseline = persistentState.state.diffBaseline;
         this.#baselineDate = this.#baselineDate
             ?? (storedBaseline !== undefined && dates.includes(storedBaseline) ? storedBaseline : dates[dates.length - 1]);
@@ -135,11 +72,11 @@ class DiffChartsScene {
         if (!this.#diffChartsContainer || !this.#baselineDate) {
             return;
         }
-        this.#charts.forEach((chart) => chart.dispose());
-        this.#charts = [];
+        this.charts.forEach((chart) => chart.dispose());
+        this.charts = [];
         this.#diffChartsContainer.innerHTML = '';
         const baseline = this.#baselineDate;
-        const dates = this.#settings.dateOptions;
+        const dates = this.settings.dateOptions;
 
         for (const showcase of Object.values(Showcase)) {
             const baselineMap = this.monthlyMap(baseline, showcase);
@@ -157,7 +94,7 @@ class DiffChartsScene {
             this.#diffChartsContainer.appendChild(block);
             // Per region, not per baseline: the options apply to whichever baseline is picked.
             const id = `diff:${showcase}`;
-            this.#charts.push(new ChartControl(block, {
+            this.charts.push(new ChartControl(block, {
                 title: t('diff.title', { region: regionName(showcase), date: baseline }),
                 series,
                 xDomain: this.xDomain(),
@@ -173,36 +110,19 @@ class DiffChartsScene {
     }
 
     /** The selected years are inclusive, so the axis runs to the end of the end year - capped at the newest data. */
-    private xDomain(): [number, number] {
-        return [this.#startYear, Math.min(this.#endYear + 1, this.#dataMaxX)];
-    }
-
-    /** Picks up the year range last chosen on another view's slider. */
-    private adoptYearRange(): void {
-        const [start, end] = this.#settings.requestedYearRange;
-        if (start === this.#startYear && end === this.#endYear) {
-            return;
-        }
-        this.#startYear = start;
-        this.#endYear = end;
-        this.#yearRangeSlider?.refresh();
-        this.applyXDomain();
-    }
-
-        private applyXDomain(): void {
-        const domain = this.xDomain();
-        this.#charts.forEach((chart) => chart.setXDomain(domain));
+    protected xDomain(): [number, number] {
+        return [this.startYear, Math.min(this.endYear + 1, this.#dataMaxX)];
     }
 
     /** Monthly resolution (not the annual mean) so per-month revisions aren't averaged away. */
     private monthlyMap(date: string, showcase: Showcase): Map<number, number> {
-        const series = new GISSParser(this.#settings.datasets[date].csv[showcase]).monthlySeries;
+        const series = new GISSParser(this.settings.datasets[date].csv[showcase]).monthlySeries;
         return new Map(series.map((entry) => [entry.x, entry.value]));
     }
 
     /** Each snapshot keeps its own color, oldest first, whichever one is the baseline. */
     private dateColorVar(date: string): string {
-        return CHART_COLOR_VARS[this.#settings.dateOptions.indexOf(date)];
+        return CHART_COLOR_VARS[this.settings.dateOptions.indexOf(date)];
     }
 }
 

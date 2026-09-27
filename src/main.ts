@@ -1,224 +1,36 @@
-
 /**
- 
-National Aeronautics and Space Administration
-Goddard Institute for Space Studies
-https://data.giss.nasa.gov/gistemp/
-
-*/
+ * Climate Helix: NASA GISS temperature anomalies as a 3D helix.
+ *
+ * National Aeronautics and Space Administration
+ * Goddard Institute for Space Studies
+ * https://data.giss.nasa.gov/gistemp/
+ */
 
 import '@fontsource/special-elite';
 import '@fontsource/dejavu-sans';
-import * as THREE from 'three';
 import { Settings } from './settings/Settings';
 import { ThemesSwitcher } from './ui/ThemesSwitcher';
 import { InfoButton } from './ui/InfoButton';
 import { Changelog } from './changelog/Changelog';
 import { showWhatsNewOnce } from './changelog/WhatsNew';
-
-import { TrackballControls } from "three/examples/jsm/controls/TrackballControls.js";
-import { ClimateHelix } from './helix/ClimateHelix';
-import { ClimateAxes } from './helix/ClimateAxes';
 import { Events, Scene } from './Enums';
-import { ScreenCapture, type CaptureControls } from './ui/ScreenCapture';
-import { ClassMutationObserver } from './ui/ClassMutationObserver';
+import { ScreenCapture } from './ui/ScreenCapture';
 import { initPwaUpdate } from './ui/PwaUpdate';
-import { YearRangeSlider } from './ui/YearRangeSlider';
 import { SceneSwitcher } from './ui/SceneSwitcher';
 import { ChartsScene } from './charts/ChartsScene';
 import { DiffChartsScene } from './charts/DiffChartsScene';
-import { HelixAnimation, drawCount, playSeconds, tipIndex } from './helix/HelixAnimation';
-import { SVGToggleButton } from './ui/SVGToggleButton';
-import { persistentState, type Vector3 } from './settings/PersistentState';
-import { formatMonthYear } from './charts/chartMath';
+import { HelixScene } from './helix/HelixScene';
+import { persistentState } from './settings/PersistentState';
 import { language, t, type Language } from './i18n';
-import { icon as playIcon } from './icons/animation/playIcon';
-import { icon as pauseIcon } from './icons/animation/pauseIcon';
 
-// The info div. A static import (not a public/ asset fetched at runtime) so
-// it's bundled into the hashed JS chunk and cache-busts the same way the
-// rest of the app already does, instead of needing its own workaround.
+// The info panels. Static imports (not public/ assets fetched at runtime), so
+// they are bundled into the hashed JS chunk and cache-bust with the rest.
 import infoDivAsString from './i18n/info/info.html?raw';
 import chartInfoDivAsString from './i18n/info/chart-info.html?raw';
 import diffInfoDivAsString from './i18n/info/diff-info.html?raw';
 import infoDivAsStringDe from './i18n/info/info.de.html?raw';
 import chartInfoDivAsStringDe from './i18n/info/chart-info.de.html?raw';
 import diffInfoDivAsStringDe from './i18n/info/diff-info.de.html?raw';
-
-const containerDiv = document.createElement('DIV');
-const CONTAINER_DIV = '.container-div';
-containerDiv.setAttribute('class', 'container-div');
-document.body.appendChild(containerDiv);
-
-let settings: Settings;
-const switcher = new ThemesSwitcher({ container: containerDiv });
-const changelog = new Changelog();
-
-let group: THREE.Group;
-let camera: THREE.PerspectiveCamera;
-let scene: THREE.Scene;
-let renderer: THREE.WebGLRenderer;
-let controls: TrackballControls;
-let helixMesh: THREE.Mesh | undefined;
-let wireframeMesh: THREE.Mesh | undefined;
-let climateAxes: ClimateAxes | undefined;
-let observer: ClassMutationObserver;
-let capture: ScreenCapture;
-let yearRangeSlider: YearRangeSlider;
-let sceneSwitcher: SceneSwitcher;
-let chartsScene: ChartsScene;
-let diffChartsScene: DiffChartsScene;
-let currentHelix: ClimateHelix;
-let playButton: SVGToggleButton;
-
-const animation = new HelixAnimation(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-// Below the title while the helix is incomplete: the month the growing tip has reached.
-const animationLabel = document.createElement('DIV');
-animationLabel.className = 'animation-label hidden';
-
-let infoIcon;
-
-function createDateButtons(): void {
-    const container = document.querySelector(CONTAINER_DIV);
-    const controls = document.querySelector('#dataset-controls') || document.createElement('DIV');
-    controls.id = 'dataset-controls';
-    if (!controls.parentElement) {
-        container?.appendChild(controls);
-    }
-    document.querySelector('#dataset-buttons')?.remove();
-    const buttons = document.createElement('DIV');
-    buttons.id = 'dataset-buttons';
-
-    settings.dateOptions.forEach((dateKey: string) => {
-        const button = document.createElement('button');
-        const year = new Date(dateKey).getFullYear();
-        button.type = 'button';
-        button.textContent = String(year);
-        button.className = 'dataset-button';
-        if (dateKey === settings.date) {
-            button.classList.add('active');
-        }
-        button.addEventListener('click', () => {
-            settings.setDate(dateKey);
-            updateDateButtons();
-        });
-        buttons.appendChild(button);
-    });
-
-    controls.appendChild(buttons);
-}
-
-function updateDateButtons(): void {
-    const buttons = document.querySelectorAll<HTMLButtonElement>('#dataset-buttons .dataset-button');
-    buttons.forEach((button) => {
-        const isActive = button.textContent === String(new Date(settings.date).getFullYear());
-        button.classList.toggle('active', isActive);
-    });
-}
-
-function init() {
-    scene = new THREE.Scene();
-
-    renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setPixelRatio(window.devicePixelRatio);
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    renderer.setSize(width, height);
-    containerDiv.appendChild(renderer.domElement);
-    observer = updateSceneBackgroundDueToThemeChange();
-
-    // camera
-    const aspectRatio = width / height;
-    // console.log(`Aspect ratio: ${aspectRatio}`);
-    camera = new THREE.PerspectiveCamera(50, aspectRatio);
-    camera.position.set(4.5, 4.5, 4.5);
-    camera.lookAt(0, 0, 0);
-    scene.add(camera);
-
-    group = new THREE.Group();
-    // The helix and its axes are built with years running along local Z.
-    // Rotate so that axis renders vertically on the right side of the screen.
-    group.rotation.x = -Math.PI / 2;
-    scene.add(group);
-
-    // Trackball, not orbit controls: they rotate the helix freely in every
-    // direction, including end over end. Orbit controls keep the world's
-    // vertical axis - since v0.6.2 the helix's own axis - fixed on screen.
-    // Created before the stored camera is applied, so reset() returns to the
-    // initial view.
-    controls = new TrackballControls(camera, renderer.domElement);
-    applyNavigationSettings();
-    document.body.addEventListener(Events.CONTROLS_CHANGED.toString(), applyNavigationSettings);
-    const storedCamera = persistentState.state.camera;
-    if (storedCamera) {
-        camera.position.fromArray(storedCamera.position);
-        controls.target.fromArray(storedCamera.target);
-        if (storedCamera.up) {
-            camera.up.fromArray(storedCamera.up);
-        }
-        camera.lookAt(controls.target);
-    }
-    // 'change', not 'end': the camera keeps moving for a moment after a drag.
-    controls.addEventListener('change', () => persistentState.update({
-        camera: {
-            position: camera.position.toArray() as Vector3,
-            target: controls.target.toArray() as Vector3,
-            up: camera.up.toArray() as Vector3,
-        },
-    }));
-    renderer.domElement.addEventListener('dblclick', () => controls.reset());
-
-    window.addEventListener('resize', onWindowResize);
-    // Every CREATE_HELIX comes from the user changing what is shown (settings,
-    // dataset, region, year range), which ends a running animation. Theme
-    // switches rebuild the helix directly (onThemeChanged) and keep it running.
-    window.addEventListener(Events.CREATE_HELIX, () => {
-        animation.finish();
-        createHelix();
-    });
-    document.body.addEventListener(Events.ANIMATION_CHANGED.toString(), () => {
-        animation.loop = settings.animationLoop;
-        updateAnimationTiming();
-    });
-    document.body.addEventListener(Events.THEME_CHANGED.toString(), onThemeChanged);
-    const captureControls: CaptureControls = {
-        All: document.body,
-        Helix: renderer.domElement
-    }
-    capture = new ScreenCapture(settings, captureControls);
-    createSceneSwitcher();
-    createPlayButton();
-    infoIcon = createInfoIcon();
-    createInfoDiv();
-    document.body.addEventListener(Events.SCENE_CHANGED.toString(), onSceneChanged);
-    Events.dispatchEvent(Events.THEME_CHANGED);
-    if (sceneSwitcher.scene !== Scene.HELIX) {
-        // Reopen the view last shown.
-        Events.dispatchEvent(Events.SCENE_CHANGED);
-    }
-    animate();
-}
-
-function createSceneSwitcher(): void {
-    const parentDiv = document.querySelector(CONTAINER_DIV) || document.body;
-    sceneSwitcher = new SceneSwitcher(parentDiv);
-    chartsScene = new ChartsScene(settings, sceneSwitcher);
-    diffChartsScene = new DiffChartsScene(settings, sceneSwitcher);
-}
-
-function onSceneChanged(): void {
-    const helixActive = sceneSwitcher.scene === Scene.HELIX;
-    document.querySelector(CONTAINER_DIV)?.classList.toggle('scene-not-helix', !helixActive);
-    if (!helixActive) {
-        animation.pause();
-        applyAnimation();
-    }
-    // Pick up a year range chosen on a chart view's slider.
-    if (helixActive && settings.clampYearRange()) {
-        Events.dispatchEvent(Events.CREATE_HELIX);
-    }
-    updateInfoContent();
-}
 
 const INFO_CONTENT_BY_SCENE: Record<Language, Record<Scene, string>> = {
     en: {
@@ -233,6 +45,51 @@ const INFO_CONTENT_BY_SCENE: Record<Language, Record<Scene, string>> = {
     },
 };
 
+const containerDiv = document.createElement('div');
+containerDiv.className = 'container-div';
+document.body.appendChild(containerDiv);
+
+const switcher = new ThemesSwitcher({ container: containerDiv });
+const changelog = new Changelog();
+
+let settings: Settings;
+let helixScene: HelixScene;
+let sceneSwitcher: SceneSwitcher;
+
+function init(): void {
+    helixScene = new HelixScene(containerDiv, settings);
+    new ScreenCapture(settings, { All: document.body, Helix: helixScene.renderer.domElement });
+
+    sceneSwitcher = new SceneSwitcher(containerDiv);
+    new ChartsScene(settings, sceneSwitcher);
+    new DiffChartsScene(settings, sceneSwitcher);
+    new InfoButton(containerDiv, sceneSwitcher);
+    createInfoDiv();
+
+    document.body.addEventListener(Events.THEME_CHANGED.toString(), () => helixScene.onThemeChanged());
+    document.body.addEventListener(Events.CREATE_HELIX.toString(), updateInfoEndDate);
+    document.body.addEventListener(Events.SCENE_CHANGED.toString(), onSceneChanged);
+    Events.dispatchEvent(Events.THEME_CHANGED);
+    if (sceneSwitcher.scene !== Scene.HELIX) {
+        // Reopen the view last shown.
+        Events.dispatchEvent(Events.SCENE_CHANGED);
+    }
+    helixScene.start();
+}
+
+function onSceneChanged(): void {
+    const helixActive = sceneSwitcher.scene === Scene.HELIX;
+    containerDiv.classList.toggle('scene-not-helix', !helixActive);
+    if (!helixActive) {
+        helixScene.onHidden();
+    }
+    // Pick up a year range chosen on a chart view's slider.
+    if (helixActive && settings.clampYearRange()) {
+        Events.dispatchEvent(Events.CREATE_HELIX);
+    }
+    updateInfoContent();
+}
+
 function updateInfoContent(): void {
     const infoDiv = document.querySelector('#info-div');
     if (!infoDiv) {
@@ -242,93 +99,15 @@ function updateInfoContent(): void {
     updateInfoEndDate();
 }
 
-/** 
- * This function is used to update scene background color due to theme changes.
- * Observe DOM for changing '<style class>' attribute. 
- */
-function updateSceneBackgroundDueToThemeChange(): ClassMutationObserver {
-    return new ClassMutationObserver(document.body, (value: MutationRecord) => {
-        const style = window.getComputedStyle(document.body);
-        const backgroundColor = style.getPropertyValue("background-color");
-        scene.background = new THREE.Color(backgroundColor);
-    });
-}
-
-/**
- * Takes a mesh out of the scene and frees its GPU buffers: the helix is
- * rebuilt on every settings change, many times a second while a slider moves.
- */
-function disposeMesh(mesh: THREE.Mesh | undefined): void {
-    if (!mesh) {
-        return;
-    }
-    group.remove(mesh);
-    mesh.geometry.dispose();
-    (Array.isArray(mesh.material) ? mesh.material : [mesh.material]).forEach((material) => material.dispose());
-}
-
-function createHelix(): void {
-    disposeMesh(helixMesh);
-    disposeMesh(wireframeMesh);
-    helixMesh = undefined;
-    wireframeMesh = undefined;
-    if (climateAxes) {
-        group.remove(climateAxes);
-        climateAxes.dispose();
-        climateAxes = undefined;
-    }
-    const helix = new ClimateHelix(settings);
-    if (settings.showFaces) {
-        helixMesh = helix.createMesh();
-        group.add(helixMesh);
-    }
-    if (settings.showWireframe) {
-        wireframeMesh = helix.createMesh({ wireframe: true, vertexColors: false })
-        group.add(wireframeMesh);
-    }
-    if (settings.showYearAxis || settings.showTemperatureAxis || settings.showMonthAxis) {
-        climateAxes = new ClimateAxes(settings, helix.height, 1);
-        group.add(climateAxes);
-    }
-    const container = document.querySelector(CONTAINER_DIV);
-    helix.createTitleDiv(container).appendChild(animationLabel);
-    currentHelix = helix;
-    updateAnimationTiming();
-    applyAnimation();
-    createDateButtons();
-    const controls = document.querySelector('#dataset-controls');
-    if (controls) {
-        if (yearRangeSlider) {
-            yearRangeSlider.refresh();
-        } else {
-            yearRangeSlider = new YearRangeSlider(controls, {
-                get min() { return settings.datasetFirstYear; },
-                get max() { return settings.datasetLastYear; },
-                get start() { return settings.firstYear; },
-                get end() { return settings.lastYear; },
-                setStart: (year) => { settings.setStartYear(year); Events.dispatchEvent(Events.CREATE_HELIX); },
-                setEnd: (year) => { settings.setEndYear(year); Events.dispatchEvent(Events.CREATE_HELIX); },
-                reset: () => { settings.resetYearRange(); settings.clampYearRange(); Events.dispatchEvent(Events.CREATE_HELIX); },
-            });
-        }
-    }
-    updateInfoEndDate();
-}
-
-function createInfoIcon(): void {
-    const parentDiv = document.querySelector(CONTAINER_DIV) || document.body;
-    const infoButton = new InfoButton(parentDiv, sceneSwitcher);
-}
-
-function createInfoDiv() {
-    const div = document.createElement('DIV');
-    div.setAttribute('id', 'info-div');
+/** The info panel, and the version label that opens the changelog, both before the info button. */
+function createInfoDiv(): void {
+    const div = document.createElement('div');
+    div.id = 'info-div';
     div.innerHTML = INFO_CONTENT_BY_SCENE[language()][Scene.HELIX];
     const infoIcon = document.querySelector('.info-button');
     infoIcon?.insertAdjacentElement('beforebegin', div);
     updateInfoEndDate();
 
-    // Version info before infoIcon; a click shows the changelog.
     const button = document.createElement('button');
     button.type = 'button';
     button.id = 'version-info';
@@ -338,76 +117,14 @@ function createInfoDiv() {
     infoIcon?.insertAdjacentElement('beforebegin', button);
 }
 
-function updateInfoEndDate() {
+function updateInfoEndDate(): void {
     const endDate = document.querySelector('#data-end-date');
     if (endDate) {
         endDate.textContent = settings.dataEndDate;
     }
 }
 
-function animate() {
-    requestAnimationFrame(animate);
-    if (animation.update(performance.now())) {
-        applyAnimation();
-    }
-    controls.update();
-    renderer.render(scene, camera);
-}
-
-function createPlayButton(): void {
-    const container = document.querySelector(CONTAINER_DIV) || document.body;
-    playButton = new SVGToggleButton({ container, icons: [playIcon, pauseIcon], labels: [t('button.play'), t('button.pause')], classToken: 'animation-button', event: 'animation-clicked' });
-    playButton.show(0);
-    playButton.addOnClickListener(() => {
-        animation.toggle();
-        applyAnimation();
-    });
-    animation.loop = settings.animationLoop;
-}
-
-/** The selected years play in their share of the configured duration, see {@link playSeconds}. */
-function updateAnimationTiming(): void {
-    animation.playSeconds = playSeconds(
-        settings.animationDuration,
-        settings.lastYear - settings.firstYear + 1,
-        settings.datasetLastYear - settings.datasetFirstYear + 1,
-    );
-}
-
-/** Draws the helix up to the animation's progress and updates the label and the Play/Pause button. */
-function applyAnimation(): void {
-    for (const mesh of [helixMesh, wireframeMesh]) {
-        if (mesh?.parent) {
-            const { tubularSegments, radialSegments } = (mesh.geometry as any).parameters;
-            mesh.geometry.setDrawRange(0, drawCount(animation.progress, tubularSegments, radialSegments));
-        }
-    }
-    const points = currentHelix?.curve.length ?? 0;
-    animationLabel.classList.toggle('hidden', animation.complete || points === 0);
-    if (!animation.complete && points > 0) {
-        animationLabel.textContent = formatMonthYear(settings.firstYear + tipIndex(animation.progress, points) / 12);
-    }
-    playButton?.select(animation.playing ? 1 : 0);
-}
-
-function onThemeChanged() {
-    settings.initializeColors();
-    createHelix();
-}
-
-function applyNavigationSettings(): void {
-    controls.staticMoving = !settings.inertia;
-    controls.rotateSpeed = settings.rotateSpeed;
-}
-
-function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    controls.handleResize();
-}
-async function start() {
+async function start(): Promise<void> {
     settings = await Settings.create();
     initPwaUpdate();
     // Canvas-drawn axis labels need the webfont file itself to be loaded
@@ -421,14 +138,8 @@ async function start() {
     // Play on start waits until the news are closed.
     await showWhatsNewOnce(changelog, persistentState, APP_VERSION);
     if (settings.playOnStart && sceneSwitcher.scene === Scene.HELIX) {
-        // A one-off run: it stops at the end even when Loop is on.
-        animation.play({ once: true });
-        applyAnimation();
+        helixScene.playOnce();
     }
 }
 
 start();
-
-
-// Make empty module to allow top level await
-export { };

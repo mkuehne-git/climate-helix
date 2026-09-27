@@ -1,6 +1,6 @@
 ---
 name: data-update
-description: Add a new NASA GISS temperature data snapshot to Climate Helix - download the three CSV files into a dated folder, register it in Settings.ts, make it the default, and update the tests, README and changelog that name the newest snapshot. Use when asked to update, refresh or add GISS/GISTEMP data or a new snapshot.
+description: Add a new NASA GISS temperature data snapshot to Climate Helix - download the three CSV files into a dated folder, register it in src/data/datasets.ts, make it the default, and update the tests, README and changelog that name the newest snapshot. Use when asked to update, refresh or add GISS/GISTEMP data or a new snapshot.
 ---
 
 # Data update
@@ -25,7 +25,7 @@ If the newest existing snapshot is from the same year, ask the project owner whe
 
 ## 2. Register the snapshot
 
-In `src/settings/Settings.ts`:
+In `src/data/datasets.ts`:
 
 - Add an entry to `datasetPaths` (newest first), with the same three file names as the other entries.
 - Set `DEFAULT_DATE` to the new folder name, so the app opens on the newest snapshot. Changing it also resets the snapshot that returning users had stored (see `storedDate` in `src/settings/PersistentState.ts`), so everyone sees the new data.
