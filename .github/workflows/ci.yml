@@ -36,6 +36,9 @@ jobs:
       - name: Stub the private imprint module
         run: echo 'export const decryptedAES = () => undefined;' > src/imprint-gen.js
 
+      - name: Check types
+        run: npm run typecheck
+
       - name: Run unit tests
         run: npm test
 

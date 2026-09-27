@@ -61,4 +61,4 @@ class ScreenCapture {
   }
 }
 
-export { ScreenCapture, CaptureControls };
+export { ScreenCapture, type CaptureControls };

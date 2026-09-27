@@ -29,7 +29,7 @@ For UI text changes, check that `src/i18n/de.ts` and the `*.de.html` info panels
 
 Run in this order and report failures with their output - do not commit around them:
 
-1. `npm test` (Vitest unit and component tests).
+1. `npm run typecheck` (tsc; Vite builds without checking types), then `npm test` (Vitest unit and component tests).
 2. `npm run build`. The two pre-existing warnings are expected: the `configLoader: 'native'` notice about `vite.config.ts`, and Node's `ExperimentalWarning`.
 3. `npm run test:e2e` when the change touches the UI, `main.ts`, `Settings.ts`, a scene, CSS, the service worker or `vite.config.ts`. It builds with `VITE_E2E=true` (lighter helix mesh), so **run `npm run build` again afterwards** - otherwise `dist/` holds the test build, and `deploy.sh` could publish it if it ever stops rebuilding.
 4. For visible UI changes, retake the README screenshots (the `screenshots` skill) if they show the changed part.

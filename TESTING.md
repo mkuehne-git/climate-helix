@@ -96,8 +96,9 @@ No screenshot comparisons of the helix: WebGL output varies too much between mac
 
 1. `npm ci` on Node 24
 2. Stub `src/imprint-gen.js`
-3. `npm test`
-4. `npm run build`
+3. `npm run typecheck` (since v2.0.2: `tsc` with `tsconfig.json`, not strict; Vite builds without checking types)
+4. `npm test`
+5. `npm run build`
 
 It replaces the former `dependency-check.yml`, which only ran for dependency changes, on Node 20. It does not deploy: deployment stays a manual `deploy.sh` run (see `ROADMAP.md`). Dependabot groups the test tools (`vitest`, `happy-dom`, `@playwright/test`) in a `test-tooling` group; after a Playwright update, run `npx playwright install chromium firefox` locally.
 

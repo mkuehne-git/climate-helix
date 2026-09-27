@@ -1,6 +1,6 @@
 {
   "name": "climate-helix",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "3D Climate Helix",
   "main": "main.js",
   "engines": {
@@ -12,6 +12,7 @@
     "build": "vite build",
     "serve": "vite preview",
     "test": "vitest run",
+    "typecheck": "tsc -p .",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "screenshots": "playwright test -c playwright.screenshots.config.ts"
@@ -32,6 +33,7 @@
     "crypto-js": "^4.2.0",
     "happy-dom": "^20.14.5",
     "html2canvas": "^1.4.1",
+    "typescript": "^7.0.2",
     "vite": "^8.3.0",
     "vite-plugin-pwa": "^1.3.0",
     "vitest": "^5.0.2"

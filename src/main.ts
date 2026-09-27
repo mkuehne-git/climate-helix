@@ -20,7 +20,7 @@ import { TrackballControls } from "three/examples/jsm/controls/TrackballControls
 import { ClimateHelix } from './ClimateHelix';
 import { ClimateAxes } from './ClimateAxes';
 import { Events, Scene } from './Enums';
-import { ScreenCapture, CaptureControls } from './ScreenCapture';
+import { ScreenCapture, type CaptureControls } from './ScreenCapture';
 import { ClassMutationObserver } from './ClassMutationObserver';
 import { initPwaUpdate } from './PwaUpdate';
 import { YearRangeSlider } from './YearRangeSlider';
@@ -90,7 +90,7 @@ function createDateButtons(): void {
     buttons.id = 'dataset-buttons';
 
     settings.dateOptions.forEach((dateKey: string) => {
-        const button = document.createElement('BUTTON');
+        const button = document.createElement('button');
         const year = new Date(dateKey).getFullYear();
         button.type = 'button';
         button.textContent = String(year);

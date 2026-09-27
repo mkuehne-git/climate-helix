@@ -1,6 +1,10 @@
 # Changelog
 
-## v2.0.1 · 2026-09-27
+## v2.0.2 · 2026-09-27
+
+* Check the TypeScript types: `npm run typecheck` (TypeScript 7, `tsconfig.json`) runs locally and in the CI workflow, since the build itself does not check types. It found three small errors, now fixed. No functional change.
+
+## v2.0.1 · 2026-09-27 · [715135d](https://github.com/mkuehne-git/climate-helix/commit/715135d)
 
 * Fix months with a temperature anomaly of exactly 0.00 °C missing from the helix: each one moved every later month one step around the circle, so from 1881 on many months sat at the wrong place, and the helix ended a year too low. Depending on the snapshot and region, 10 to 18 months were affected.
 * Fix the app using more and more graphics memory while settings change: every redraw of the helix, many per second while a slider moves, kept the old one in memory. On phones this could eventually stop the 3D view.

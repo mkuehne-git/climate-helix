@@ -25,6 +25,7 @@ updates:
           - "vite-plugin-pwa"
           - "@vitejs/*"
           - "@types/*"
+          - "typescript"
       test-tooling:
         patterns:
           - "vitest"
