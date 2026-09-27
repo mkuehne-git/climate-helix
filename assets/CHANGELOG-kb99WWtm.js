@@ -1,5 +1,20 @@
 var e=`# Changelog
 
+## v1.1.1 · 2026-09-27 · [d3415d4](https://github.com/mkuehne-git/climate-helix/commit/d3415d4)
+
+* Fix the X button of the changelog and What's new sitting to the right of the center: it is now exactly where the info button is, like the imprint's.
+* Make the icon buttons (Play/Pause, info, settings, theme and the X buttons) usable with the keyboard and screen readers: Tab reaches them, Enter or Space presses them, and each has a name in English and German that follows its state, such as "Play" and "Pause".
+
+## v1.1.0 · 2026-09-27 · [23879e0](https://github.com/mkuehne-git/climate-helix/commit/23879e0)
+
+* The app is now available in German. It follows your browser's language, and the new **Language** setting near the bottom of the settings panel chooses English or Deutsch explicitly, or returns to Automatic; changing it reloads the app. In German, the settings, titles, info panels, charts and dialogs are translated, and numbers and months are written the German way ("+1,50 °C", "März"). The changelog and What's new stay English.
+* Fix the sign of the y-axis labels in the charts being cut off at the left edge.
+
+## v1.0.3 · 2026-09-26 · [6c186f1](https://github.com/mkuehne-git/climate-helix/commit/6c186f1)
+
+* Prepare the app for more languages, step 1 of the localization plan in the roadmap: all user-visible text of the app moves into an English message catalog (\`src/i18n/\`), and numbers, temperatures and month names are formatted in one place. Charts remember hidden series by an identifier instead of their label, and the helix title comes from the catalog instead of the data file. No functional change.
+* Fix the end-to-end test of What's new, which expected the current version on top even when that version has no functional change and is left out.
+
 ## v1.0.2 · 2026-09-26 · [3223cb5](https://github.com/mkuehne-git/climate-helix/commit/3223cb5)
 
 * Add a plan for localizing the app in English and German to the roadmap: what has to be translated, how the language is chosen, and the steps. No functional change.
