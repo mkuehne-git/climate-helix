@@ -1,12 +1,12 @@
-import { Events, Scene, Showcase } from "./Enums";
-import { Settings } from "./Settings";
-import { GISSParser } from "./GISSParser";
+import { Events, Scene, Showcase } from "../Enums";
+import { Settings } from "../settings/Settings";
+import { GISSParser } from "../data/GISSParser";
 import { ChartControl } from "./ChartControl";
-import { SceneSwitcher } from "./SceneSwitcher";
-import { YearRangeSlider } from "./YearRangeSlider";
-import { persistentState } from "./PersistentState";
+import { SceneSwitcher } from "../ui/SceneSwitcher";
+import { YearRangeSlider } from "../ui/YearRangeSlider";
+import { persistentState } from "../settings/PersistentState";
 import { CHART_COLOR_VARS } from "./chartColors";
-import { regionName, t } from "./i18n";
+import { regionName, t } from "../i18n";
 
 
 /**

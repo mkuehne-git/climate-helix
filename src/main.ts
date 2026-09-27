@@ -10,27 +10,27 @@ https://data.giss.nasa.gov/gistemp/
 import '@fontsource/special-elite';
 import '@fontsource/dejavu-sans';
 import * as THREE from 'three';
-import { Settings } from './Settings';
-import { ThemesSwitcher } from './ThemesSwitcher';
-import { InfoButton } from './InfoButton';
-import { Changelog } from './Changelog';
-import { showWhatsNewOnce } from './WhatsNew';
+import { Settings } from './settings/Settings';
+import { ThemesSwitcher } from './ui/ThemesSwitcher';
+import { InfoButton } from './ui/InfoButton';
+import { Changelog } from './changelog/Changelog';
+import { showWhatsNewOnce } from './changelog/WhatsNew';
 
 import { TrackballControls } from "three/examples/jsm/controls/TrackballControls.js";
-import { ClimateHelix } from './ClimateHelix';
-import { ClimateAxes } from './ClimateAxes';
+import { ClimateHelix } from './helix/ClimateHelix';
+import { ClimateAxes } from './helix/ClimateAxes';
 import { Events, Scene } from './Enums';
-import { ScreenCapture, type CaptureControls } from './ScreenCapture';
-import { ClassMutationObserver } from './ClassMutationObserver';
-import { initPwaUpdate } from './PwaUpdate';
-import { YearRangeSlider } from './YearRangeSlider';
-import { SceneSwitcher } from './SceneSwitcher';
-import { ChartsScene } from './ChartsScene';
-import { DiffChartsScene } from './DiffChartsScene';
-import { HelixAnimation, drawCount, playSeconds, tipIndex } from './HelixAnimation';
-import { SVGToggleButton } from './SVGToggleButton';
-import { persistentState, type Vector3 } from './PersistentState';
-import { formatMonthYear } from './chartMath';
+import { ScreenCapture, type CaptureControls } from './ui/ScreenCapture';
+import { ClassMutationObserver } from './ui/ClassMutationObserver';
+import { initPwaUpdate } from './ui/PwaUpdate';
+import { YearRangeSlider } from './ui/YearRangeSlider';
+import { SceneSwitcher } from './ui/SceneSwitcher';
+import { ChartsScene } from './charts/ChartsScene';
+import { DiffChartsScene } from './charts/DiffChartsScene';
+import { HelixAnimation, drawCount, playSeconds, tipIndex } from './helix/HelixAnimation';
+import { SVGToggleButton } from './ui/SVGToggleButton';
+import { persistentState, type Vector3 } from './settings/PersistentState';
+import { formatMonthYear } from './charts/chartMath';
 import { language, t, type Language } from './i18n';
 import { icon as playIcon } from './icons/animation/playIcon';
 import { icon as pauseIcon } from './icons/animation/pauseIcon';
@@ -38,12 +38,12 @@ import { icon as pauseIcon } from './icons/animation/pauseIcon';
 // The info div. A static import (not a public/ asset fetched at runtime) so
 // it's bundled into the hashed JS chunk and cache-busts the same way the
 // rest of the app already does, instead of needing its own workaround.
-import infoDivAsString from './info.html?raw';
-import chartInfoDivAsString from './chart-info.html?raw';
-import diffInfoDivAsString from './diff-info.html?raw';
-import infoDivAsStringDe from './info.de.html?raw';
-import chartInfoDivAsStringDe from './chart-info.de.html?raw';
-import diffInfoDivAsStringDe from './diff-info.de.html?raw';
+import infoDivAsString from './i18n/info/info.html?raw';
+import chartInfoDivAsString from './i18n/info/chart-info.html?raw';
+import diffInfoDivAsString from './i18n/info/diff-info.html?raw';
+import infoDivAsStringDe from './i18n/info/info.de.html?raw';
+import chartInfoDivAsStringDe from './i18n/info/chart-info.de.html?raw';
+import diffInfoDivAsStringDe from './i18n/info/diff-info.de.html?raw';
 
 const containerDiv = document.createElement('DIV');
 const CONTAINER_DIV = '.container-div';

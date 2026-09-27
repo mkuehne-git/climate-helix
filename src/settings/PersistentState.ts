@@ -1,4 +1,4 @@
-import { Scene, Showcase } from './Enums';
+import { Scene, Showcase } from '../Enums';
 
 const STORAGE_KEY = 'climate-helix.state';
 const STATE_VERSION = 1;

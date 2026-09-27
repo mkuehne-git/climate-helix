@@ -1,9 +1,9 @@
-import { Events } from "./Enums";
-import { persistentState } from "./PersistentState";
+import { Events } from "../Enums";
+import { persistentState } from "../settings/PersistentState";
 import { SVGToggleButton } from "./SVGToggleButton";
-import { t } from "./i18n";
-import { icon as lightIcon } from "./icons/themes/lightIcon";
-import { icon as darkIcon } from "./icons/themes/darkIcon";
+import { t } from "../i18n";
+import { icon as lightIcon } from "../icons/themes/lightIcon";
+import { icon as darkIcon } from "../icons/themes/darkIcon";
 
 // Used by CSS to style dark/light mode
 const DARK_THEME = 'dark';

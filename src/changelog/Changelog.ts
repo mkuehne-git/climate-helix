@@ -1,10 +1,10 @@
-import { Events } from "./Enums";
-import { OverlayPage } from "./OverlayPage";
-import { t } from "./i18n";
+import { Events } from "../Enums";
+import { OverlayPage } from "../ui/OverlayPage";
+import { t } from "../i18n";
 import { parseChangelog, renderEntries, whatsNewEntries, type ChangelogEntry } from "./changelogFormat";
 
 /** CHANGELOG.md is loaded on demand, in its own chunk; the build adds the newest entry's commit (vite.config.ts). */
-const loadChangelog = async (): Promise<ChangelogEntry[]> => parseChangelog((await import("../CHANGELOG.md?raw")).default);
+const loadChangelog = async (): Promise<ChangelogEntry[]> => parseChangelog((await import("../../CHANGELOG.md?raw")).default);
 
 /** Says that the entries are English, in languages that need it. */
 const note = (): string => t("changelog.note") ? `<p class="changelog-note">${t("changelog.note")}</p>\n` : "";

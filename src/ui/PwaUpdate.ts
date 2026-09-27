@@ -1,5 +1,5 @@
 import { registerSW } from 'virtual:pwa-register';
-import { t } from './i18n';
+import { t } from '../i18n';
 
 let updateServiceWorker: (() => Promise<void>) | undefined;
 

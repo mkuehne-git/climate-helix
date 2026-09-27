@@ -5,7 +5,7 @@ vi.mock('../CHANGELOG.md?raw', () => ({
     default: '# Changelog\n\n## v1.0.0 · 2026-10-01\n\n* New.\n\n## v0.9.0 · 2026-09-01 · [abc1234](https://github.com/x/y/commit/abc1234)\n\n* Old.\n',
 }));
 
-import { Changelog } from '../src/Changelog';
+import { Changelog } from '../src/changelog/Changelog';
 import { Events } from '../src/Enums';
 
 const changelog = new Changelog();

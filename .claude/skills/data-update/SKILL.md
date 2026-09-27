@@ -25,14 +25,14 @@ If the newest existing snapshot is from the same year, ask the project owner whe
 
 ## 2. Register the snapshot
 
-In `src/Settings.ts`:
+In `src/settings/Settings.ts`:
 
 - Add an entry to `datasetPaths` (newest first), with the same three file names as the other entries.
-- Set `DEFAULT_DATE` to the new folder name, so the app opens on the newest snapshot. Changing it also resets the snapshot that returning users had stored (see `storedDate` in `src/PersistentState.ts`), so everyone sees the new data.
+- Set `DEFAULT_DATE` to the new folder name, so the app opens on the newest snapshot. Changing it also resets the snapshot that returning users had stored (see `storedDate` in `src/settings/PersistentState.ts`), so everyone sees the new data.
 
 Nothing else in the app lists snapshots: the dataset buttons, the settings panel's Data section, the Charts and Diff views and the year ranges all derive from `datasetPaths`.
 
-Each snapshot has its own line color in the Diff charts (`src/chartColors.ts`, five so far). With more snapshots than colors, `test/chartColors.test.ts` fails: add the next validated color (`--chart-color-6` in both themes of `src/css/style.css`, checked with the dataviz skill's validator) rather than reusing one.
+Each snapshot has its own line color in the Diff charts (`src/charts/chartColors.ts`, five so far). With more snapshots than colors, `test/chartColors.test.ts` fails: add the next validated color (`--chart-color-6` in both themes of `src/css/style.css`, checked with the dataviz skill's validator) rather than reusing one.
 
 ## 3. Update what names the newest snapshot
 

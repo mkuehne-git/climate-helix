@@ -18,7 +18,7 @@ npm test          # run the unit tests (Vitest)
 npm run typecheck # check the TypeScript types (tsc; the build does not)
 npm run test:watch # run the unit tests in watch mode
 npm run test:e2e  # build and run the Playwright end-to-end tests (Chromium, Firefox)
-npm run screenshots # retake the README screenshots in src/images/ (light theme)
+npm run screenshots # retake the README screenshots in docs/images/ (light theme)
 ```
 
 The default development server uses HTTPS with a local self-signed certificate. If the browser cannot trust that certificate, use `npm run dev:http` and open `http://127.0.0.1:5173/` instead.
@@ -46,27 +46,29 @@ Always ask the project owner for approval before creating a commit. Do not commi
 
 ## Source Layout
 
+`src/` is grouped by area: `data/` (parsing and year ranges), `helix/` (the 3D helix), `charts/` (the Charts and Diff views), `settings/` (settings, their panel and persistence), `ui/` (buttons, overlays, sliders, screen capture, PWA updates), `changelog/`, `imprint/`, `i18n/` (catalogs and the info panels), plus `icons/` and `css/`. `main.ts` and `Enums.ts` stay at the top. The README screenshots are in `docs/images/`, not in `src/`. The private `src/imprint-gen.js` stays at the top of `src/`: CI and `deploy.sh` expect it there.
+
 - `src/main.ts` initializes the DOM, Three.js scene, camera, renderer, controls, event listeners, and animation loop.
-- `src/ClimateHelix.ts` converts parsed temperature data into colored Three.js geometry; `main.ts` frees the old meshes (`disposeMesh`) whenever it rebuilds the helix.
-- `src/chartColors.ts` lists the validated categorical chart colors (`--chart-color-1` to `-5` in `style.css`); each Diff snapshot keeps its own, so there can be no more snapshots than colors.
-- `src/GISSParser.ts` parses the NASA GISS CSV format used by the app.
-- `src/Settings.ts` owns the settings, their controls and the app functions, and dispatches application events when settings change. `src/SettingsPanel.ts` is the native settings panel (the gear button, `src/SettingsButton.ts`, opens it; `h` and Escape too): a scrolling body for the settings and a fixed footer for Language, Check for updates, Imprint, Restore defaults and the changelog. The body holds native sections (Data, View, Animation, Screen capture), built from `src/settingsControls.ts` (section, checkbox, range, segmented buttons, color, button; each control's `update()` shows a value that changed elsewhere), and a collapsed Advanced section with the helix's geometry. The icon buttons' styles are in `src/css/toggle-buttons.css`.
+- `src/helix/ClimateHelix.ts` converts parsed temperature data into colored Three.js geometry; `main.ts` frees the old meshes (`disposeMesh`) whenever it rebuilds the helix.
+- `src/charts/chartColors.ts` lists the validated categorical chart colors (`--chart-color-1` to `-5` in `style.css`); each Diff snapshot keeps its own, so there can be no more snapshots than colors.
+- `src/data/GISSParser.ts` parses the NASA GISS CSV format used by the app.
+- `src/settings/Settings.ts` owns the settings, their controls and the app functions, and dispatches application events when settings change. `src/settings/SettingsPanel.ts` is the native settings panel (the gear button, `src/settings/SettingsButton.ts`, opens it; `h` and Escape too): a scrolling body for the settings and a fixed footer for Language, Check for updates, Imprint, Restore defaults and the changelog. The body holds native sections (Data, View, Animation, Screen capture), built from `src/settings/settingsControls.ts` (section, checkbox, range, segmented buttons, color, button; each control's `update()` shows a value that changed elsewhere), and a collapsed Advanced section with the helix's geometry. The icon buttons' styles are in `src/css/toggle-buttons.css`.
 - `src/Enums.ts` contains shared event and showcase identifiers.
-- `src/HelixGeometry.js` provides the custom tube geometry used for the helix.
-- `src/PersistentState.ts` keeps the settings and application state across reloads in one Local Storage entry (`climate-helix.state`). Modules read their part on startup and report changes with `persistentState.update()`; "Restore defaults" in the settings clears it and reloads.
-- `src/HelixAnimation.ts` holds the creation animation's state (progress, playing, loop); `main.ts` advances it from the render loop and applies it to the helix meshes with `setDrawRange`.
-- `src/OverlayPage.ts` is the full-page overlay used by the imprint and the changelog: it closes with the X button at the info button's position or with Escape.
-- `src/Changelog.ts` shows `CHANGELOG.md` when the version label is clicked; `src/changelogFormat.ts` parses and renders it. The file is loaded on demand (`CHANGELOG.md?raw`), and the build adds the newest entry's commit hash (`changelogCommit` in `vite.config.ts`).
-- `src/WhatsNew.ts` shows the changelog entries since the version used last, once per version (`lastSeenVersion` in the persistent state, kept by Restore defaults). Entries marked "No functional change." are left out.
-- `src/i18n/` holds the user-visible text: `en.ts` (English, the source) and `de.ts` (German) are the message catalogs, `index.ts` chooses the language at startup and has `t(key, params)` and the number, temperature and month formatting. New UI text goes into both catalogs, not into the modules; `test/i18n.test.ts` fails when a German key or parameter is missing. The info panels exist per language (`info.html`, `info.de.html`, and the same for `chart-info` and `diff-info`); change both. The changelog stays English.
-- `src/ScreenCapture.ts`, `src/Imprint.ts`, `src/InfoButton.ts`, `src/SettingsButton.ts`, and `src/ThemesSwitcher.ts` implement the surrounding UI features.
+- `src/helix/HelixGeometry.js` provides the custom tube geometry used for the helix.
+- `src/settings/PersistentState.ts` keeps the settings and application state across reloads in one Local Storage entry (`climate-helix.state`). Modules read their part on startup and report changes with `persistentState.update()`; "Restore defaults" in the settings clears it and reloads.
+- `src/helix/HelixAnimation.ts` holds the creation animation's state (progress, playing, loop); `main.ts` advances it from the render loop and applies it to the helix meshes with `setDrawRange`.
+- `src/ui/OverlayPage.ts` is the full-page overlay used by the imprint and the changelog: it closes with the X button at the info button's position or with Escape.
+- `src/changelog/Changelog.ts` shows `CHANGELOG.md` when the version label is clicked; `src/changelog/changelogFormat.ts` parses and renders it. The file is loaded on demand (`CHANGELOG.md?raw`), and the build adds the newest entry's commit hash (`changelogCommit` in `vite.config.ts`).
+- `src/changelog/WhatsNew.ts` shows the changelog entries since the version used last, once per version (`lastSeenVersion` in the persistent state, kept by Restore defaults). Entries marked "No functional change." are left out.
+- `src/i18n/` holds the user-visible text: `en.ts` (English, the source) and `de.ts` (German) are the message catalogs, `index.ts` chooses the language at startup and has `t(key, params)` and the number, temperature and month formatting. New UI text goes into both catalogs, not into the modules; `test/i18n.test.ts` fails when a German key or parameter is missing. The info panels exist per language in `src/i18n/info/` (`info.html`, `info.de.html`, and the same for `chart-info` and `diff-info`); change both. The changelog stays English.
+- `src/ui/ScreenCapture.ts`, `src/imprint/Imprint.ts`, `src/ui/InfoButton.ts`, `src/settings/SettingsButton.ts`, and `src/ui/ThemesSwitcher.ts` implement the surrounding UI features.
 - `src/css/style.css` contains theme variables and application styling; color values used by the helix are read from CSS custom properties.
 - `public/assets/csv/` contains versioned NASA GISS data files. `Settings.ts` lists them in `datasetPaths` and fetches them at startup.
 - `vite.config.ts` configures the production base path, HTTPS development support, PWA generation, and `APP_VERSION`.
 
 ## Data Updates
 
-Keep each data snapshot in its own dated directory under `public/assets/csv/`, with the three expected files: `GLB.Ts+dSST.csv`, `NH.Ts+dSST.csv`, and `SH.Ts+dSST.csv`. Register each snapshot in `datasetPaths` in `src/Settings.ts` and set `DEFAULT_DATE` to the default one. The `data-update` skill (`.claude/skills/data-update/`) walks through adding a snapshot. Preserve the GISS file structure: title row, header row, monthly columns, and the trailing aggregate columns.
+Keep each data snapshot in its own dated directory under `public/assets/csv/`, with the three expected files: `GLB.Ts+dSST.csv`, `NH.Ts+dSST.csv`, and `SH.Ts+dSST.csv`. Register each snapshot in `datasetPaths` in `src/settings/Settings.ts` and set `DEFAULT_DATE` to the default one. The `data-update` skill (`.claude/skills/data-update/`) walks through adding a snapshot. Preserve the GISS file structure: title row, header row, monthly columns, and the trailing aggregate columns.
 
 When changing parsing or data handling, check all three regions and confirm that the displayed title and date range match the selected CSV. Treat source-data changes as user-visible changes and mention the snapshot date in the changelog when appropriate.
 
@@ -78,7 +80,7 @@ The current priorities and implementation notes are maintained separately in `RO
 
 - Follow the existing TypeScript style and keep changes focused on the owning module.
 - Use the existing `Events` mechanism for communication between settings, theme changes, and scene redraws.
-- Reuse existing Three.js and PWA dependencies and the settings controls in `src/settingsControls.ts` rather than adding parallel abstractions.
+- Reuse existing Three.js and PWA dependencies and the settings controls in `src/settings/settingsControls.ts` rather than adding parallel abstractions.
 - Keep static assets in `public/` and import them using the project’s existing Vite asset patterns.
 - Preserve the PWA base path and offline behavior when modifying `vite.config.ts` or asset URLs.
 - Do not edit generated output in `dist/` or `dev-dist/` as a source change; regenerate it with the build when needed.

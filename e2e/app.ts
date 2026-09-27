@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { expect, type Page } from '@playwright/test';
-import { isFunctionalChange, parseChangelog } from '../src/changelogFormat';
+import { isFunctionalChange, parseChangelog } from '../src/changelog/changelogFormat';
 
 /** The app version under test. */
 export const APP_VERSION: string = JSON.parse(readFileSync('package.json', 'utf8')).version;

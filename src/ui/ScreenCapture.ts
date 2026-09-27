@@ -1,7 +1,7 @@
 import html2canvas from "html2canvas";
 
-import { Events } from "./Enums";
-import type { CaptureTarget } from "./Settings";
+import { Events } from "../Enums";
+import type { CaptureTarget } from "../settings/Settings";
 // This is for the screen capture. Without the WebGL content would not be showing.
 //
 // https://stackoverflow.com/questions/55760121/html2canvas-captures-everything-except-the-content-of-an-inner-canvas

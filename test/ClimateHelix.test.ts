@@ -4,9 +4,9 @@ import * as THREE from 'three';
 import { describe, expect, it, vi } from 'vitest';
 
 // Settings builds the settings panel and reads CSS custom properties on import; the helix only needs its static color lookup.
-vi.mock('../src/Settings', () => ({ Settings: { styledColor: () => new THREE.Color('white') } }));
+vi.mock('../src/settings/Settings', () => ({ Settings: { styledColor: () => new THREE.Color('white') } }));
 
-import { ClimateHelix, temperatureColor } from '../src/ClimateHelix';
+import { ClimateHelix, temperatureColor } from '../src/helix/ClimateHelix';
 
 const csv = readFileSync(join(__dirname, '..', 'public', 'assets', 'csv', '2026-09-16', 'GLB.Ts+dSST.csv'), 'utf8');
 const HEIGHT = 2.5;

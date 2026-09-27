@@ -1,5 +1,5 @@
 import type { ChartPoint } from './ChartControl';
-import { formatMonthYear as formatMonth, monthName } from './i18n';
+import { formatMonthYear as formatMonth, monthName } from '../i18n';
 
 /**
  * A centered moving average over `points` (already sorted by `x`): each

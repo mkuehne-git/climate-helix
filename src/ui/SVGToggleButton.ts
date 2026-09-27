@@ -1,4 +1,4 @@
-import './css/toggle-buttons.css';
+import '../css/toggle-buttons.css';
 
 const PREFIX = 'toggle';
 const DIV_ELEMENT = 'div';

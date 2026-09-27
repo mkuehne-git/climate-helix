@@ -3,7 +3,7 @@ import { defineConfig, devices } from '@playwright/test';
 const PORT = 4181;
 
 /**
- * Takes the README screenshots in src/images/ (`npm run screenshots`), in the
+ * Takes the README screenshots in docs/images/ (`npm run screenshots`), in the
  * light theme, from a production build with the full helix mesh. Not a test:
  * the images are written over the committed ones, to be reviewed before
  * committing them.

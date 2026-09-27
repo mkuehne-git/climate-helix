@@ -1,6 +1,6 @@
 import { SVGToggleButton } from "./SVGToggleButton";
-import { icon as closeIcon } from "./icons/info/closeIcon";
-import { t } from "./i18n";
+import { icon as closeIcon } from "../icons/info/closeIcon";
+import { t } from "../i18n";
 
 /**
  * A full-page overlay above the app, as used by the imprint and the

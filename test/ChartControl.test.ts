@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { ChartControl, type ChartConfig } from '../src/ChartControl';
+import { ChartControl, type ChartConfig } from '../src/charts/ChartControl';
 
 let container: HTMLElement;
 beforeEach(() => {

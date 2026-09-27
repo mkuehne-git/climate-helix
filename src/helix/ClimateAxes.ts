@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-import { Settings } from './Settings';
+import { Settings } from '../settings/Settings';
 import { temperatureColor } from './ClimateHelix';
-import { formatTemperature, monthName } from './i18n';
+import { formatTemperature, monthName } from '../i18n';
 
 const MONTH_COUNT = 12;
 const LABELED_MONTHS = new Set([0, 3, 6, 9]);

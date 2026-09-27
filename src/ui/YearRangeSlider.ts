@@ -1,5 +1,5 @@
-import closeIcon from './icons/info/close.svg?raw';
-import { t } from './i18n';
+import closeIcon from '../icons/info/close.svg?raw';
+import { t } from '../i18n';
 
 /** The value source and sink a {@link YearRangeSlider} drives. */
 interface YearRange {

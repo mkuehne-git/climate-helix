@@ -5,7 +5,7 @@ import { NEWEST_NEWS_VERSION, openApp, openSection, openSettings, switchScene, w
 // viewport, like the app is mostly used; the legend one is wider for the
 // settings panel.
 const PHONE = { width: 390, height: 844 };
-const IMAGES = 'src/images';
+const IMAGES = 'docs/images';
 
 /** Lets the helix and the charts finish drawing, with the pointer out of the way (no tooltips). */
 async function settle(page: Page): Promise<void> {

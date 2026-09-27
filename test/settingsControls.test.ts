@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { checkbox, color, range, section, segmented } from '../src/settingsControls';
+import { checkbox, color, range, section, segmented } from '../src/settings/settingsControls';
 
 let parent: HTMLElement;
 beforeEach(() => {

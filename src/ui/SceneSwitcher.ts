@@ -1,9 +1,9 @@
-import { Events, Scene } from "./Enums";
-import { persistentState } from "./PersistentState";
-import { t, type MessageKey } from "./i18n";
-import { icon as helixIcon } from "./icons/helix/helixIcon";
-import { icon as chartIcon } from "./icons/charts/chartIcon";
-import { icon as diffIcon } from "./icons/diff/diffIcon";
+import { Events, Scene } from "../Enums";
+import { persistentState } from "../settings/PersistentState";
+import { t, type MessageKey } from "../i18n";
+import { icon as helixIcon } from "../icons/helix/helixIcon";
+import { icon as chartIcon } from "../icons/charts/chartIcon";
+import { icon as diffIcon } from "../icons/diff/diffIcon";
 
 type SceneDescriptor = { scene: Scene, label: MessageKey, icon: { id: string, svg: string } };
 

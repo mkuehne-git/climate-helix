@@ -1,9 +1,9 @@
 import * as THREE from "three";
-import { Events } from './Enums';
-import { Settings } from './Settings';
-import { GISSParser } from './GISSParser';
+import { Events } from '../Enums';
+import { Settings } from '../settings/Settings';
+import { GISSParser } from '../data/GISSParser';
 import { HelixGeometry } from "./HelixGeometry";
-import { regionTitle, t } from './i18n';
+import { regionTitle, t } from '../i18n';
 
 const MONTHS = 12;
 const sin: number[] = [];

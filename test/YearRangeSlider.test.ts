@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { YearRangeSlider, type YearRange } from '../src/YearRangeSlider';
+import { YearRangeSlider, type YearRange } from '../src/ui/YearRangeSlider';
 
 function createRange(start = 1880, end = 2026): YearRange & { start: number, end: number } {
     const range = {

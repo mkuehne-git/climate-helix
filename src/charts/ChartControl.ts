@@ -1,6 +1,6 @@
 import { decimalsForStep, formatMonthYear, monthTicks, movingAverage, niceTicks } from './chartMath';
-import { formatTemperature, t } from './i18n';
-import type { ChartState } from './PersistentState';
+import { formatTemperature, t } from '../i18n';
+import type { ChartState } from '../settings/PersistentState';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 

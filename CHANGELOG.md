@@ -1,6 +1,10 @@
 # Changelog
 
-## v2.0.2 · 2026-09-27
+## v2.0.3 · 2026-09-27
+
+* Group the source files in `src/` into folders by area: `data/`, `helix/`, `charts/`, `settings/`, `ui/`, `changelog/`, `imprint/`, and the info panels in `i18n/info/`. The README screenshots move from `src/images/` to `docs/images/`. No functional change.
+
+## v2.0.2 · 2026-09-27 · [2a91a05](https://github.com/mkuehne-git/climate-helix/commit/2a91a05)
 
 * Check the TypeScript types: `npm run typecheck` (TypeScript 7, `tsconfig.json`) runs locally and in the CI workflow, since the build itself does not check types. It found three small errors, now fixed. No functional change.
 

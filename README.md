@@ -1,4 +1,4 @@
-![Climate-helix](./src/images/climate-helix.png)
+![Climate-helix](./docs/images/climate-helix.png)
 # climate-helix
 This HTML-5 application features a 3D climate helix similar to the one shown in [Coding Train, How to Code a Climate Spiral](https://youtu.be/rVBTxnRyOuE?t=2384).
 
@@ -16,7 +16,7 @@ The use of [TrackballControls](https://threejs.org/docs/#examples/en/controls/Tr
 
 # Settings
 
-<img src="./src/images/climate-helix-settings.png" alt="Climate-helix settings on a phone" width="300">
+<img src="./docs/images/climate-helix-settings.png" alt="Climate-helix settings on a phone" width="300">
 
 The gear icon in the upper right corner (or the `h` key) opens the settings panel: on the right side of the window, or full screen on a phone. Its sections open and close with a click on their title:
 
@@ -50,7 +50,7 @@ The app is available in English and German. It follows your browser's language: 
 
 # What's new and changelog
 
-![Climate-helix What's new](./src/images/climate-helix-whats-new.png)
+![Climate-helix What's new](./docs/images/climate-helix-whats-new.png)
 
 The first time the app opens after an update, it shows what's new since the version you used last. Versions without a visible change (tests, documentation) are left out, and the **Full changelog** button shows every version. It appears once per version: not again after a reload, not after **Restore defaults**, and not on your very first visit.
 
@@ -58,7 +58,7 @@ Click the version number in the lower right corner, or in the settings panel's f
 
 # Legend
 
-![Climate-helix with legend](./src/images/climate-helix-legend.png)
+![Climate-helix with legend](./docs/images/climate-helix-legend.png)
 
 The legend in the settings panel's ***View*** section (shown open above) adds optional reference axes around the helix: a **Year axis** marking the year range along the side, a **Temperature axis** of concentric rings labeling anomaly values from -1.0°C to +1.5°C, and a **Month axis** labeling Jan/Apr/Jul/Oct around the outer rim. The number of year ticks and temperature rings shown is configurable.
 
@@ -68,11 +68,11 @@ Three icon-buttons at the lower-left switch between equal peer scenes: **Helix**
 
 * **Charts** renders one time-series chart per dataset snapshot, all three regions (Global, Northern HS, Southern HS) overlaid on a shared year axis. The same year range slider as in the Helix view zooms the x-axis of all charts.
 
-  ![Climate-helix charts](./src/images/climate-helix-charts.png)
+  ![Climate-helix charts](./docs/images/climate-helix-charts.png)
 
 * **Diff** lets you pick a baseline snapshot (shown by year, like the Helix dataset selector), then shows one chart per region with a line for every other snapshot's monthly difference from that baseline - revealing that NASA revises historical data between snapshots, not just appends new months. The y-axis always rescales to the lines that are checked and the years in view, and each chart has a **Moving average** toggle (overlays a smoothed 12-month trend and dims the raw line). The same year range slider as in the Helix view zooms the x-axis of all charts.
 
-  ![Climate-helix diff charts](./src/images/climate-helix-diff.png)
+  ![Climate-helix diff charts](./docs/images/climate-helix-diff.png)
 
 * Every chart has a legend with a checkbox per series to show or hide it, and a hover crosshair with a tooltip showing exact values.
 

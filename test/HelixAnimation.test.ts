@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { HelixAnimation, drawCount, playSeconds, tipIndex } from '../src/HelixAnimation';
+import { HelixAnimation, drawCount, playSeconds, tipIndex } from '../src/helix/HelixAnimation';
 
 /** An animation taking 10 s, started at t = 0 (the first update only sets the clock). */
 function playing(options: { loop?: boolean, once?: boolean } = {}): HelixAnimation {

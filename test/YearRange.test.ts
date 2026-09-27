@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { YearRange } from '../src/YearRange';
+import { YearRange } from '../src/data/YearRange';
 
 // All datasets cover 1880-2026; the active one (the newest) as well.
 let range: YearRange;

@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
     HEADING, compareVersions, isFunctionalChange, parseChangelog, renderEntry, renderInline, renderMarkdown, whatsNewEntries,
-} from '../src/changelogFormat';
+} from '../src/changelog/changelogFormat';
 
 const changelogFile = readFileSync(new URL('../CHANGELOG.md', import.meta.url), 'utf8');
 const packageVersion = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')).version as string;

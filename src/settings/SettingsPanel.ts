@@ -1,4 +1,4 @@
-import { t } from "./i18n";
+import { t } from "../i18n";
 
 /**
  * The settings panel: a native side panel on the right (full screen on

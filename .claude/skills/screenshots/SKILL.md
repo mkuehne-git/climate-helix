@@ -1,11 +1,11 @@
 ---
 name: screenshots
-description: Retake the Climate Helix README screenshots in src/images/ with Playwright (npm run screenshots), review them and update the README if a view was added or renamed. Use after visible UI changes, before a major or minor release, or when asked to update, refresh or retake screenshots.
+description: Retake the Climate Helix README screenshots in docs/images/ with Playwright (npm run screenshots), review them and update the README if a view was added or renamed. Use after visible UI changes, before a major or minor release, or when asked to update, refresh or retake screenshots.
 ---
 
 # Screenshots
 
-The README shows six screenshots in `src/images/`. `npm run screenshots` retakes them all with Playwright (`playwright.screenshots.config.ts`, specs in `screenshots/readme.spec.ts`), always in the light theme.
+The README shows six screenshots in `docs/images/`. `npm run screenshots` retakes them all with Playwright (`playwright.screenshots.config.ts`, specs in `screenshots/readme.spec.ts`), always in the light theme.
 
 | Image | Shows | Viewport |
 | --- | --- | --- |

@@ -1,10 +1,10 @@
-import { Events } from "./Enums";
-import { SVGToggleButton } from "./SVGToggleButton";
-import { t } from "./i18n";
+import { Events } from "../Enums";
+import { SVGToggleButton } from "../ui/SVGToggleButton";
+import { t } from "../i18n";
 import type { SettingsPanel } from "./SettingsPanel";
 
-import { icon as openIcon } from "./icons/settings/openIcon";
-import { icon as closeIcon } from "./icons/settings/closeIcon";
+import { icon as openIcon } from "../icons/settings/openIcon";
+import { icon as closeIcon } from "../icons/settings/closeIcon";
 
 /**
  * The gear button in the top-right corner: opens and closes the settings

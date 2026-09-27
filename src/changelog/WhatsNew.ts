@@ -1,6 +1,6 @@
 import type { Changelog } from "./Changelog";
 import { compareVersions } from "./changelogFormat";
-import type { PersistentState } from "./PersistentState";
+import type { PersistentState } from "../settings/PersistentState";
 
 /** The last version without What's new: someone who used it, or an older one, has seen no news yet. */
 export const VERSION_BEFORE_WHATS_NEW = "0.11.1";

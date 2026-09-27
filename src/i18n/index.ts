@@ -1,5 +1,5 @@
 import { Showcase } from '../Enums';
-import { persistentState } from '../PersistentState';
+import { persistentState } from '../settings/PersistentState';
 import { de } from './de';
 import { en } from './en';
 

@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { GISSParser } from '../src/GISSParser';
+import { GISSParser } from '../src/data/GISSParser';
 
 const CSV_DIR = join(__dirname, '..', 'public', 'assets', 'csv');
 const REGIONS = {

@@ -1,11 +1,11 @@
-import { Events, Scene, Showcase } from "./Enums";
-import { Settings } from "./Settings";
-import { GISSParser } from "./GISSParser";
+import { Events, Scene, Showcase } from "../Enums";
+import { Settings } from "../settings/Settings";
+import { GISSParser } from "../data/GISSParser";
 import { ChartControl } from "./ChartControl";
-import { SceneSwitcher } from "./SceneSwitcher";
-import { YearRangeSlider } from "./YearRangeSlider";
-import { persistentState } from "./PersistentState";
-import { regionName, t } from "./i18n";
+import { SceneSwitcher } from "../ui/SceneSwitcher";
+import { YearRangeSlider } from "../ui/YearRangeSlider";
+import { persistentState } from "../settings/PersistentState";
+import { regionName, t } from "../i18n";
 
 const REGION_COLOR_VARS: Record<Showcase, string> = {
     [Showcase.GLOBAL]: 'var(--chart-color-1)',

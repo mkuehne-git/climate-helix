@@ -104,7 +104,7 @@ It replaces the former `dependency-check.yml`, which only ran for dependency cha
 
 ## README screenshots (v1.0.0)
 
-`npm run screenshots` retakes the images in `src/images/` with Playwright (`playwright.screenshots.config.ts`, specs in `screenshots/`): a production build with the full helix mesh on port 4181, Chromium, light theme, mostly at phone size (390 x 844). They are documentation, not tests, and are not compared with earlier images; review them before committing. The `screenshots` skill (`.claude/skills/screenshots/`) says when to retake them.
+`npm run screenshots` retakes the images in `docs/images/` with Playwright (`playwright.screenshots.config.ts`, specs in `screenshots/`): a production build with the full helix mesh on port 4181, Chromium, light theme, mostly at phone size (390 x 844). They are documentation, not tests, and are not compared with earlier images; review them before committing. The `screenshots` skill (`.claude/skills/screenshots/`) says when to retake them.
 
 ## CI and Playwright
 

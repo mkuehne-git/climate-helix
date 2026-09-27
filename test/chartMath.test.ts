@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { decimalsForStep, formatMonthYear, monthTicks, movingAverage, niceTicks } from '../src/chartMath';
+import { decimalsForStep, formatMonthYear, monthTicks, movingAverage, niceTicks } from '../src/charts/chartMath';
 
 describe('niceTicks', () => {
     it('uses 1, 2 or 5 times a power of ten as the step', () => {

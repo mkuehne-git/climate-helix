@@ -1,15 +1,15 @@
-import { Imprint } from './Imprint';
-import { Events, Showcase } from './Enums';
+import { Imprint } from '../imprint/Imprint';
+import { Events, Showcase } from '../Enums';
 import * as THREE from "three";
 
 import { SettingsButton } from "./SettingsButton";
 import { SettingsPanel } from "./SettingsPanel";
 import { button, checkbox, color, range, section, segmented, subheading, type Control } from './settingsControls';
-import { checkForPwaUpdates, showPwaStatus } from './PwaUpdate';
-import { GISSParser } from './GISSParser';
-import { YearRange } from './YearRange';
+import { checkForPwaUpdates, showPwaStatus } from '../ui/PwaUpdate';
+import { GISSParser } from '../data/GISSParser';
+import { YearRange } from '../data/YearRange';
 import { persistentState, storedDate, type StoredState } from './PersistentState';
-import { LANGUAGE_NAMES, LANGUAGES, formatMonthYear, formatNumber, formatTemperature, regionName, regionShortName, t, type Language } from './i18n';
+import { LANGUAGE_NAMES, LANGUAGES, formatMonthYear, formatNumber, formatTemperature, regionName, regionShortName, t, type Language } from '../i18n';
 
 /** `endMonth`: the last month with data, 0 (January) to 11. */
 export type Dataset = { endMonth?: { year: number, month: number }, csv: Record<Showcase, string>, firstYear: number, lastYear: number };

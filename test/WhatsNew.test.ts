@@ -11,9 +11,9 @@ vi.mock('../CHANGELOG.md?raw', () => ({
     ].join('\n'),
 }));
 
-import { Changelog } from '../src/Changelog';
-import { PersistentState, STORAGE_KEY } from '../src/PersistentState';
-import { showWhatsNewOnce, versionSeenBefore } from '../src/WhatsNew';
+import { Changelog } from '../src/changelog/Changelog';
+import { PersistentState, STORAGE_KEY } from '../src/settings/PersistentState';
+import { showWhatsNewOnce, versionSeenBefore } from '../src/changelog/WhatsNew';
 
 const changelog = new Changelog();
 const overlay = () => document.querySelector('.overlay-page.changelog');

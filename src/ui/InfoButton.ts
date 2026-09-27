@@ -1,9 +1,9 @@
-import { Events } from "./Enums";
+import { Events } from "../Enums";
 import { SVGToggleButton } from "./SVGToggleButton";
-import { icon as infoIcon } from "./icons/info/infoIcon";
-import { icon as closeIcon } from "./icons/info/closeIcon";
+import { icon as infoIcon } from "../icons/info/infoIcon";
+import { icon as closeIcon } from "../icons/info/closeIcon";
 import { SceneSwitcher } from "./SceneSwitcher";
-import { t } from "./i18n";
+import { t } from "../i18n";
 
 class InfoButton {
     #button: SVGToggleButton;

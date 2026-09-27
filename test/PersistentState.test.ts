@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { LEGACY_ANIMATION_KEY, PersistentState, STORAGE_KEY, parseState, storedDate } from '../src/PersistentState';
+import { LEGACY_ANIMATION_KEY, PersistentState, STORAGE_KEY, parseState, storedDate } from '../src/settings/PersistentState';
 import { Scene, Showcase } from '../src/Enums';
 
 /** A minimal in-memory Local Storage. */

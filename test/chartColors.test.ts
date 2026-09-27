@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { CHART_COLOR_VARS } from '../src/chartColors';
+import { CHART_COLOR_VARS } from '../src/charts/chartColors';
 
 const snapshots = readdirSync(join(__dirname, '..', 'public', 'assets', 'csv')).filter((name) => /^\d{4}-\d{2}-\d{2}$/.test(name));
 const css = readFileSync(join(__dirname, '..', 'src', 'css', 'style.css'), 'utf8');
